@@ -1,51 +1,42 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ResponseInterceptor } from './common/interceptor/response.interceptor';
-import { ProtectGuardStep1 } from './modules/auth/protect/protect.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // API GỌI TỚI
-  // 1. Middleware
-  // 2. Guards
-  // 3. Interceptors (before)
-  // 4. Pipes
-  // 5. ---------- Controller => Service ----------
-  // 6. Interceptors (after)
-  // 7. Filters (chạy cuối, nhưng chỉ chạy khi quăng execution)
-  // FE NHẬN
+  // CORS
+  app.enableCors();
 
-  // GLOBAL
-  const reflector = app.get(Reflector);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalInterceptors(new ResponseInterceptor());
-  app.useGlobalGuards(new ProtectGuardStep1(reflector));
+  // Global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
+  // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Capstone Fiverr API')
+    .setDescription('API cho nền tảng freelance tương tự Fiverr')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, documentFactory, {
-    swaggerOptions: { persistAuthorization: true },
-  });
 
-  const PORT = process.env.PORT ?? 3000;
-  const logger = new Logger('Bootstrap');
-  await app.listen(PORT, () => {
-    logger.log(`Server running on port ${PORT}`);
-  });
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
+  // Global prefix
+  app.setGlobalPrefix('api');
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  
+  console.log(`🚀 Ứng dụng đang chạy trên: http://localhost:${port}`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api-docs`);
 }
+
 bootstrap();
-
-
-
-
-// ákjdákjdhád
-
-// áđâsd

@@ -1,31 +1,22 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ArticleModule } from './modules/article/article.module';
-import { PrismaModule } from './modules/prisma/prisma.module';
-import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { TokenModule } from './modules/token/token.module';
-import { ProtectStrategyStep2 } from './modules/auth/protect/protect.strategy';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { TotpModule } from './modules/totp/totp.module';
+import { UsersModule } from './modules/users/users.module';
+import { JobsModule } from './modules/jobs/jobs.module';
+import { PrismaService } from './common/prisma/prisma.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    ArticleModule,
-    PrismaModule,
-    UserModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
-    TokenModule,
-    TotpModule,
+    UsersModule,
+    JobsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ProtectStrategyStep2],
+  providers: [AppService, PrismaService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
