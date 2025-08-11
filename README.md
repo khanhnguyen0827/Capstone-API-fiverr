@@ -1,35 +1,79 @@
 # Capstone API Fiverr
 
-API backend cho nền tảng freelance tương tự Fiverr, được xây dựng với Node.js, Express và Prisma ORM.
+API backend cho nền tảng freelance tương tự Fiverr, được xây dựng với **NestJS**, **Prisma ORM** và **MySQL**.
 
-## Cấu trúc Database
+## 🚀 Tính năng chính
+
+- ✅ **Authentication**: Đăng ký, đăng nhập với JWT
+- ✅ **User Management**: CRUD người dùng với role-based access
+- ✅ **Job Management**: Quản lý công việc, danh mục
+- ✅ **Database**: MySQL với Prisma ORM
+- ✅ **API Documentation**: Swagger UI
+- ✅ **Validation**: Class-validator với DTOs
+- ✅ **Security**: JWT authentication, password hashing
+
+## 🏗️ Cấu trúc Database
 
 Database được thiết kế theo mô hình ERD với 6 bảng chính:
 
-### 1. LoaiCongViec (Job Type)
+### 1. **LoaiCongViec** (Job Type)
 - Quản lý các loại công việc chính (IT, Design, Marketing, etc.)
 
-### 2. ChiTietLoaiCongViec (Job Type Detail)
+### 2. **ChiTietLoaiCongViec** (Job Type Detail)
 - Quản lý chi tiết từng loại công việc
 - Liên kết với LoaiCongViec
 
-### 3. NguoiDung (User)
+### 3. **NguoiDung** (User)
 - Quản lý thông tin người dùng
 - Hỗ trợ 2 role: freelancer và client
 
-### 4. CongViec (Job)
+### 4. **CongViec** (Job)
 - Quản lý các công việc được đăng
 - Liên kết với người tạo và loại công việc
 
-### 5. ThueCongViec (Job Rental)
+### 5. **ThueCongViec** (Job Rental)
 - Quản lý việc thuê công việc
 - Theo dõi trạng thái hoàn thành
 
-### 6. BinhLuan (Comment)
+### 6. **BinhLuan** (Comment)
 - Quản lý bình luận và đánh giá
 - Hỗ trợ rating bằng sao
 
-## Cài đặt
+## 📁 Cấu trúc dự án
+
+```
+src/
+├── common/
+│   └── prisma/
+│       └── prisma.service.ts      # Prisma service
+├── modules/
+│   ├── auth/                      # Authentication module
+│   │   ├── auth.controller.ts     # Auth endpoints
+│   │   ├── auth.service.ts        # Auth business logic
+│   │   ├── auth.module.ts         # Auth module config
+│   │   ├── jwt.strategy.ts        # JWT strategy
+│   │   ├── jwt-auth.guard.ts      # JWT guard
+│   │   └── dto/
+│   │       └── auth.dto.ts        # Auth DTOs
+│   ├── users/                     # Users module
+│   │   ├── users.controller.ts    # User endpoints
+│   │   ├── users.service.ts       # User business logic
+│   │   ├── users.module.ts        # User module config
+│   │   └── dto/
+│   │       └── users.dto.ts       # User DTOs
+│   └── jobs/                      # Jobs module
+│       ├── jobs.controller.ts     # Job endpoints
+│       ├── jobs.service.ts        # Job business logic
+│       ├── jobs.module.ts         # Job module config
+│       └── dto/
+│           └── jobs.dto.ts        # Job DTOs
+├── app.module.ts                  # Root module
+├── main.ts                        # Application entry point
+└── prisma/
+    └── schema.prisma              # Database schema
+```
+
+## 🛠️ Cài đặt
 
 ### 1. Cài đặt dependencies
 ```bash
@@ -65,84 +109,113 @@ npm run db:migrate
 ### 5. Khởi chạy ứng dụng
 ```bash
 # Development mode
-npm run dev
+npm run start:dev
 
 # Production mode
-npm start
+npm run start:prod
 ```
 
-## Scripts có sẵn
+## 📚 API Endpoints
 
-- `npm run dev`: Chạy ứng dụng với nodemon (development)
-- `npm start`: Chạy ứng dụng production
+### 🔐 Authentication
+- `POST /api/auth/signup` - Đăng ký người dùng mới
+- `POST /api/auth/signin` - Đăng nhập
+
+### 👥 Users
+- `GET /api/users` - Lấy danh sách người dùng (có pagination)
+- `GET /api/users/:id` - Lấy thông tin người dùng theo ID
+- `POST /api/users` - Tạo người dùng mới
+- `PUT /api/users/:id` - Cập nhật thông tin người dùng (cần auth)
+- `DELETE /api/users/:id` - Xóa người dùng (cần auth)
+- `GET /api/users/profile/me` - Lấy thông tin profile của user hiện tại (cần auth)
+
+### 💼 Jobs
+- `GET /api/jobs` - Lấy danh sách công việc (có pagination, search, filter)
+- `GET /api/jobs/:id` - Lấy thông tin công việc theo ID
+- `POST /api/jobs` - Tạo công việc mới (cần auth)
+- `PUT /api/jobs/:id` - Cập nhật công việc (cần auth)
+- `DELETE /api/jobs/:id` - Xóa công việc (cần auth)
+- `GET /api/jobs/categories/list` - Lấy danh sách danh mục công việc
+
+## 🔧 Scripts có sẵn
+
+- `npm run start:dev`: Chạy ứng dụng với nodemon (development)
+- `npm run start`: Chạy ứng dụng production
+- `npm run build`: Build ứng dụng
 - `npm run db:generate`: Tạo Prisma client
 - `npm run db:push`: Đồng bộ schema với database
 - `npm run db:migrate`: Tạo và chạy migration
 - `npm run db:studio`: Mở Prisma Studio để xem database
 
-## Cấu trúc thư mục
+## 🌐 Truy cập ứng dụng
 
-```
-├── config/
-│   └── database.js          # Cấu hình kết nối database
-├── prisma/
-│   └── schema.prisma        # Schema Prisma
-├── database.sql             # File SQL tạo database
-├── package.json             # Dependencies và scripts
-└── README.md               # Hướng dẫn sử dụng
+- **API Server**: http://localhost:3000
+- **API Documentation**: http://localhost:3000/api-docs
+- **Health Check**: http://localhost:3000/api/health
+
+## 🔒 Bảo mật
+
+- **JWT Authentication**: Sử dụng Bearer token
+- **Password Hashing**: Bcrypt với salt rounds
+- **Role-based Access**: Kiểm soát quyền truy cập
+- **Input Validation**: Class-validator với DTOs
+
+## 📊 Response Format
+
+Tất cả API responses đều theo format chuẩn:
+
+```json
+{
+  "statusCode": 200,
+  "message": "Thông báo thành công",
+  "content": "Dữ liệu trả về",
+  "dateTime": "2024-01-20T10:30:00.000Z"
+}
 ```
 
-## Kết nối Database
+## 🚨 Error Handling
+
+Errors được xử lý với HTTP status codes phù hợp:
+
+- `400 Bad Request`: Dữ liệu đầu vào không hợp lệ
+- `401 Unauthorized`: Chưa đăng nhập hoặc token không hợp lệ
+- `403 Forbidden`: Không có quyền truy cập
+- `404 Not Found`: Tài nguyên không tồn tại
+- `500 Internal Server Error`: Lỗi server
+
+## 🔍 Database Connection
 
 Database sử dụng MySQL với thông tin kết nối:
-- Host: localhost
-- Port: 3307
-- User: root
-- Password: 123456
-- Database: capstone_fiverr
+- **Host**: localhost
+- **Port**: 3307
+- **User**: root
+- **Password**: 123456
+- **Database**: capstone_fiverr
 
-## Tính năng
-
-- ✅ Quản lý người dùng (đăng ký, đăng nhập)
-- ✅ Quản lý công việc (đăng, sửa, xóa)
-- ✅ Thuê công việc
-- ✅ Bình luận và đánh giá
-- ✅ Phân loại công việc
-- ✅ Tìm kiếm và lọc công việc
-- ✅ JWT Authentication
-- ✅ RESTful API
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Đăng ký
-- `POST /api/auth/login` - Đăng nhập
-
-### Users
-- `GET /api/users` - Lấy danh sách người dùng
-- `GET /api/users/:id` - Lấy thông tin người dùng
-- `PUT /api/users/:id` - Cập nhật thông tin người dùng
-
-### Jobs
-- `GET /api/jobs` - Lấy danh sách công việc
-- `POST /api/jobs` - Tạo công việc mới
-- `GET /api/jobs/:id` - Lấy thông tin công việc
-- `PUT /api/jobs/:id` - Cập nhật công việc
-- `DELETE /api/jobs/:id` - Xóa công việc
-
-### Job Rentals
-- `POST /api/rentals` - Thuê công việc
-- `GET /api/rentals` - Lấy danh sách thuê
-- `PUT /api/rentals/:id` - Cập nhật trạng thái
-
-### Comments
-- `GET /api/comments/:jobId` - Lấy bình luận của công việc
-- `POST /api/comments` - Thêm bình luận
-- `PUT /api/comments/:id` - Sửa bình luận
-- `DELETE /api/comments/:id` - Xóa bình luận
-
-## Lưu ý
+## 📝 Lưu ý
 
 - Đảm bảo MySQL server đang chạy trên port 3307
 - Tạo database `capstone_fiverr` trước khi chạy ứng dụng
 - Cập nhật thông tin kết nối database trong file `.env` nếu cần
+- Sử dụng Bearer token trong header `Authorization` cho các API cần auth
+
+## 🆘 Troubleshooting
+
+### Lỗi kết nối database
+- Kiểm tra MySQL server có đang chạy không
+- Kiểm tra port 3307 có đúng không
+- Kiểm tra username/password MySQL
+
+### Lỗi Prisma
+```bash
+# Reset Prisma
+npx prisma migrate reset
+npx prisma generate
+npx prisma db push
+```
+
+### Lỗi port đã sử dụng
+Thay đổi port trong file `.env`:
+```env
+PORT=3001
+```

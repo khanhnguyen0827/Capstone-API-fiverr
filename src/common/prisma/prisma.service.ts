@@ -10,15 +10,17 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           url: process.env.DATABASE_URL || 'mysql://root:123456@localhost:3307/capstone_fiverr',
         },
       },
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     });
   }
 
   async onModuleInit() {
     await this.$connect();
-    console.log('✅ Kết nối database thành công!');
+    console.log('✅ Database connected successfully');
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
+    console.log('🔌 Database disconnected');
   }
 }

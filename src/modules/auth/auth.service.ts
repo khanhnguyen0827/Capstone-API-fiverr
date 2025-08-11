@@ -32,22 +32,12 @@ export class AuthService {
         ...userData,
         email,
         pass_word: hashedPassword,
-        role: userData.role || 'user',
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        birth_day: true,
-        gender: true,
-        role: true,
-        skill: true,
-        certification: true,
       },
     });
 
-    return newUser;
+    // Loại bỏ password khỏi response
+    const { pass_word: _, ...userWithoutPassword } = newUser;
+    return userWithoutPassword;
   }
 
   async signin(loginDto: LoginDto) {
@@ -75,20 +65,16 @@ export class AuthService {
       role: user.role,
     };
 
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET || 'capstone-fiverr-secret-key',
+      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+    });
+
+    // Loại bỏ password khỏi response
+    const { pass_word: _, ...userWithoutPassword } = user;
 
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        birth_day: user.birth_day,
-        gender: user.gender,
-        role: user.role,
-        skill: user.skill,
-        certification: user.certification,
-      },
+      user: userWithoutPassword,
       token,
     };
   }
