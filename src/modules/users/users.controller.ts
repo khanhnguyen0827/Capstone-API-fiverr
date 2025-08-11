@@ -1,48 +1,47 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiBody,
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
   ApiParam,
-  ApiQuery,
+  ApiBody,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
+  ApiNotFoundResponse,
   ApiForbiddenResponse,
-  ApiNotFoundResponse
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Users Management')
-@Controller('api/users')
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Lấy danh sách người dùng',
-    description: 'Lấy danh sách tất cả người dùng với phân trang'
+    description: 'Lấy danh sách tất cả người dùng trong hệ thống'
   })
-  @ApiQuery({
-    name: 'page',
-    description: 'Số trang (mặc định: 1)',
-    required: false,
-    type: Number,
-    example: 1
-  })
-  @ApiQuery({
-    name: 'size',
-    description: 'Số lượng item trên mỗi trang (mặc định: 10)',
-    required: false,
-    type: Number,
-    example: 10
-  })
-  @ApiOkResponse({
+  @ApiResponse({
+    status: 200,
     description: 'Lấy danh sách người dùng thành công',
     schema: {
       example: {
@@ -53,13 +52,13 @@ export class UsersController {
             {
               id: 1,
               name: 'Nguyễn Văn A',
-              email: 'user1@example.com',
+              email: 'nguyenvana@email.com',
               phone: '0123456789',
               birth_day: '1990-01-01',
               gender: 'Nam',
               role: 'freelancer',
-              skill: 'Lập trình web',
-              certification: 'AWS Certified'
+              skill: 'Lập trình web, React, Node.js',
+              certification: 'AWS Certified Developer'
             }
           ],
           pagination: {
@@ -73,28 +72,30 @@ export class UsersController {
       }
     }
   })
-  async getUsers(@Query('page') page: string = '1', @Query('size') size: string = '10') {
-    const result = await this.usersService.getUsers(parseInt(page), parseInt(size));
+  async getUsers() {
+    const users = await this.usersService.getUsers(1, 100); // Lấy tất cả users
     return {
       statusCode: 200,
       message: 'Lấy danh sách người dùng thành công',
-      content: result,
+      content: users,
       dateTime: new Date().toISOString(),
     };
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Lấy thông tin người dùng theo ID',
-    description: 'Lấy thông tin chi tiết của một người dùng cụ thể'
+    description: 'Lấy chi tiết thông tin người dùng dựa trên ID'
   })
   @ApiParam({
     name: 'id',
-    description: 'ID của người dùng',
+    description: 'ID người dùng',
     type: Number,
     example: 1
   })
-  @ApiOkResponse({
+  @ApiResponse({
+    status: 200,
     description: 'Lấy thông tin người dùng thành công',
     schema: {
       example: {
@@ -103,43 +104,37 @@ export class UsersController {
         content: {
           id: 1,
           name: 'Nguyễn Văn A',
-          email: 'user@example.com',
+          email: 'nguyenvana@email.com',
           phone: '0123456789',
           birth_day: '1990-01-01',
           gender: 'Nam',
           role: 'freelancer',
-          skill: 'Lập trình web',
-          certification: 'AWS Certified'
+          skill: 'Lập trình web, React, Node.js',
+          certification: 'AWS Certified Developer'
         },
         dateTime: '2024-01-20T10:30:00.000Z'
       }
     }
   })
-  @ApiNotFoundResponse({
-    description: 'Người dùng không tồn tại',
-    schema: {
-      example: {
-        statusCode: 404,
-        message: 'Người dùng không tồn tại',
-        content: null,
-        dateTime: '2024-01-20T10:30:00.000Z'
-      }
-    }
+  @ApiResponse({
+    status: 404,
+    description: 'Người dùng không tồn tại'
   })
-  async getUserById(@Param('id') id: string) {
-    const result = await this.usersService.getUserById(parseInt(id));
+  async getUserById(@Param('id') id: number) {
+    const user = await this.usersService.getUserById(id);
     return {
       statusCode: 200,
       message: 'Lấy thông tin người dùng thành công',
-      content: result,
+      content: user,
       dateTime: new Date().toISOString(),
     };
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Tạo người dùng mới',
-    description: 'Tạo một người dùng mới với thông tin được cung cấp'
+    description: 'Tạo tài khoản người dùng mới (chỉ dành cho admin)'
   })
   @ApiBody({ type: CreateUserDto })
   @ApiCreatedResponse({
@@ -151,49 +146,42 @@ export class UsersController {
         content: {
           id: 2,
           name: 'Trần Thị B',
-          email: 'user2@example.com',
+          email: 'tranthib@email.com',
           phone: '0987654321',
-          birth_day: '1992-05-15',
+          birth_day: '1995-05-15',
           gender: 'Nữ',
           role: 'client',
-          skill: 'Marketing',
-          certification: 'Google Ads Certified'
+          skill: 'Quản lý dự án',
+          certification: 'PMP Certified'
         },
         dateTime: '2024-01-20T10:30:00.000Z'
       }
     }
   })
   @ApiBadRequestResponse({
-    description: 'Dữ liệu đầu vào không hợp lệ hoặc email đã tồn tại',
-    schema: {
-      example: {
-        statusCode: 400,
-        message: 'Email đã tồn tại',
-        content: null,
-        dateTime: '2024-01-20T10:30:00.000Z'
-      }
-    }
+    description: 'Dữ liệu đầu vào không hợp lệ'
   })
   async createUser(@Body() createUserDto: CreateUserDto) {
-    const result = await this.usersService.createUser(createUserDto);
+    const user = await this.usersService.createUser(createUserDto);
     return {
       statusCode: 201,
       message: 'Tạo người dùng thành công',
-      content: result,
+      content: user,
       dateTime: new Date().toISOString(),
     };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id')
-  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Cập nhật thông tin người dùng',
-    description: 'Cập nhật thông tin của người dùng (cần xác thực)'
+    description: 'Cập nhật thông tin người dùng (yêu cầu đăng nhập và quyền sở hữu)'
   })
+  @ApiBearerAuth('JWT-auth')
   @ApiParam({
     name: 'id',
-    description: 'ID của người dùng cần cập nhật',
+    description: 'ID người dùng cần cập nhật',
     type: Number,
     example: 1
   })
@@ -206,14 +194,14 @@ export class UsersController {
         message: 'Cập nhật người dùng thành công',
         content: {
           id: 1,
-          name: 'Nguyễn Văn A (Updated)',
-          email: 'user@example.com',
+          name: 'Nguyễn Văn A (Đã cập nhật)',
+          email: 'nguyenvana@email.com',
           phone: '0123456789',
           birth_day: '1990-01-01',
           gender: 'Nam',
           role: 'freelancer',
-          skill: 'Lập trình web, React',
-          certification: 'AWS Certified, React Certified'
+          skill: 'Lập trình web, React, Node.js, TypeScript',
+          certification: 'AWS Certified Developer, Google Cloud Certified'
         },
         dateTime: '2024-01-20T10:30:00.000Z'
       }
@@ -228,26 +216,31 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: 'Người dùng không tồn tại'
   })
-  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Request() req) {
-    const result = await this.usersService.updateUser(parseInt(id), updateUserDto, req.user);
+  async updateUser(
+    @Param('id') id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @Request() req: any,
+  ) {
+    const user = await this.usersService.updateUser(id, updateUserDto, req.user);
     return {
       statusCode: 200,
       message: 'Cập nhật người dùng thành công',
-      content: result,
+      content: user,
       dateTime: new Date().toISOString(),
     };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Xóa người dùng',
-    description: 'Xóa một người dùng (cần xác thực và quyền)'
+    description: 'Xóa người dùng (yêu cầu đăng nhập và quyền admin)'
   })
+  @ApiBearerAuth('JWT-auth')
   @ApiParam({
     name: 'id',
-    description: 'ID của người dùng cần xóa',
+    description: 'ID người dùng cần xóa',
     type: Number,
     example: 1
   })
@@ -257,53 +250,8 @@ export class UsersController {
       example: {
         statusCode: 200,
         message: 'Xóa người dùng thành công',
-        content: null,
-        dateTime: '2024-01-20T10:30:00.000Z'
-      }
-    }
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Chưa đăng nhập hoặc token không hợp lệ'
-  })
-  @ApiForbiddenResponse({
-    description: 'Không có quyền xóa người dùng này'
-  })
-  @ApiNotFoundResponse({
-    description: 'Người dùng không tồn tại'
-  })
-  async deleteUser(@Param('id') id: string, @Request() req) {
-    await this.usersService.deleteUser(parseInt(id), req.user);
-    return {
-      statusCode: 200,
-      message: 'Xóa người dùng thành công',
-      content: null,
-      dateTime: new Date().toISOString(),
-    };
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile/me')
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Lấy thông tin profile của user hiện tại',
-    description: 'Lấy thông tin chi tiết của người dùng đang đăng nhập'
-  })
-  @ApiOkResponse({
-    description: 'Lấy thông tin profile thành công',
-    schema: {
-      example: {
-        statusCode: 200,
-        message: 'Lấy thông tin profile thành công',
         content: {
-          id: 1,
-          name: 'Nguyễn Văn A',
-          email: 'user@example.com',
-          phone: '0123456789',
-          birth_day: '1990-01-01',
-          gender: 'Nam',
-          role: 'freelancer',
-          skill: 'Lập trình web',
-          certification: 'AWS Certified'
+          message: 'Xóa người dùng thành công'
         },
         dateTime: '2024-01-20T10:30:00.000Z'
       }
@@ -312,12 +260,60 @@ export class UsersController {
   @ApiUnauthorizedResponse({
     description: 'Chưa đăng nhập hoặc token không hợp lệ'
   })
-  async getProfile(@Request() req) {
-    const result = await this.usersService.getUserById(req.user.userId);
+  @ApiForbiddenResponse({
+    description: 'Không có quyền xóa người dùng'
+  })
+  @ApiNotFoundResponse({
+    description: 'Người dùng không tồn tại'
+  })
+  async deleteUser(@Param('id') id: number, @Request() req: any) {
+    const result = await this.usersService.deleteUser(id, req.user);
     return {
       statusCode: 200,
-      message: 'Lấy thông tin profile thành công',
+      message: 'Xóa người dùng thành công',
       content: result,
+      dateTime: new Date().toISOString(),
+    };
+  }
+
+  @Get('profile/me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Lấy thông tin profile cá nhân',
+    description: 'Lấy thông tin profile của người dùng đang đăng nhập'
+  })
+  @ApiBearerAuth('JWT-auth')
+  @ApiOkResponse({
+    description: 'Lấy profile thành công',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: 'Lấy profile thành công',
+        content: {
+          id: 1,
+          name: 'Nguyễn Văn A',
+          email: 'nguyenvana@email.com',
+          phone: '0123456789',
+          birth_day: '1990-01-01',
+          gender: 'Nam',
+          role: 'freelancer',
+          skill: 'Lập trình web, React, Node.js',
+          certification: 'AWS Certified Developer'
+        },
+        dateTime: '2024-01-20T10:30:00.000Z'
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Chưa đăng nhập hoặc token không hợp lệ'
+  })
+  async getProfile(@Request() req: any) {
+    const profile = await this.usersService.getUserById(req.user.userId);
+    return {
+      statusCode: 200,
+      message: 'Lấy profile thành công',
+      content: profile,
       dateTime: new Date().toISOString(),
     };
   }

@@ -58,17 +58,16 @@ export class AuthService {
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
-    // Tạo JWT token
+    // Tạo JWT token với payload đầy đủ
     const payload = {
       sub: user.id,
       email: user.email,
+      name: user.name,
       role: user.role,
     };
 
-    const token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET || 'capstone-fiverr-secret-key',
-      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
-    });
+    // Sử dụng JWT service với cấu hình từ module
+    const token = this.jwtService.sign(payload);
 
     // Loại bỏ password khỏi response
     const { pass_word: _, ...userWithoutPassword } = user;
@@ -76,6 +75,8 @@ export class AuthService {
     return {
       user: userWithoutPassword,
       token,
+      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+      tokenType: 'Bearer'
     };
   }
 }
