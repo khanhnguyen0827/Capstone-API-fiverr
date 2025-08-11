@@ -1,0 +1,7 @@
+.env
+generated
+dist
+node_modules
+images
+.dockerignore
+.prettierrc
