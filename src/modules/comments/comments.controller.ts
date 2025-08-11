@@ -44,7 +44,7 @@ export class CommentsController {
             ngay_binh_luan: '2024-01-20T10:30:00.000Z',
             ma_cong_viec: 1,
             ma_nguoi_binh_luan: 1,
-            nguoiDung: {
+            nguoiBinhLuan: {
               id: 1,
               name: 'Nguyễn Văn A',
               email: 'user@example.com'
@@ -85,7 +85,7 @@ export class CommentsController {
           ngay_binh_luan: '2024-01-20T10:30:00.000Z',
           ma_cong_viec: 1,
           ma_nguoi_binh_luan: 2,
-          nguoiDung: {
+          nguoiBinhLuan: {
             id: 2,
             name: 'Trần Thị B',
             email: 'user2@example.com'
@@ -134,7 +134,7 @@ export class CommentsController {
           ngay_binh_luan: '2024-01-20T10:30:00.000Z',
           ma_cong_viec: 1,
           ma_nguoi_binh_luan: 1,
-          nguoiDung: {
+          nguoiBinhLuan: {
             id: 1,
             name: 'Nguyễn Văn A',
             email: 'user@example.com'

@@ -10,7 +10,7 @@ export class CommentsService {
     const comments = await this.prisma.binhLuan.findMany({
       where: { ma_cong_viec: jobId },
       include: {
-        nguoiDung: {
+        nguoiBinhLuan: {
           select: {
             id: true,
             name: true,
@@ -34,7 +34,7 @@ export class CommentsService {
         ngay_binh_luan: new Date()
       },
       include: {
-        nguoiDung: {
+        nguoiBinhLuan: {
           select: {
             id: true,
             name: true,
@@ -65,7 +65,7 @@ export class CommentsService {
       where: { id },
       data: updateCommentDto,
       include: {
-        nguoiDung: {
+        nguoiBinhLuan: {
           select: {
             id: true,
             name: true,
