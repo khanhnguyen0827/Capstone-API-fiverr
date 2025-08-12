@@ -1,10 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import { AppModule } from './app.module';
+import * as SwaggerModels from './common/swagger/models';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -18,78 +21,49 @@ async function bootstrap() {
   // Global prefix - chỉ set một lần
   app.setGlobalPrefix('api');
 
+  // Serve static assets for Swagger customization
+  app.useStaticAssets(join(process.cwd(), 'public'));
+
   // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('🚀 Fiverr API - Professional Freelance Platform')
-    .setDescription(`
-      <div style="text-align: center; margin: 20px 0;">
-        <h2 style="color: #2c3e50; margin-bottom: 15px;">🌟 API Documentation for Fiverr-like Platform</h2>
-        <p style="color: #5a6c7d; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-          Complete REST API for managing users, jobs, comments, and authentication in a professional freelance marketplace.
-        </p>
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; margin: 15px 0;">
-          <strong>🔐 JWT Authentication Required</strong> - Use Bearer token for protected endpoints
-        </div>
-        <div style="display: flex; justify-content: center; gap: 20px; margin: 20px 0; flex-wrap: wrap;">
-          <span style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px;">✅ Users Management</span>
-          <span style="background: #3498db; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px;">💼 Jobs Management</span>
-          <span style="background: #e74c3c; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px;">💬 Comments System</span>
-          <span style="background: #f39c12; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px;">🔑 Authentication</span>
-        </div>
-      </div>
-    `)
-    .setVersion('2.0.0')
-    .addServer('http://localhost:3000', 'Development Server')
-    .addServer('https://api.fiverr.com', 'Production Server')
+    .setTitle(process.env.SWAGGER_TITLE || 'Capstone Fiverr API')
+    .setDescription(process.env.SWAGGER_DESCRIPTION || 'API cho nền tảng freelance tương tự Fiverr')
+    .setVersion(process.env.SWAGGER_VERSION || '1.0.0')
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
         name: 'JWT',
-        description: '🔐 Enter your JWT token for authentication. Format: Bearer <your-token>',
+        description: 'Nhập JWT token để xác thực. Format: Bearer <token>',
         in: 'header',
       },
       'JWT-auth',
     )
-    .addTag('🔐 Authentication', 'User registration, login, token management, and security features')
-    .addTag('👥 Users Management', 'Complete user CRUD operations, profile management, and permissions')
-    .addTag('💼 Jobs Management', 'Job posting, searching, categories, ratings, and marketplace features')
-    .addTag('💬 Comments & Reviews', 'Comment system, user reviews, ratings, and interaction features')
-    .addTag('📊 Analytics', 'Platform statistics, user analytics, and performance metrics')
-    .addTag('🔧 System', 'Health checks, system status, and maintenance endpoints')
+    .addTag('Authentication', 'Xác thực người dùng - Đăng ký, đăng nhập, quản lý token')
+    .addTag('Users', 'Quản lý người dùng - CRUD, hồ sơ, phân quyền')
+    .addTag('Jobs', 'Quản lý công việc - Đăng tin, tìm kiếm, danh mục, đánh giá')
+    .addTag('Comments', 'Hệ thống bình luận - Đánh giá, nhận xét, tương tác')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    extraModels: Object.values(SwaggerModels) as any,
+  });
 
-  // Cấu hình Swagger UI với giao diện đẹp và chuyên nghiệp
+  // Cấu hình Swagger UI tinh gọn + hỗ trợ Dark/Light
   SwaggerModule.setup(process.env.SWAGGER_PATH || 'api-docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
       displayRequestDuration: true,
       filter: true,
-      showExtensions: true,
-      showCommonExtensions: true,
-      docExpansion: 'list',
-      defaultModelsExpandDepth: 2,
-      defaultModelExpandDepth: 2,
-      displayOperationId: false,
-      tryItOutEnabled: true,
-      requestInterceptor: (req) => {
-        // Tự động thêm Bearer token nếu có
-        const token = localStorage.getItem('swagger_token');
-        if (token) {
-          req.headers.Authorization = `Bearer ${token}`;
-        }
-        return req;
-      }
+      docExpansion: 'none',
+      defaultModelsExpandDepth: -1,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
     },
-    customSiteTitle: 'Fiverr API Documentation',
-    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
-    ],
+    customSiteTitle: process.env.SWAGGER_TITLE || 'Capstone Fiverr API',
+    customCssUrl: '/swagger.css',
+    customJs: ['/swagger.js'],
   });
 
   const port = process.env.PORT || 3000;

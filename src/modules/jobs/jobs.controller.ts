@@ -31,7 +31,7 @@ import { JobsService } from './jobs.service';
 import { CreateJobDto, UpdateJobDto, JobSearchDto } from './dto/jobs.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@ApiTags('Jobs Management')
+@ApiTags('Jobs')
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
