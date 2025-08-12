@@ -15,12 +15,35 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   async onModuleInit() {
-    await this.$connect();
-    console.log('✅ Database connected successfully');
+    try {
+      await this.$connect();
+      console.log('✅ Database connected successfully');
+    } catch (error) {
+      console.error('❌ Database connection failed:', error.message);
+      console.log('🔧 Please check:');
+      console.log('   - MySQL server is running');
+      console.log('   - Database "capstone_fiverr" exists');
+      console.log('   - Connection details in .env file');
+      console.log('   - Port 3307 is accessible');
+      
+      // Retry connection after 5 seconds
+      setTimeout(async () => {
+        try {
+          await this.$connect();
+          console.log('✅ Database reconnected successfully');
+        } catch (retryError) {
+          console.error('❌ Database reconnection failed:', retryError.message);
+        }
+      }, 5000);
+    }
   }
 
   async onModuleDestroy() {
-    await this.$disconnect();
-    console.log('🔌 Database disconnected');
+    try {
+      await this.$disconnect();
+      console.log('🔌 Database disconnected');
+    } catch (error) {
+      console.error('❌ Error disconnecting database:', error.message);
+    }
   }
 }

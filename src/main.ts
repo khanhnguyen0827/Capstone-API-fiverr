@@ -32,7 +32,7 @@ API sử dụng JWT Bearer token để xác thực. Để sử dụng các endpo
 
 1. Đăng ký tài khoản mới qua \`POST /api/auth/signup\`
 2. Đăng nhập để lấy JWT token qua \`POST /api/auth/signin\`
-3. Sử dụng token trong header: \`Authorization: Bearer <your-token>\`
+3. Sử dụng token trong header: \`Authorization: Bearer <token>\`
 
 ## Features
 - **User Management**: Đăng ký, đăng nhập, quản lý profile
@@ -222,7 +222,7 @@ Nếu có vấn đề, vui lòng liên hệ support team.
         border-radius: 12px;
         border: 2px solid #e9ecef;
         margin: 20px 0;
-      }
+        }
       
       .swagger-ui .auth-container {
         background: linear-gradient(135deg, #f8f9fa, #e9ecef);
@@ -409,7 +409,7 @@ Nếu có vấn đề, vui lòng liên hệ support team.
       
       .swagger-ui .response-col_links {
         color: #3498db;
-      }
+        }
       
       .swagger-ui .response-col_links a {
         color: #3498db;
@@ -463,14 +463,19 @@ Nếu có vấn đề, vui lòng liên hệ support team.
   });
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
   
-  console.log(`
+  try {
+    await app.listen(port);
+    console.log(`
 🚀 Ứng dụng đang chạy trên: http://localhost:${port}
 📚 API Documentation: http://localhost:${port}/api-docs
-🔍 Health Check: http://localhost:${port}/api/health
+🔍 Health Check: http://localhost:${port}/health
 🌍 Environment: ${process.env.NODE_ENV || 'development'}
-  `);
+    `);
+  } catch (error) {
+    console.error('❌ Failed to start application:', error.message);
+    process.exit(1);
+  }
 }
 
 bootstrap();
