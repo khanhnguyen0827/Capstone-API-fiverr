@@ -78,7 +78,7 @@ async function bootstrap() {
         color: #2c3e50; 
         font-size: 42px; 
         font-weight: 700; 
-        text-align: center; 
+        text-align: center;
         margin: 30px 0; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         text-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -104,7 +104,7 @@ async function bootstrap() {
       /* Authorization section - thiết kế hiện đại */
       .swagger-ui .scheme-container { 
         background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: white; 
+        color: white;
         padding: 25px; 
         border-radius: 12px; 
         margin: 30px 0; 
@@ -113,10 +113,10 @@ async function bootstrap() {
         text-align: center;
       }
       
-      .swagger-ui .scheme-container .scheme-title { 
-        color: white !important; 
+      .swagger-ui .scheme-container .scheme-title {
+        color: white !important;
         font-weight: 600; 
-        font-size: 18px; 
+        font-size: 18px;
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 15px;
@@ -221,7 +221,7 @@ async function bootstrap() {
       
       .swagger-ui .opblock.opblock-put .opblock-summary-method { 
         background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
-        border-radius: 6px; 
+        border-radius: 6px;
         font-weight: 700;
         box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
         border: none;
@@ -294,7 +294,7 @@ async function bootstrap() {
       }
       
       /* Operation summary - thiết kế gọn gàng */
-      .swagger-ui .opblock-summary-description { 
+      .swagger-ui .opblock-summary-description {
         color: #5a6c7d; 
         font-style: normal; 
         font-size: 15px;
@@ -302,9 +302,9 @@ async function bootstrap() {
         font-weight: 500;
       }
       
-      .swagger-ui .opblock-summary-path { 
+      .swagger-ui .opblock-summary-path {
         font-weight: 700; 
-        color: #2c3e50; 
+        color: #2c3e50;
         font-size: 16px;
         font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
         background: #f8f9fa;
@@ -313,9 +313,9 @@ async function bootstrap() {
         border: 1px solid #e1e8ed;
       }
       
-      .swagger-ui .opblock-summary-operation-id { 
+      .swagger-ui .opblock-summary-operation-id {
         color: #3498db; 
-        font-size: 12px; 
+        font-size: 12px;
         background: rgba(52, 152, 219, 0.1);
         padding: 4px 10px;
         border-radius: 15px;
@@ -343,8 +343,8 @@ async function bootstrap() {
       }
       
       /* Response tables - thiết kế full và rõ ràng */
-      .swagger-ui .responses-table { 
-        border-radius: 8px; 
+      .swagger-ui .responses-table {
+        border-radius: 8px;
         overflow: visible; 
         box-shadow: 0 3px 12px rgba(0,0,0,0.08);
         border: 2px solid #e1e8ed;
@@ -354,7 +354,7 @@ async function bootstrap() {
         min-height: 80px;
       }
       
-      .swagger-ui .responses-table th { 
+      .swagger-ui .responses-table th {
         background: #f8f9fa;
         color: #2c3e50; 
         font-weight: 600; 
@@ -365,7 +365,7 @@ async function bootstrap() {
         border-bottom: 2px solid #e1e8ed;
       }
       
-      .swagger-ui .responses-table td { 
+      .swagger-ui .responses-table td {
         padding: 15px 18px; 
         border-bottom: 1px solid #f1f3f4;
         font-size: 14px;
@@ -377,16 +377,16 @@ async function bootstrap() {
       }
       
       /* Models - thiết kế đẹp */
-      .swagger-ui .model { 
+      .swagger-ui .model {
         border-radius: 12px; 
         border: 2px solid #e1e8ed; 
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         overflow: hidden;
       }
       
-      .swagger-ui .model-title { 
+      .swagger-ui .model-title {
         background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: white; 
+        color: white;
         padding: 20px; 
         font-weight: 600; 
         font-size: 16px;
@@ -394,13 +394,13 @@ async function bootstrap() {
         letter-spacing: 0.5px;
       }
       
-      .swagger-ui .model-box { 
+      .swagger-ui .model-box {
         padding: 25px; 
         background: #f8f9fa;
       }
       
       /* Parameters container - thiết kế hiện đại */
-      .swagger-ui .parameters-container { 
+      .swagger-ui .parameters-container {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
         border-radius: 12px; 
         padding: 25px; 
@@ -409,7 +409,7 @@ async function bootstrap() {
         box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       }
       
-      .swagger-ui .parameters-container h4 { 
+      .swagger-ui .parameters-container h4 {
         color: #3498db; 
         margin-bottom: 20px; 
         font-weight: 600; 
@@ -420,9 +420,9 @@ async function bootstrap() {
       }
       
       /* Parameter styling */
-      .swagger-ui .parameter__name { 
+      .swagger-ui .parameter__name {
         font-weight: 600; 
-        color: #2c3e50; 
+        color: #2c3e50;
         font-size: 14px;
         background: #f8f9fa;
         padding: 6px 12px;
@@ -430,37 +430,37 @@ async function bootstrap() {
         border: 1px solid #e1e8ed;
       }
       
-      .swagger-ui .parameter__type { 
+      .swagger-ui .parameter__type {
         color: #3498db; 
-        font-style: italic; 
+        font-style: italic;
         font-size: 13px;
         font-weight: 500;
       }
       
-      .swagger-ui .parameter__required { 
+      .swagger-ui .parameter__required {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-        color: white; 
+        color: white;
         padding: 4px 12px; 
         border-radius: 20px; 
-        font-size: 11px; 
+        font-size: 11px;
         font-weight: 600; 
         text-transform: uppercase;
         box-shadow: 0 2px 8px rgba(255, 65, 108, 0.3);
       }
       
-      .swagger-ui .parameter__deprecated { 
+      .swagger-ui .parameter__deprecated {
         background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-        color: white; 
+        color: white;
         padding: 4px 12px; 
         border-radius: 20px; 
-        font-size: 11px; 
+        font-size: 11px;
         font-weight: 600; 
         text-transform: uppercase;
         box-shadow: 0 2px 8px rgba(255, 154, 158, 0.3);
       }
       
       /* Response status colors - thiết kế đẹp */
-      .swagger-ui .response-col_status { 
+      .swagger-ui .response-col_status {
         font-weight: 600; 
         font-size: 14px;
         padding: 8px 16px;
@@ -471,50 +471,50 @@ async function bootstrap() {
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
       
-      .swagger-ui .response-col_status.response-200 { 
-        color: #27ae60; 
+      .swagger-ui .response-col_status.response-200 {
+        color: #27ae60;
         background: linear-gradient(135deg, #d5f4e6 0%, #abebc6 100%);
         border: 2px solid #27ae60;
       }
       
-      .swagger-ui .response-col_status.response-201 { 
-        color: #27ae60; 
+      .swagger-ui .response-col_status.response-201 {
+        color: #27ae60;
         background: linear-gradient(135deg, #d5f4e6 0%, #abebc6 100%);
         border: 2px solid #27ae60;
       }
       
-      .swagger-ui .response-col_status.response-400 { 
-        color: #e74c3c; 
+      .swagger-ui .response-col_status.response-400 {
+        color: #e74c3c;
         background: linear-gradient(135deg, #fadbd8 0%, #f5b7b1 100%);
         border: 2px solid #e74c3c;
       }
       
-      .swagger-ui .response-col_status.response-401 { 
-        color: #f39c12; 
+      .swagger-ui .response-col_status.response-401 {
+        color: #f39c12;
         background: linear-gradient(135deg, #fdeaa7 0%, #f8d7da 100%);
         border: 2px solid #f39c12;
       }
       
-      .swagger-ui .response-col_status.response-403 { 
-        color: #e67e22; 
+      .swagger-ui .response-col_status.response-403 {
+        color: #e67e22;
         background: linear-gradient(135deg, #f8d7da 0%, #f5b7b1 100%);
         border: 2px solid #e67e22;
       }
       
-      .swagger-ui .response-col_status.response-404 { 
-        color: #e74c3c; 
+      .swagger-ui .response-col_status.response-404 {
+        color: #e74c3c;
         background: linear-gradient(135deg, #fadbd8 0%, #f5b7b1 100%);
         border: 2px solid #e74c3c;
       }
       
-      .swagger-ui .response-col_status.response-500 { 
-        color: #c0392b; 
+      .swagger-ui .response-col_status.response-500 {
+        color: #c0392b;
         background: linear-gradient(135deg, #f5b7b1 0%, #fadbd8 100%);
         border: 2px solid #c0392b;
       }
       
       /* Response description và links - thiết kế tinh gọn */
-      .swagger-ui .response-col_description { 
+      .swagger-ui .response-col_description {
         color: #2c3e50; 
         font-size: 12px;
         line-height: 1.4;
@@ -526,8 +526,8 @@ async function bootstrap() {
         margin: 6px 0;
       }
       
-      .swagger-ui .response-col_links { 
-        color: #3498db; 
+      .swagger-ui .response-col_links {
+        color: #3498db;
         font-size: 11px;
         font-weight: 400;
         background: #f8f9fa;
@@ -537,9 +537,9 @@ async function bootstrap() {
         margin: 5px 0;
       }
       
-      .swagger-ui .response-col_links a { 
-        color: #3498db; 
-        text-decoration: none; 
+      .swagger-ui .response-col_links a {
+        color: #3498db;
+        text-decoration: none;
         font-weight: 400;
         transition: color 0.3s ease;
         padding: 2px 5px;
@@ -547,7 +547,7 @@ async function bootstrap() {
         background: rgba(52, 152, 219, 0.06);
       }
       
-      .swagger-ui .response-col_links a:hover { 
+      .swagger-ui .response-col_links a:hover {
         color: #2980b9; 
         background: rgba(52, 152, 219, 0.12);
         text-decoration: none;
@@ -858,7 +858,7 @@ async function bootstrap() {
         
         .swagger-ui .opblock-tag-section h3 {
           padding: 15px 20px;
-          font-size: 18px;
+        font-size: 18px;
         }
       }
       
@@ -916,7 +916,7 @@ async function bootstrap() {
       }
     `,
           customSiteTitle: 'Fiverr API',
-      customfavIcon: '/favicon.ico',
+    customfavIcon: '/favicon.ico',
       customJs: `
         // Tự động hiện Responses table và làm full rõ ràng giao diện
         document.addEventListener('DOMContentLoaded', function() {
@@ -1135,7 +1135,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-
+  
   console.log(`
 🚀 Ứng dụng đang chạy trên: http://localhost:${port}
 📚 API Documentation: http://localhost:${port}/api-docs
