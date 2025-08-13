@@ -1,4 +1,8 @@
 /**
+ * 
+ * brew install dive       # macOS
+sudo apt install dive   # Linux
+choco install dive      # Windows
 docker image build -t vulebaolong/img-be_cyber_community:latest .
 docker build -t img-be_cyber_community .
    - build ra image

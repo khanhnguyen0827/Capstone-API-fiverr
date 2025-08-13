@@ -1,31 +1,40 @@
 
-# stage 1: giai đoạn để build ra image
-FROM node:24-alpine AS builder
+# stage 1: build image
+FROM node:20-bullseye-slim AS builder
 
 WORKDIR /app
 
-# thay đổi thư viên thêm/ xoá thư viện
-COPY package.json ./
-RUN npm install
+# install deps
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# thay đổi code
+# copy source
 COPY . .
 
+# prisma client + build
 RUN npx prisma generate
-
 RUN npm run build
 
-# xoá thư viện devDependencies
-RUN npm prune --production
+# prune devDependencies
+RUN npm prune --omit=dev
 
 # stage 2: start project
-FROM node:24-alpine
+FROM node:20-bullseye-slim
 
 WORKDIR /app
+ENV NODE_ENV=production
 
-COPY --from=builder ./app/dist ./dist
-COPY --from=builder ./app/generated ./generated
-COPY --from=builder ./app/node_modules ./node_modules
+# Install OpenSSL 1.1 runtime for Prisma
+RUN apt-get update -y \
+	&& apt-get install -y --no-install-recommends openssl libssl1.1 \
+	&& rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+COPY package.json ./package.json
+
+EXPOSE 3000
 
 CMD ["node", "dist/main.js"]
 
