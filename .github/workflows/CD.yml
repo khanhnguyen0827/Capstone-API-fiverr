@@ -1,67 +1,38 @@
-name: CD - Deploy to Production
+name: CD 
 
 on:
-  workflow_run:
-    workflows: ['CI - Build and Push Docker Image']
+  workflow_run: 
+    workflows: ['CI']
     types:
       - completed
-    branches: ['main']
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
+  start-project:
+    runs-on: node_49
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Create environment file
+      - name: tạo file .env 
         run: |
-          cat > .env << EOF
-          # Database Configuration
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          
-          # JWT Configuration
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
-          
-          # Server Configuration
-          PORT=3069
-          NODE_ENV=production
-          
-          # CORS Configuration
-          CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
-          
-          # Swagger Configuration
-          SWAGGER_TITLE=${{ secrets.SWAGGER_TITLE }}
-          SWAGGER_DESCRIPTION=${{ secrets.SWAGGER_DESCRIPTION }}
-          SWAGGER_VERSION=${{ secrets.SWAGGER_VERSION }}
-          SWAGGER_PATH=api-docs
-          EOF
+          echo "PORT=${{secrets.PORT}}" >> .env
+          echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{secrets.ACCESS_TOKEN_SECRET}}" >> .env
+          echo "ACCESS_TOKEN_EXPIRES=${{secrets.ACCESS_TOKEN_EXPIRES}}" >> .env
+          echo "REFRESH_TOKEN_SECRET=${{secrets.REFRESH_TOKEN_SECRET}}" >> .env
+          echo "REFRESH_TOKEN_EXPIRES=${{secrets.REFRESH_TOKEN_EXPIRES}}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}" >> .env
 
-      - name: Stop and remove old containers
+      - name: dừng và xoá container
         run: |
-          docker container stop con-be_api_fiverr con-db_api_fiverr || true
-          docker container rm con-be_api_fiverr con-db_api_fiverr || true
+          sudo docker container stop con-be_api_fiverr || true
+          sudo docker container remove con-be_api_fiverr || true
 
-      - name: Remove old images
-        run: |
-          docker image rm khanh2nq/img-be_api_fiverr:latest || true
+      - name: xoá image cũ
+        run: sudo docker image remove khanh2nq/img-be_api_fiverr:latest
 
-      - name: Pull latest image
-        run: docker pull khanh2nq/img-be_api_fiverr:latest
+      - name: chạy image
+        run: sudo docker compose up -d  
 
-      - name: Deploy with docker-compose
-        run: docker compose up -d
-
-      - name: Wait for services to be ready
-        run: |
-          sleep 30
-          docker ps
-
-      - name: Health check
-        run: |
-          curl -f http://localhost:3070/api/health || exit 1
-
-      - name: Cleanup environment file
-        run: rm -f .env
+      - name: xoá env
+        run: sudo rm -f .env
+        
