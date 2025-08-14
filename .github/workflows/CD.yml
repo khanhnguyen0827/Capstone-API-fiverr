@@ -5,20 +5,19 @@ on:
     workflows: ['CI']
     types:
       - completed
-    branches: ['main']
+    
 
 jobs:
-  deploy:
+  start-project:
     runs-on: api_fiverr
     
     steps:
-
       - name: tạo file env
         run: |
-          echo "PORT=${{secrets.PORT}}" >> .env
-          echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
-          echo "ACCESS_TOKEN_SECRET=${{secrets.ACCESS_TOKEN_SECRET}}" >> .env
-          echo "ACCESS_TOKEN_EXPIRES=${{secrets.ACCESS_TOKEN_EXPIRES}}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> .env
+          echo "ACCESS_TOKEN_EXPIRES=${{ secrets.ACCESS_TOKEN_EXPIRES }}" >> .env
           echo "REFRESH_TOKEN_SECRET=${{secrets.REFRESH_TOKEN_SECRET}}" >> .env
           echo "REFRESH_TOKEN_EXPIRES=${{secrets.REFRESH_TOKEN_EXPIRES}}" >> .env
           echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env
