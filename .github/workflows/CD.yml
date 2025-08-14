@@ -12,122 +12,39 @@ jobs:
     runs-on: api_fiverr
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Debug - Show workflow context
+      - name: tạo file env
         run: |
-          echo "🔍 Debug Information:"
-          echo "GitHub SHA: ${{ github.sha }}"
-          echo "Workflow: ${{ github.workflow }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Runner: api_fiverr (self-hosted)"
+          echo "PORT=${{secrets.PORT}}" >> .env
+          echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{secrets.ACCESS_TOKEN_SECRET}}" >> .env
+          echo "ACCESS_TOKEN_EXPIRES=${{secrets.ACCESS_TOKEN_EXPIRES}}" >> .env
+          echo "REFRESH_TOKEN_SECRET=${{secrets.REFRESH_TOKEN_SECRET}}" >> .env
+          echo "REFRESH_TOKEN_EXPIRES=${{secrets.REFRESH_TOKEN_EXPIRES}}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}" >> .env
+          echo "CLOUDINARY_NAME=${{secrets.CLOUDINARY_NAME}}" >> .env
+          echo "CLOUDINARY_API_KEY=${{secrets.CLOUDINARY_API_KEY}}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{secrets.CLOUDINARY_API_SECRET}}" >> .env
 
-      - name: Login to Docker Hub
-        run: |
-          echo "🔐 Logging into Docker Hub..."
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          echo "✅ Docker Hub login successful"
 
-      - name: Debug - Check Docker Hub images
+      - name: dừng và xoá container
         run: |
-          echo "🔍 Checking available images in Docker Hub..."
-          docker search khanh2nq/img-be_api_fiverr || echo "⚠️ Search failed, continuing..."
+          sudo docker container stop con-be_api_fiverr || true
+          sudo docker container remove con-be_api_fiverr || true
 
-      - name: Create environment file
+      - name: dừng và xoá container
         run: |
-          cat > .env << EOF
-          # Database Configuration
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          
-          # JWT Configuration
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
-          
-          # Server Configuration
-          PORT=3069
-          NODE_ENV=production
-          
-          # CORS Configuration
-          CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
-          
-          # Swagger Configuration
-          SWAGGER_TITLE=${{ secrets.SWAGGER_TITLE }}
-          SWAGGER_DESCRIPTION=${{ secrets.SWAGGER_DESCRIPTION }}
-          SWAGGER_VERSION=${{ secrets.SWAGGER_VERSION }}
-          SWAGGER_PATH=api-docs
-          EOF
-          echo "✅ Environment file created"
+          sudo docker container stop con-be_cyber_community || true
+          sudo docker container remove con-be_cyber_community || true
 
-      - name: Stop and remove old containers
-        run: |
-          echo "🔄 Stopping old containers..."
-          docker container stop con-be_api_fiverr con-db_api_fiverr || true
-          docker container rm con-be_api_fiverr con-db_api_fiverr || true
-          echo "✅ Old containers cleaned up"
-
-      - name: Remove old images
-        run: |
-          echo "🔄 Removing old images..."
-          docker image rm khanh2nq/img-be_api_fiverr:latest || true
-          echo "✅ Old images cleaned up"
-
-      - name: Debug - List local images
-        run: |
-          echo "🔍 Local Docker images:"
-          docker images | grep khanh2nq || echo "No local khanh2nq images found"
-
-      - name: Pull latest image
-        run: |
-          echo "📥 Pulling latest image..."
-          echo "Attempting to pull: khanh2nq/img-be_api_fiverr:${{ github.sha }}"
-          docker pull khanh2nq/img-be_api_fiverr:${{ github.sha }}
-          echo "✅ Image pulled successfully"
-
-      - name: Debug - Verify pulled image
-        run: |
-          echo "🔍 Verifying pulled image..."
-          docker images | grep khanh2nq
-          docker inspect khanh2nq/img-be_api_fiverr:${{ github.sha }} | head -20
-
-      - name: Tag image as latest
-        run: |
-          echo "🏷️ Tagging image as latest..."
-          docker tag khanh2nq/img-be_api_fiverr:${{ github.sha }} khanh2nq/img-be_api_fiverr:latest
-          echo "✅ Image tagged as latest"
-
-      - name: Deploy with docker-compose
-        run: |
-          echo "🚀 Starting deployment..."
-          docker compose up -d
-          echo "✅ Deployment started"
-
-      - name: Wait for services to be ready
-        run: |
-          echo "⏳ Waiting for services to be ready..."
-          sleep 30
-          echo "📊 Container status:"
-          docker ps
-          echo "✅ Services should be ready"
-
-      - name: Health check
-        run: |
-          echo "🏥 Performing health check..."
-          curl -f http://localhost:3070/api/health || exit 1
-          echo "✅ Health check passed"
-
-      - name: Deployment summary
-        run: |
-          echo "🎉 Deployment completed successfully!"
-          echo "Image: khanh2nq/img-be_api_fiverr:${{ github.sha }}"
-          echo "Tagged as: khanh2nq/img-be_api_fiverr:latest"
-          echo "Health check: ✅ PASSED"
-          echo "Services running:"
-          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-
-      - name: Cleanup environment file
-        run: |
-          rm -f .env
-          echo "🧹 Environment file cleaned up"
+      - name: xoá image cũ
+        run: sudo docker image remove vulebaolong/img-be_cyber_community:latest
+  
+      - name: chạy image
+        run: sudo docker compose up -d
+  
+      - name: xoá env
+        run: sudo rm -f .env
+  
         
