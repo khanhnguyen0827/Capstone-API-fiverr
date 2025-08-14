@@ -6,6 +6,10 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import * as SwaggerModels from './common/swagger/models';
 
+// Load environment variables
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
