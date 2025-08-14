@@ -24,6 +24,8 @@ async function bootstrap() {
   // Serve static assets for Swagger customization
   app.useStaticAssets(join(process.cwd(), 'public'));
 
+  
+
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle(process.env.SWAGGER_TITLE || 'Capstone Fiverr API')
