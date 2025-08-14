@@ -9,14 +9,30 @@ on:
 
 jobs:
   deploy:
-    runs-on: api_fiverr
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug - Show workflow context
+        run: |
+          echo "🔍 Debug Information:"
+          echo "GitHub SHA: ${{ github.sha }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+
       - name: Login to Docker Hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "🔐 Logging into Docker Hub..."
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          echo "✅ Docker Hub login successful"
+
+      - name: Debug - Check Docker Hub images
+        run: |
+          echo "🔍 Checking available images in Docker Hub..."
+          docker search khanh2nq/img-be_api_fiverr || echo "⚠️ Search failed, continuing..."
 
       - name: Create environment file
         run: |
@@ -41,6 +57,7 @@ jobs:
           SWAGGER_VERSION=${{ secrets.SWAGGER_VERSION }}
           SWAGGER_PATH=api-docs
           EOF
+          echo "✅ Environment file created"
 
       - name: Stop and remove old containers
         run: |
@@ -55,11 +72,23 @@ jobs:
           docker image rm khanh2nq/img-be_api_fiverr:latest || true
           echo "✅ Old images cleaned up"
 
+      - name: Debug - List local images
+        run: |
+          echo "🔍 Local Docker images:"
+          docker images | grep khanh2nq || echo "No local khanh2nq images found"
+
       - name: Pull latest image
         run: |
           echo "📥 Pulling latest image..."
+          echo "Attempting to pull: khanh2nq/img-be_api_fiverr:${{ github.sha }}"
           docker pull khanh2nq/img-be_api_fiverr:${{ github.sha }}
           echo "✅ Image pulled successfully"
+
+      - name: Debug - Verify pulled image
+        run: |
+          echo "🔍 Verifying pulled image..."
+          docker images | grep khanh2nq
+          docker inspect khanh2nq/img-be_api_fiverr:${{ github.sha }} | head -20
 
       - name: Tag image as latest
         run: |
