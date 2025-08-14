@@ -1,21 +1,26 @@
-name: CI
+name: CI - Build and Push Docker Image
 
 on:
   push:
     branches: ['main']
 
+
 jobs:
-   build-image:
-      runs-on: unbuntu-latest
+  build-and-push:
+    runs-on: ubuntu-latest
 
-      steps:
-         - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-         - name: đăng nhập docker hub
-           run: docker login -u vulebaolong -p ${{secrets.DOCKER_PASSWORD}}
+      - name: login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-         - name: build image
-           run: docker image build -t vulebaolong/img-be_cyber_community:latest .
+      - name: build image
+        run: docker build -t khanh2nq/img-be_api_fiverr:${{ github.sha }} .
 
-         - name: push image
-           run: docker push vulebaolong/img-be_cyber_community:latest
+      - name: push image
+        run: docker push khanh2nq/img-be_api_fiverr:${{ github.sha }}
+
+    
+  
+  
