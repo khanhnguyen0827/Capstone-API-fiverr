@@ -2,29 +2,33 @@
 
 ## **📋 Tổng quan**
 
-CI/CD Pipeline đã được hiệu chỉnh và tối ưu hóa để hoạt động với tài khoản Docker Hub `khanh2nq` và workflow đơn giản, hiệu quả.
+CI/CD Pipeline đã được hiệu chỉnh và tối ưu hóa để hoạt động với tài khoản Docker Hub `khanh2nq` và **self-hosted runner** `api_fiverr` cho CI/CD workflows.
 
 ## **🔄 Workflows**
 
 ### **1. CI Workflow**
 - **Tên**: `CI`
+- **Runner**: `api_fiverr` (self-hosted)
 - **Trigger**: Push vào `main` branch
 - **Chức năng**: Build và push Docker image
 - **Output**: `khanh2nq/img-be_api_fiverr:{commit-sha}`
 
 ### **2. CD Workflow**
 - **Tên**: `CD`
+- **Runner**: `api_fiverr` (self-hosted)
 - **Trigger**: Sau khi CI workflow hoàn thành
 - **Chức năng**: Deploy lên production
 - **Output**: Application running với health check
 
 ### **3. Test Workflow**
 - **Tên**: `Test and Quality Checks`
+- **Runner**: `ubuntu-latest` (GitHub-hosted)
 - **Trigger**: Push/Pull Request vào `main` hoặc `develop`
 - **Chức năng**: Testing, linting, security audit
 
 ### **4. Database Workflow**
 - **Tên**: `Database Migration`
+- **Runner**: `ubuntu-latest` (GitHub-hosted)
 - **Trigger**: Sau khi CI workflow hoàn thành
 - **Chức năng**: Database migrations
 
@@ -49,14 +53,14 @@ SWAGGER_VERSION=1.0.0
 
 ## **🚀 Cách hoạt động**
 
-### **CI Workflow:**
+### **CI Workflow (api_fiverr runner):**
 1. **Checkout code** từ repository
 2. **Login** vào Docker Hub với `khanh2nq`
 3. **Build** Docker image với commit SHA
 4. **Push** image lên Docker Hub
 5. **Verify** image đã được push thành công
 
-### **CD Workflow:**
+### **CD Workflow (api_fiverr runner):**
 1. **Checkout code** từ repository
 2. **Login** vào Docker Hub
 3. **Create** environment file với secrets
@@ -72,11 +76,11 @@ SWAGGER_VERSION=1.0.0
 ```
 Push to main branch
        ↓
-   CI Workflow
+   CI Workflow (api_fiverr)
        ↓
 Build & Push Image
        ↓
-   CD Workflow
+   CD Workflow (api_fiverr)
        ↓
 Deploy to Production
        ↓
@@ -86,6 +90,13 @@ Deploy to Production
 ```
 
 ## **🎯 Lợi ích**
+
+### **Self-hosted Runner (api_fiverr):**
+- ✅ **Speed**: Faster builds và deployments
+- ✅ **Cost**: Không tính phí theo minute
+- ✅ **Customization**: Full control over environment
+- ✅ **Security**: Code không rời khỏi infrastructure
+- ✅ **Dependencies**: Pre-installed tools và services
 
 ### **Đơn giản hóa:**
 - ✅ Sử dụng Docker commands trực tiếp
@@ -119,11 +130,18 @@ Deploy to Production
 3. **Build failed**
    - Kiểm tra Dockerfile
    - Xem logs để tìm lỗi cụ thể
+   - Verify self-hosted runner `api_fiverr` status
 
 4. **Deploy failed**
    - Kiểm tra Docker Hub login
    - Verify image pull thành công
    - Check docker-compose config
+   - Check runner connectivity
+
+5. **Self-hosted runner issues**
+   - Kiểm tra runner status (phải là "Idle")
+   - Verify runner tags và connectivity
+   - Check runner logs
 
 ## **📈 Monitoring**
 
@@ -136,6 +154,7 @@ Deploy to Production
 - **GitHub Actions**: Tab Actions → Workflow → Job → Step
 - **Docker**: `docker logs container_name`
 - **Application**: Application logs trong container
+- **Self-hosted Runner**: Runner status và logs
 
 ## **🚀 Bước tiếp theo**
 
@@ -146,29 +165,31 @@ Deploy to Production
 ### **2. Test CI/CD:**
 ```bash
 git add .
-git commit -m "feat: test updated CI/CD pipeline"
+git commit -m "feat: update CI/CD to use self-hosted runner api_fiverr"
 git push origin main
 ```
 
 ### **3. Monitor Workflows:**
 - Vào GitHub → Actions tab
-- Kiểm tra CI workflow trước
-- Sau đó kiểm tra CD workflow
+- Kiểm tra CI workflow trước (api_fiverr runner)
+- Sau đó kiểm tra CD workflow (api_fiverr runner)
 
 ## **📚 Tài liệu**
 
 - **CI_CD_README.md**: Hướng dẫn chi tiết
 - **GITHUB_SECRETS_SETUP.md**: Setup secrets
 - **CI_CD_SUMMARY.md**: Tóm tắt này
+- **CD_TROUBLESHOOTING.md**: Troubleshooting guide
 
 ## **🎉 Kết luận**
 
 CI/CD Pipeline đã được hiệu chỉnh hoàn chỉnh với:
-- ✅ Workflow names đơn giản (`CI`, `CD`)
-- ✅ Docker Hub account `khanh2nq`
-- ✅ Logging chi tiết và dễ theo dõi
-- ✅ Error handling và verification
-- ✅ Health check và monitoring
-- ✅ Documentation đầy đủ
+- ✅ **Self-hosted Runner**: `api_fiverr` cho CI/CD workflows
+- ✅ **Workflow names**: Đơn giản (`CI`, `CD`)
+- ✅ **Docker Hub account**: `khanh2nq`
+- ✅ **Logging**: Chi tiết và dễ theo dõi
+- ✅ **Error handling**: Verification và debugging
+- ✅ **Health check**: Monitoring và status
+- ✅ **Documentation**: Đầy đủ và cập nhật
 
-**Pipeline sẵn sàng hoạt động!** 🚀
+**Pipeline sẵn sàng hoạt động với self-hosted runner api_fiverr!** 🚀

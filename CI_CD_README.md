@@ -2,12 +2,13 @@
 
 ## **Tổng quan**
 
-Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa quy trình phát triển, testing, build và deploy với cách tiếp cận đơn giản và hiệu quả.
+Dự án Capstone Fiverr API sử dụng GitHub Actions với **self-hosted runner** `api_fiverr` để tự động hóa quy trình phát triển, testing, build và deploy với cách tiếp cận đơn giản và hiệu quả.
 
 ## **📋 Workflows**
 
 ### **1. CI - Build and Push Docker Image**
 - **Trigger**: Push vào `main` branch
+- **Runner**: `api_fiverr` (self-hosted)
 - **Chức năng**: 
   - Login vào Docker Hub với tài khoản `khanh2nq`
   - Build Docker image với commit SHA
@@ -18,6 +19,7 @@ Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa 
 
 ### **2. Test and Quality Checks**
 - **Trigger**: Push/Pull Request vào `main` hoặc `develop` branch
+- **Runner**: `ubuntu-latest` (GitHub-hosted)
 - **Chức năng**:
   - Chạy tests trên nhiều phiên bản Node.js (18.x, 20.x, 24.x)
   - Linting và code quality checks
@@ -26,6 +28,7 @@ Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa 
 
 ### **3. CD - Deploy to Production**
 - **Trigger**: Sau khi CI workflow hoàn thành thành công
+- **Runner**: `api_fiverr` (self-hosted)
 - **Chức năng**:
   - Login vào Docker Hub
   - Pull image mới nhất theo commit SHA
@@ -37,6 +40,7 @@ Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa 
 
 ### **4. Database Migration**
 - **Trigger**: Sau khi CI workflow hoàn thành thành công
+- **Runner**: `ubuntu-latest` (GitHub-hosted)
 - **Chức năng**: Chạy database migrations
 
 ## **🔑 GitHub Secrets cần thiết**
@@ -113,15 +117,22 @@ git push origin main
 2. **Build failed:**
    - Kiểm tra Dockerfile
    - Xem logs để tìm lỗi cụ thể
+   - Verify self-hosted runner `api_fiverr` đang hoạt động
 
 3. **Deploy failed:**
    - Kiểm tra server có sẵn sàng không
    - Kiểm tra ports và network
    - Verify Docker Hub login thành công
+   - Check self-hosted runner status
 
 4. **Tests failed:**
    - Chạy tests locally trước
    - Kiểm tra test coverage
+
+5. **Self-hosted runner issues:**
+   - Kiểm tra runner `api_fiverr` có status "Idle" không
+   - Verify runner tags: `self-hosted`, `Linux`, `X64`, `api_fiverr`
+   - Check runner logs và connectivity
 
 ## **📈 Monitoring**
 
@@ -133,6 +144,7 @@ git push origin main
 - **GitHub Actions**: Tab Actions → Workflow → Job → Step
 - **Docker**: `docker logs container_name`
 - **Application**: Application logs trong container
+- **Self-hosted Runner**: Runner logs và status
 
 ## **🔄 Rollback**
 
@@ -144,6 +156,7 @@ Nếu cần rollback:
 ## **📚 Tài liệu tham khảo**
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [Self-hosted Runners](https://docs.github.com/en/actions/hosting-your-own-runners)
 - [Docker Commands](https://docs.docker.com/engine/reference/commandline/)
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [Prisma Documentation](https://www.prisma.io/docs/)
@@ -156,6 +169,11 @@ Nếu cần rollback:
 - **Pull Command**: `docker pull khanh2nq/img-be_api_fiverr:latest`
 
 ## **🆕 Cải tiến mới**
+
+### **Self-hosted Runner:**
+- ✅ **CI Workflow**: Sử dụng `api_fiverr` runner
+- ✅ **CD Workflow**: Sử dụng `api_fiverr` runner
+- ✅ **Benefits**: Faster builds, custom environment, cost-effective
 
 ### **CI Workflow:**
 - ✅ Sử dụng `docker login`, `build`, `push` trực tiếp
@@ -178,11 +196,11 @@ Nếu cần rollback:
 ```
 Push to main branch
        ↓
-   CI Workflow
+   CI Workflow (api_fiverr)
        ↓
 Build & Push Image
        ↓
-   CD Workflow
+   CD Workflow (api_fiverr)
        ↓
 Deploy to Production
        ↓
@@ -190,3 +208,19 @@ Deploy to Production
        ↓
    Success! 🎉
 ```
+
+## **🏃‍♂️ Self-hosted Runner: api_fiverr**
+
+### **Specifications:**
+- **Type**: Self-hosted
+- **OS**: Linux
+- **Architecture**: X64
+- **Tags**: `self-hosted`, `Linux`, `X64`, `api_fiverr`
+- **Status**: Idle (ready for jobs)
+
+### **Benefits:**
+- **Speed**: Faster builds và deployments
+- **Cost**: Không tính phí theo minute
+- **Customization**: Full control over environment
+- **Security**: Code không rời khỏi infrastructure
+- **Dependencies**: Pre-installed tools và services
