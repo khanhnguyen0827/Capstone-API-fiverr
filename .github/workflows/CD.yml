@@ -35,11 +35,11 @@ jobs:
 
       - name: dừng và xoá container
         run: |
-          sudo docker container stop con-be_cyber_community || true
-          sudo docker container remove con-be_cyber_community || true
+          sudo docker container stop con-be_api_fiverr || true
+          sudo docker container remove con-be_api_fiverr || true
 
       - name: xoá image cũ
-        run: sudo docker image remove vulebaolong/img-be_cyber_community:latest
+        run: sudo docker image remove khanh2nq/img-be_api_fiverr:latest
   
       - name: chạy image
         run: sudo docker compose up -d
