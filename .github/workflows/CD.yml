@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: api_fiverr
     
     steps:
       - name: Checkout code
@@ -44,31 +44,60 @@ jobs:
 
       - name: Stop and remove old containers
         run: |
+          echo "🔄 Stopping old containers..."
           docker container stop con-be_api_fiverr con-db_api_fiverr || true
           docker container rm con-be_api_fiverr con-db_api_fiverr || true
+          echo "✅ Old containers cleaned up"
 
       - name: Remove old images
         run: |
+          echo "🔄 Removing old images..."
           docker image rm khanh2nq/img-be_api_fiverr:latest || true
+          echo "✅ Old images cleaned up"
 
       - name: Pull latest image
-        run: docker pull khanh2nq/img-be_api_fiverr:${{ github.sha }}
+        run: |
+          echo "📥 Pulling latest image..."
+          docker pull khanh2nq/img-be_api_fiverr:${{ github.sha }}
+          echo "✅ Image pulled successfully"
 
       - name: Tag image as latest
-        run: docker tag khanh2nq/img-be_api_fiverr:${{ github.sha }} khanh2nq/img-be_api_fiverr:latest
+        run: |
+          echo "🏷️ Tagging image as latest..."
+          docker tag khanh2nq/img-be_api_fiverr:${{ github.sha }} khanh2nq/img-be_api_fiverr:latest
+          echo "✅ Image tagged as latest"
 
       - name: Deploy with docker-compose
-        run: docker compose up -d
+        run: |
+          echo "🚀 Starting deployment..."
+          docker compose up -d
+          echo "✅ Deployment started"
 
       - name: Wait for services to be ready
         run: |
+          echo "⏳ Waiting for services to be ready..."
           sleep 30
+          echo "📊 Container status:"
           docker ps
+          echo "✅ Services should be ready"
 
       - name: Health check
         run: |
+          echo "🏥 Performing health check..."
           curl -f http://localhost:3070/api/health || exit 1
+          echo "✅ Health check passed"
+
+      - name: Deployment summary
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "Image: khanh2nq/img-be_api_fiverr:${{ github.sha }}"
+          echo "Tagged as: khanh2nq/img-be_api_fiverr:latest"
+          echo "Health check: ✅ PASSED"
+          echo "Services running:"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
       - name: Cleanup environment file
-        run: rm -f .env
+        run: |
+          rm -f .env
+          echo "🧹 Environment file cleaned up"
         

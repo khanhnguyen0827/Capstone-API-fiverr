@@ -130,10 +130,11 @@ git push origin main
 - Test connection string trước khi setup
 
 ### **Workflow mới:**
-- CI workflow chỉ trigger trên `main` branch
-- CD workflow chạy sau khi CI hoàn thành
+- **CI workflow** chỉ trigger trên `main` branch
+- **CD workflow** chạy sau khi CI hoàn thành
 - Sử dụng commit SHA để tracking images
 - Tag `latest` được tạo trong CD workflow
+- Logging chi tiết với emojis cho dễ theo dõi
 
 ## **🚨 Troubleshooting**
 
@@ -157,8 +158,13 @@ git push origin main
 
 4. **"Workflow not triggered"**
    - Kiểm tra branch name (phải là `main`)
-   - Kiểm tra workflow name trong trigger
+   - Kiểm tra workflow name trong trigger (`CI` → `CD`)
    - Verify CI workflow đã hoàn thành thành công
+
+5. **"Deployment failed"**
+   - Kiểm tra Docker Hub login trong CD workflow
+   - Verify image đã được pull thành công
+   - Kiểm tra docker-compose configuration
 
 ## **📞 Hỗ trợ**
 
@@ -168,6 +174,7 @@ Nếu gặp vấn đề:
 3. Test Docker Hub login locally
 4. Kiểm tra database connectivity
 5. Verify workflow trigger conditions
+6. Check container logs: `docker logs container_name`
 
 ## **🔗 Links hữu ích**
 
@@ -175,3 +182,21 @@ Nếu gặp vấn đề:
 - [Docker Hub Access Tokens](https://docs.docker.com/docker-hub/access-tokens/)
 - [GitHub Actions Security](https://docs.github.com/en/actions/security-guides/)
 - [Docker Commands Reference](https://docs.docker.com/engine/reference/commandline/)
+
+## **🎯 Workflow Flow**
+
+```
+Push to main branch
+       ↓
+   CI Workflow
+       ↓
+Build & Push Image
+       ↓
+   CD Workflow
+       ↓
+Deploy to Production
+       ↓
+   Health Check
+       ↓
+   Success! 🎉
+```
