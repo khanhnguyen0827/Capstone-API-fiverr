@@ -4,7 +4,7 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-# thay đổi thư viên thêm/ xoá thư viện
+# thay đổi thư viện thêm/ xoá thư viện
 COPY package.json ./
 RUN npm install
 
@@ -24,11 +24,11 @@ FROM node:24-alpine
 WORKDIR /app
 
 COPY --from=builder ./app/dist ./dist
-COPY --from=builder ./app/generated ./generated
+COPY --from=builder ./app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder ./app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder ./app/node_modules ./node_modules
 
 CMD ["node", "dist/main.js"]
-
 
 # 2.07GB
 # 500MB
