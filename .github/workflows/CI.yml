@@ -1,4 +1,4 @@
-name: CI - Build and Push Docker Image
+name: CI
 
 on:
   push:
@@ -21,6 +21,6 @@ jobs:
       - name: push image
         run: docker push khanh2nq/img-be_api_fiverr:${{ github.sha }}
 
-    
+
   
   

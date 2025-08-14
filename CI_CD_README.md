@@ -2,17 +2,18 @@
 
 ## **Tổng quan**
 
-Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa quy trình phát triển, testing, build và deploy.
+Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa quy trình phát triển, testing, build và deploy với cách tiếp cận đơn giản và hiệu quả.
 
 ## **📋 Workflows**
 
 ### **1. CI - Build and Push Docker Image**
-- **Trigger**: Push/Pull Request vào `main` hoặc `develop` branch
+- **Trigger**: Push vào `main` branch
 - **Chức năng**: 
-  - Build Docker image
-  - Push lên Docker Hub
-  - Tạo tags: `latest` và `{commit-sha}`
-- **Output**: Docker image `khanh2nq/img-be_api_fiverr:latest`
+  - Login vào Docker Hub với tài khoản `khanh2nq`
+  - Build Docker image với commit SHA
+  - Push image lên Docker Hub
+- **Output**: Docker image `khanh2nq/img-be_api_fiverr:{commit-sha}`
+- **Approach**: Sử dụng `docker login`, `docker build`, `docker push` trực tiếp
 
 ### **2. Test and Quality Checks**
 - **Trigger**: Push/Pull Request vào `main` hoặc `develop` branch
@@ -25,9 +26,12 @@ Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa 
 ### **3. CD - Deploy to Production**
 - **Trigger**: Sau khi CI workflow hoàn thành thành công
 - **Chức năng**:
-  - Deploy ứng dụng lên production server
-  - Health check
-  - Rollback nếu cần
+  - Login vào Docker Hub
+  - Pull image mới nhất theo commit SHA
+  - Tag image thành `latest`
+  - Deploy ứng dụng với docker-compose
+  - Health check và monitoring
+- **Approach**: Sử dụng `docker login`, `docker pull`, `docker tag`, `docker compose`
 
 ### **4. Database Migration**
 - **Trigger**: Sau khi CI workflow hoàn thành thành công
@@ -38,7 +42,7 @@ Dự án Capstone Fiverr API sử dụng GitHub Actions để tự động hóa 
 ### **Docker Hub (khanh2nq):**
 ```bash
 DOCKER_USERNAME=khanh2nq
-DOCKER_PASSWORD=your_docker_hub_token
+DOCKER_PASSWORD=your_docker_hub_access_token
 ```
 
 ### **Database:**
@@ -111,6 +115,7 @@ git push origin main
 3. **Deploy failed:**
    - Kiểm tra server có sẵn sàng không
    - Kiểm tra ports và network
+   - Verify Docker Hub login thành công
 
 4. **Tests failed:**
    - Chạy tests locally trước
@@ -137,7 +142,7 @@ Nếu cần rollback:
 ## **📚 Tài liệu tham khảo**
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Docker Build Action](https://github.com/docker/build-push-action)
+- [Docker Commands](https://docs.docker.com/engine/reference/commandline/)
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [Prisma Documentation](https://www.prisma.io/docs/)
 
@@ -145,5 +150,18 @@ Nếu cần rollback:
 
 - **Repository**: `khanh2nq/img-be_api_fiverr`
 - **URL**: https://hub.docker.com/r/khanh2nq/img-be_api_fiverr
-- **Tags**: `latest`, `{commit-sha}`
+- **Tags**: `{commit-sha}`, `latest` (được tạo trong CD)
 - **Pull Command**: `docker pull khanh2nq/img-be_api_fiverr:latest`
+
+## **🆕 Cải tiến mới**
+
+### **CI Workflow:**
+- ✅ Sử dụng `docker login`, `build`, `push` trực tiếp
+- ✅ Đơn giản hóa, ít dependencies
+- ✅ Build image với commit SHA để tracking
+
+### **CD Workflow:**
+- ✅ Pull image theo commit SHA
+- ✅ Tag thành `latest` cho production
+- ✅ Health check và monitoring
+- ✅ Cleanup và error handling
