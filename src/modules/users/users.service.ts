@@ -2,19 +2,24 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../../modules/prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { USER_ROLES, RESPONSE_MESSAGES, SECURITY_CONFIG } from '../../common/constant/app.constant';
+import { BaseService } from '../../common/base';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UsersService {
-  constructor(private prisma: PrismaService) {}
+export class UsersService extends BaseService {
+  constructor(private prisma: PrismaService) {
+    super('UsersService');
+  }
 
   async getUsers(page: number, size: number) {
-    const skip = (page - 1) * size;
+    this.logOperation('getUsers', { page, size });
+    
+    const { page: validPage, size: validSize, skip } = this.validatePagination(page, size);
     
     const [users, total] = await Promise.all([
       this.prisma.nguoiDung.findMany({
         skip,
-        take: size,
+        take: validSize,
         select: {
           id: true,
           name: true,
@@ -26,22 +31,22 @@ export class UsersService {
           skill: true,
           certification: true,
         },
+        orderBy: { id: 'desc' },
       }),
       this.prisma.nguoiDung.count(),
     ]);
 
+    const pagination = this.createPaginationInfo(validPage, validSize, total);
+
     return {
       data: users,
-      pagination: {
-        page,
-        size,
-        total,
-        totalPages: Math.ceil(total / size),
-      },
+      pagination,
     };
   }
 
   async getUserById(id: number) {
+    this.logOperation('getUserById', { id });
+    
     const user = await this.prisma.nguoiDung.findUnique({
       where: { id },
       select: {
@@ -58,6 +63,7 @@ export class UsersService {
     });
 
     if (!user) {
+      this.logError('getUserById', { id, error: 'User not found' });
       throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
@@ -65,6 +71,8 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto) {
+    this.logOperation('createUser', { email: createUserDto.email });
+    
     const { email, pass_word, ...userData } = createUserDto;
 
     // Kiểm tra email đã tồn tại
@@ -73,6 +81,7 @@ export class UsersService {
     });
 
     if (existingUser) {
+      this.logError('createUser', { email, error: 'Email already exists' });
       throw new ForbiddenException('Email đã tồn tại');
     }
 
@@ -100,12 +109,16 @@ export class UsersService {
       },
     });
 
+    this.logOperation('createUser success', { userId: newUser.id });
     return newUser;
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser: any) {
+    this.logOperation('updateUser', { id, currentUserId: currentUser.userId });
+    
     // Kiểm tra quyền
     if (currentUser.userId !== id && currentUser.role !== USER_ROLES.ADMIN) {
+      this.logError('updateUser', { id, currentUserId: currentUser.userId, error: 'Forbidden' });
       throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
     }
 
@@ -114,6 +127,7 @@ export class UsersService {
     });
 
     if (!user) {
+      this.logError('updateUser', { id, error: 'User not found' });
       throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
@@ -139,12 +153,16 @@ export class UsersService {
       },
     });
 
+    this.logOperation('updateUser success', { id });
     return updatedUser;
   }
 
   async deleteUser(id: number, currentUser: any) {
+    this.logOperation('deleteUser', { id, currentUserId: currentUser.userId });
+    
     // Kiểm tra quyền
     if (currentUser.userId !== id && currentUser.role !== USER_ROLES.ADMIN) {
+      this.logError('deleteUser', { id, currentUserId: currentUser.userId, error: 'Forbidden' });
       throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
     }
 
@@ -153,6 +171,7 @@ export class UsersService {
     });
 
     if (!user) {
+      this.logError('deleteUser', { id, error: 'User not found' });
       throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
@@ -160,6 +179,7 @@ export class UsersService {
       where: { id },
     });
 
+    this.logOperation('deleteUser success', { id });
     return { message: RESPONSE_MESSAGES.DELETED };
   }
 }
