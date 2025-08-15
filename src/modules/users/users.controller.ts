@@ -99,7 +99,7 @@ export class UsersController extends BaseController {
     @Query('page') page?: number,
     @Query('size') size?: number
   ) {
-    const { page: validPage, size: validSize } = this.validatePagination(page, size);
+    const { page: validPage, size: validSize } = this.usersService.validatePagination(page, size);
     const result = await this.usersService.getUsers(validPage, validSize);
     
     return this.createPaginatedResponse(

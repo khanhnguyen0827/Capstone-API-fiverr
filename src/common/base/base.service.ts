@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { PAGINATION_CONFIG } from '../../constant/app.constant';
+import { PAGINATION_CONFIG } from '../constant/app.constant';
 
 export abstract class BaseService {
   protected readonly logger: Logger;
@@ -8,7 +8,7 @@ export abstract class BaseService {
     this.logger = new Logger(serviceName);
   }
 
-  protected validatePagination(page?: number, size?: number) {
+  public validatePagination(page?: number, size?: number) {
     const validPage = Math.max(1, page || PAGINATION_CONFIG.defaultPage);
     const validSize = Math.min(
       Math.max(1, size || PAGINATION_CONFIG.defaultSize),

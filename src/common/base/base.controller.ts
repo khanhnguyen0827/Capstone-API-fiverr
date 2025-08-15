@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { RESPONSE_MESSAGES } from '../../constant/app.constant';
+import { RESPONSE_MESSAGES } from '../constant/app.constant';
 
 export interface ApiResponse<T = any> {
   statusCode: number;
@@ -13,6 +13,8 @@ export interface ApiResponse<T = any> {
     size: number;
     total: number;
     totalPages: number;
+    hasNext?: boolean;
+    hasPrev?: boolean;
   };
 }
 
@@ -65,9 +67,11 @@ export abstract class BaseController {
       size: number;
       total: number;
       totalPages: number;
+      hasNext?: boolean;
+      hasPrev?: boolean;
     },
     message: string = RESPONSE_MESSAGES.SUCCESS
-  ): ApiResponse<{ data: T[]; pagination: typeof pagination }> {
+  ): ApiResponse<{ data: T[]; pagination: any }> {
     return this.createSuccessResponse(
       { data, pagination },
       message,

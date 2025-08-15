@@ -126,6 +126,7 @@ export const VALIDATION_MESSAGES = {
   RATING_RANGE: `Số sao phải từ ${RATING_CONFIG.min}-${RATING_CONFIG.max}`,
   FILE_SIZE_EXCEEDED: `Kích thước file không được vượt quá ${FILE_UPLOAD_CONFIG.maxSize / 1024 / 1024}MB`,
   FILE_TYPE_NOT_ALLOWED: 'Loại file không được hỗ trợ',
+  BAD_REQUEST: 'Dữ liệu không hợp lệ',
 } as const;
 
 // Logging constants

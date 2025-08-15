@@ -9,6 +9,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { MiddlewareModule } from './common/middleware/middleware.module';
 import { InitModule } from './init/init.module';
+import { HealthModule } from './modules/health/health.module';
 import { 
   SecurityMiddleware, 
   CorsMiddleware, 
@@ -25,6 +26,7 @@ import {
     MiddlewareModule,
     PrismaModule,
     InitModule,
+    HealthModule,
     AuthModule,
     UsersModule,
     JobsModule,
