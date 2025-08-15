@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../../common/prisma/prisma.service';
+import { PrismaService } from '../../modules/prisma/prisma.service';
 import { CreateJobDto, UpdateJobDto, JobSearchDto } from './dto/jobs.dto';
+import { USER_ROLES, RESPONSE_MESSAGES } from '../../common/constant/app.constant';
 
 @Injectable()
 export class JobsService {
@@ -94,7 +95,7 @@ export class JobsService {
       });
 
       if (!job) {
-        throw new NotFoundException('Công việc không tồn tại');
+        throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
       }
 
       return job;
@@ -142,12 +143,12 @@ export class JobsService {
       });
 
       if (!job) {
-        throw new NotFoundException('Công việc không tồn tại');
+        throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
       }
 
       // Kiểm tra quyền sở hữu
-      if (job.nguoi_tao !== currentUser.userId && currentUser.role !== 'admin') {
-        throw new ForbiddenException('Không có quyền cập nhật công việc này');
+      if (job.nguoi_tao !== currentUser.userId && currentUser.role !== USER_ROLES.ADMIN) {
+        throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
       }
 
       const updatedJob = await this.prisma.congViec.update({
@@ -182,19 +183,19 @@ export class JobsService {
       });
 
       if (!job) {
-        throw new NotFoundException('Công việc không tồn tại');
+        throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
       }
 
       // Kiểm tra quyền sở hữu
-      if (job.nguoi_tao !== currentUser.userId && currentUser.role !== 'admin') {
-        throw new ForbiddenException('Không có quyền xóa công việc này');
+      if (job.nguoi_tao !== currentUser.userId && currentUser.role !== USER_ROLES.ADMIN) {
+        throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
       }
 
       await this.prisma.congViec.delete({
         where: { id },
       });
 
-      return { message: 'Xóa công việc thành công' };
+      return { message: RESPONSE_MESSAGES.DELETED };
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof ForbiddenException) {
         throw error;

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../../common/prisma/prisma.service';
+import { PrismaService } from '../../modules/prisma/prisma.service';
 import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
+import { USER_ROLES, RESPONSE_MESSAGES } from '../../common/constant/app.constant';
 
 @Injectable()
 export class CommentsService {
@@ -53,12 +54,12 @@ export class CommentsService {
     });
 
     if (!comment) {
-      throw new NotFoundException('Bình luận không tồn tại');
+      throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
     // Kiểm tra quyền sở hữu
-    if (comment.ma_nguoi_binh_luan !== currentUser.userId && currentUser.role !== 'admin') {
-      throw new ForbiddenException('Không có quyền cập nhật bình luận này');
+    if (comment.ma_nguoi_binh_luan !== currentUser.userId && currentUser.role !== USER_ROLES.ADMIN) {
+      throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
     }
 
     const updatedComment = await this.prisma.binhLuan.update({
@@ -84,18 +85,18 @@ export class CommentsService {
     });
 
     if (!comment) {
-      throw new NotFoundException('Bình luận không tồn tại');
+      throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
     // Kiểm tra quyền sở hữu
-    if (comment.ma_nguoi_binh_luan !== currentUser.userId && currentUser.role !== 'admin') {
-      throw new ForbiddenException('Không có quyền xóa bình luận này');
+    if (comment.ma_nguoi_binh_luan !== currentUser.userId && currentUser.role !== USER_ROLES.ADMIN) {
+      throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
     }
 
     await this.prisma.binhLuan.delete({
       where: { id },
     });
 
-    return { message: 'Xóa bình luận thành công' };
+    return { message: RESPONSE_MESSAGES.DELETED };
   }
 }

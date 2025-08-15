@@ -11,6 +11,8 @@ API backend cho nền tảng freelance tương tự Fiverr, được xây dựng
 - ✅ **API Documentation**: Swagger UI
 - ✅ **Validation**: Class-validator với DTOs
 - ✅ **Security**: JWT authentication, password hashing
+- ✅ **Environment Configuration**: Quản lý biến môi trường với dotenv
+- ✅ **Constants Management**: Hệ thống constants tập trung và type-safe
 
 ## 🏗️ Cấu trúc Database
 
@@ -44,6 +46,8 @@ Database được thiết kế theo mô hình ERD với 6 bảng chính:
 ```
 src/
 ├── common/
+│   ├── constant/
+│   │   └── app.constant.ts        # Application constants & env vars
 │   └── prisma/
 │       └── prisma.service.ts      # Prisma service
 ├── modules/
@@ -80,12 +84,51 @@ src/
 npm install
 ```
 
-### 2. Cấu hình Database
-Tạo file `.env` với nội dung:
+### 2. Cấu hình Environment Variables
+
+#### Tạo file `.env` từ template:
+```bash
+cp env.example .env
+```
+
+#### Cấu hình các biến môi trường chính:
+
+**Application Environment:**
 ```env
-DATABASE_URL="mysql://root:123456@localhost:3307/capstone_fiverr"
-JWT_SECRET="your-super-secret-jwt-key-here"
+NODE_ENV=development
 PORT=3000
+```
+
+**Database Configuration:**
+```env
+DATABASE_URL=mysql://root:password@localhost:3306/capstone_fiverr
+DB_POOL_MIN=2
+DB_POOL_MAX=10
+DB_TIMEOUT=30000
+```
+
+**JWT Configuration:**
+```env
+JWT_SECRET=your-super-secret-jwt-key-2024
+JWT_EXPIRES_IN=1d
+JWT_REFRESH_SECRET=your-super-secret-refresh-key-2024
+JWT_REFRESH_EXPIRES_IN=7d
+```
+
+**Security Configuration:**
+```env
+BCRYPT_ROUNDS=10
+CORS_ORIGIN=*
+API_RATE_LIMIT=100
+API_RATE_LIMIT_WINDOW=900000
+```
+
+**API Configuration:**
+```env
+API_PREFIX=api
+API_VERSION=v1
+SWAGGER_PATH=api-docs
+SWAGGER_ENABLED=true
 ```
 
 ### 3. Tạo Database
@@ -99,123 +142,100 @@ mysql -u root -p < database.sql
 # Tạo Prisma client
 npm run db:generate
 
-# Đồng bộ schema với database
+# Push schema to database
 npm run db:push
-
-# Hoặc tạo migration
-npm run db:migrate
 ```
 
-### 5. Khởi chạy ứng dụng
-```bash
-# Development mode
-npm run start:dev
+## 🔧 Cấu hình Constants
 
-# Production mode
+Project sử dụng hệ thống constants tập trung trong `src/common/constant/app.constant.ts`:
+
+### Environment Variables
+```typescript
+export const ENV = {
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  PORT: parseInt(process.env.PORT || '3000', 10),
+  DATABASE_URL: process.env.DATABASE_URL || 'mysql://...',
+  JWT_SECRET: process.env.JWT_SECRET || 'your-secret-key',
+  // ... more env vars
+} as const;
+```
+
+### Configuration Objects
+```typescript
+export const JWT_CONFIG = {
+  secret: ENV.JWT_SECRET,
+  expiresIn: ENV.JWT_EXPIRES_IN,
+  algorithm: 'HS256' as const,
+} as const;
+
+export const SECURITY_CONFIG = {
+  bcryptRounds: ENV.BCRYPT_ROUNDS,
+  corsOrigin: ENV.CORS_ORIGIN,
+  // ... more security config
+} as const;
+```
+
+### Validation Messages
+```typescript
+export const VALIDATION_MESSAGES = {
+  EMAIL_REQUIRED: 'Email không được để trống',
+  PASSWORD_MIN_LENGTH: 'Mật khẩu phải có ít nhất 6 ký tự',
+  // ... more validation messages
+} as const;
+```
+
+## 🚀 Chạy ứng dụng
+
+### Development mode
+```bash
+npm run start:dev
+```
+
+### Production mode
+```bash
+npm run build
 npm run start:prod
 ```
 
-## 📚 API Endpoints
+## 📚 API Documentation
 
-### 🔐 Authentication
-- `POST /api/auth/signup` - Đăng ký người dùng mới
-- `POST /api/auth/signin` - Đăng nhập
-
-### 👥 Users
-- `GET /api/users` - Lấy danh sách người dùng (có pagination)
-- `GET /api/users/:id` - Lấy thông tin người dùng theo ID
-- `POST /api/users` - Tạo người dùng mới
-- `PUT /api/users/:id` - Cập nhật thông tin người dùng (cần auth)
-- `DELETE /api/users/:id` - Xóa người dùng (cần auth)
-- `GET /api/users/profile/me` - Lấy thông tin profile của user hiện tại (cần auth)
-
-### 💼 Jobs
-- `GET /api/jobs` - Lấy danh sách công việc (có pagination, search, filter)
-- `GET /api/jobs/:id` - Lấy thông tin công việc theo ID
-- `POST /api/jobs` - Tạo công việc mới (cần auth)
-- `PUT /api/jobs/:id` - Cập nhật công việc (cần auth)
-- `DELETE /api/jobs/:id` - Xóa công việc (cần auth)
-- `GET /api/jobs/categories/list` - Lấy danh sách danh mục công việc
-
-## 🔧 Scripts có sẵn
-
-- `npm run start:dev`: Chạy ứng dụng với nodemon (development)
-- `npm run start`: Chạy ứng dụng production
-- `npm run build`: Build ứng dụng
-- `npm run db:generate`: Tạo Prisma client
-- `npm run db:push`: Đồng bộ schema với database
-- `npm run db:migrate`: Tạo và chạy migration
-- `npm run db:studio`: Mở Prisma Studio để xem database
-
-## 🌐 Truy cập ứng dụng
-
-- **API Server**: http://localhost:3000
-- **API Documentation**: http://localhost:3000/api-docs
-- **Health Check**: http://localhost:3000/api/health
-
-## 🔒 Bảo mật
-
-- **JWT Authentication**: Sử dụng Bearer token
-- **Password Hashing**: Bcrypt với salt rounds
-- **Role-based Access**: Kiểm soát quyền truy cập
-- **Input Validation**: Class-validator với DTOs
-
-## 📊 Response Format
-
-Tất cả API responses đều theo format chuẩn:
-
-```json
-{
-  "statusCode": 200,
-  "message": "Thông báo thành công",
-  "content": "Dữ liệu trả về",
-  "dateTime": "2024-01-20T10:30:00.000Z"
-}
+Sau khi khởi động ứng dụng, truy cập Swagger UI tại:
+```
+http://localhost:3000/api-docs
 ```
 
-## 🚨 Error Handling
+## 🔒 Security Features
 
-Errors được xử lý với HTTP status codes phù hợp:
+- **JWT Authentication**: Xác thực người dùng với JWT tokens
+- **Password Hashing**: Mật khẩu được hash với bcrypt
+- **Role-based Access Control**: Phân quyền theo vai trò người dùng
+- **CORS Configuration**: Cấu hình CORS linh hoạt
+- **Rate Limiting**: Giới hạn số lượng request
+- **Input Validation**: Validation tất cả input với class-validator
 
-- `400 Bad Request`: Dữ liệu đầu vào không hợp lệ
-- `401 Unauthorized`: Chưa đăng nhập hoặc token không hợp lệ
-- `403 Forbidden`: Không có quyền truy cập
-- `404 Not Found`: Tài nguyên không tồn tại
-- `500 Internal Server Error`: Lỗi server
+## 📝 Environment Variables Reference
 
-## 🔍 Database Connection
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | `development` | Môi trường chạy ứng dụng |
+| `PORT` | `3000` | Port mà ứng dụng lắng nghe |
+| `DATABASE_URL` | `mysql://...` | URL kết nối database |
+| `JWT_SECRET` | `your-secret-key` | Secret key cho JWT |
+| `JWT_EXPIRES_IN` | `1d` | Thời gian hết hạn JWT |
+| `BCRYPT_ROUNDS` | `10` | Số rounds hash password |
+| `CORS_ORIGIN` | `*` | Origin cho CORS |
+| `API_PREFIX` | `api` | Prefix cho API endpoints |
+| `SWAGGER_ENABLED` | `true` | Bật/tắt Swagger UI |
 
-Database sử dụng MySQL với thông tin kết nối:
-- **Host**: localhost
-- **Port**: 3307
-- **User**: root
-- **Password**: 123456
-- **Database**: capstone_fiverr
+## 🤝 Contributing
 
-## 📝 Lưu ý
+1. Fork project
+2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Tạo Pull Request
 
-- Đảm bảo MySQL server đang chạy trên port 3307
-- Tạo database `capstone_fiverr` trước khi chạy ứng dụng
-- Cập nhật thông tin kết nối database trong file `.env` nếu cần
-- Sử dụng Bearer token trong header `Authorization` cho các API cần auth
+## 📄 License
 
-## 🆘 Troubleshooting
-
-### Lỗi kết nối database
-- Kiểm tra MySQL server có đang chạy không
-- Kiểm tra port 3307 có đúng không
-- Kiểm tra username/password MySQL
-
-### Lỗi Prisma
-```bash
-# Reset Prisma
-npx prisma migrate reset
-npx prisma generate
-npx prisma db push
-```
-
-### Lỗi port đã sử dụng
-Thay đổi port trong file `.env`:
-```env
-PORT=3001
-```
+Project này được phân phối dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.

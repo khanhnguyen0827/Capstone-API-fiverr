@@ -1,28 +1,27 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { AuthDto, RegisterDto } from './dto/auth.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('signup')
-  @HttpCode(HttpStatus.CREATED)
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Đăng ký tài khoản mới',
-    description: 'Tạo tài khoản người dùng mới với email và mật khẩu'
+    summary: 'Đăng nhập',
+    description: 'Đăng nhập với email và mật khẩu để lấy JWT token'
   })
-  @ApiBody({ type: RegisterDto })
+  @ApiBody({ type: AuthDto })
   @ApiResponse({
-    status: 201,
-    description: 'Đăng ký thành công',
+    status: 200,
+    description: 'Đăng nhập thành công',
     schema: {
       example: {
-        statusCode: 201,
-        message: 'Đăng ký thành công',
-        content: {
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        user: {
           id: 1,
           name: 'Nguyễn Văn A',
           email: 'user@example.com',
@@ -32,54 +31,7 @@ export class AuthController {
           role: 'freelancer',
           skill: 'Thiết kế, Lập trình',
           certification: 'Chứng chỉ thiết kế UI/UX'
-        },
-        dateTime: '2024-01-20T10:30:00.000Z'
-      }
-    }
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Dữ liệu đầu vào không hợp lệ'
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Email đã tồn tại'
-  })
-  async signup(@Body() registerDto: RegisterDto) {
-    return this.authService.signup(registerDto);
-  }
-
-  @Post('signin')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Đăng nhập',
-    description: 'Đăng nhập với email và mật khẩu để lấy JWT token'
-  })
-  @ApiBody({ type: LoginDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Đăng nhập thành công',
-    schema: {
-      example: {
-        statusCode: 200,
-        message: 'Đăng nhập thành công',
-        content: {
-          user: {
-            id: 1,
-            name: 'Nguyễn Văn A',
-            email: 'user@example.com',
-            phone: '0123456789',
-            birth_day: '1990-01-01',
-            gender: 'Nam',
-            role: 'freelancer',
-            skill: 'Thiết kế, Lập trình',
-            certification: 'Chứng chỉ thiết kế UI/UX'
-          },
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          expiresIn: '1d',
-          tokenType: 'Bearer'
-        },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        }
       }
     }
   })
@@ -91,47 +43,47 @@ export class AuthController {
     status: 401,
     description: 'Email hoặc mật khẩu không đúng'
   })
-  async signin(@Body() loginDto: LoginDto) {
-    return this.authService.signin(loginDto);
+  async login(@Body() authDto: AuthDto) {
+    return this.authService.login(authDto);
   }
 
-  @Post('refresh-token')
-  @HttpCode(HttpStatus.OK)
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: 'Làm mới JWT token',
-    description: 'Làm mới JWT token khi token cũ hết hạn'
+    summary: 'Đăng ký tài khoản mới',
+    description: 'Tạo tài khoản người dùng mới với email và mật khẩu'
   })
+  @ApiBody({ type: RegisterDto })
   @ApiResponse({
-    status: 200,
-    description: 'Làm mới token thành công',
+    status: 201,
+    description: 'Đăng ký thành công',
     schema: {
       example: {
-        statusCode: 200,
-        message: 'Làm mới token thành công',
-        content: {
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          expiresIn: '1d',
-          tokenType: 'Bearer'
-        },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        id: 1,
+        name: 'Nguyễn Văn A',
+        email: 'user@example.com',
+        phone: '0123456789',
+        birth_day: '1990-01-01',
+        gender: 'Nam',
+        role: 'freelancer',
+        skill: 'Thiết kế, Lập trình',
+        certification: 'Chứng chỉ thiết kế UI/UX'
       }
     }
   })
   @ApiResponse({
-    status: 401,
-    description: 'Token không hợp lệ hoặc đã hết hạn'
+    status: 400,
+    description: 'Dữ liệu đầu vào không hợp lệ'
   })
-  async refreshToken() {
-    // TODO: Implement refresh token logic
+  @ApiResponse({
+    status: 409,
+    description: 'Email đã tồn tại'
+  })
+  async register(@Body() registerDto: RegisterDto) {
+    // TODO: Implement register logic
     return {
-      statusCode: 200,
-      message: 'Làm mới token thành công',
-      content: {
-        token: 'new-refreshed-token',
-        expiresIn: '1d',
-        tokenType: 'Bearer'
-      },
-      dateTime: new Date().toISOString()
+      message: 'Register endpoint - implementation needed',
+      data: registerDto
     };
   }
 }

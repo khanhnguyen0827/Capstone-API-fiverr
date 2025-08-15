@@ -90,3 +90,5 @@ model BinhLuan {
   
   @@map("BinhLuan")
 }
+
+

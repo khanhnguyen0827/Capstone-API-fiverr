@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../../common/prisma/prisma.service';
+import { PrismaService } from '../../modules/prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
+import { USER_ROLES, RESPONSE_MESSAGES, SECURITY_CONFIG } from '../../common/constant/app.constant';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -57,7 +58,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('Người dùng không tồn tại');
+      throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
     return user;
@@ -75,8 +76,8 @@ export class UsersService {
       throw new ForbiddenException('Email đã tồn tại');
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(pass_word, 10);
+    // Hash password với số rounds từ config
+    const hashedPassword = await bcrypt.hash(pass_word, SECURITY_CONFIG.bcryptRounds);
 
     // Tạo user mới
     const newUser = await this.prisma.nguoiDung.create({
@@ -84,7 +85,7 @@ export class UsersService {
         ...userData,
         email,
         pass_word: hashedPassword,
-        role: userData.role || 'user',
+        role: userData.role || USER_ROLES.USER,
       },
       select: {
         id: true,
@@ -104,8 +105,8 @@ export class UsersService {
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser: any) {
     // Kiểm tra quyền
-    if (currentUser.userId !== id && currentUser.role !== 'admin') {
-      throw new ForbiddenException('Không có quyền cập nhật người dùng này');
+    if (currentUser.userId !== id && currentUser.role !== USER_ROLES.ADMIN) {
+      throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
     }
 
     const user = await this.prisma.nguoiDung.findUnique({
@@ -113,13 +114,13 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('Người dùng không tồn tại');
+      throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
     // Hash password nếu có cập nhật
     let updateData = { ...updateUserDto };
     if (updateUserDto.pass_word) {
-      updateData.pass_word = await bcrypt.hash(updateUserDto.pass_word, 10);
+      updateData.pass_word = await bcrypt.hash(updateUserDto.pass_word, SECURITY_CONFIG.bcryptRounds);
     }
 
     const updatedUser = await this.prisma.nguoiDung.update({
@@ -143,8 +144,8 @@ export class UsersService {
 
   async deleteUser(id: number, currentUser: any) {
     // Kiểm tra quyền
-    if (currentUser.userId !== id && currentUser.role !== 'admin') {
-      throw new ForbiddenException('Không có quyền xóa người dùng này');
+    if (currentUser.userId !== id && currentUser.role !== USER_ROLES.ADMIN) {
+      throw new ForbiddenException(RESPONSE_MESSAGES.FORBIDDEN);
     }
 
     const user = await this.prisma.nguoiDung.findUnique({
@@ -152,13 +153,13 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('Người dùng không tồn tại');
+      throw new NotFoundException(RESPONSE_MESSAGES.NOT_FOUND);
     }
 
     await this.prisma.nguoiDung.delete({
       where: { id },
     });
 
-    return { message: 'Xóa người dùng thành công' };
+    return { message: RESPONSE_MESSAGES.DELETED };
   }
 }

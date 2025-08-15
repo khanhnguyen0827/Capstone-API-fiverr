@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { USER_ROLES, GENDER_OPTIONS, VALIDATION_MESSAGES } from '../../common/constant/app.constant';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -7,8 +8,8 @@ export class CreateUserDto {
     example: 'user@example.com',
     type: String,
   })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.EMAIL_REQUIRED })
+  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
   email: string;
 
   @ApiProperty({
@@ -17,9 +18,9 @@ export class CreateUserDto {
     minLength: 6,
     type: String,
   })
-  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
   @IsString()
-  @MinLength(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
+  @MinLength(6, { message: VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH })
   pass_word: string;
 
   @ApiProperty({
@@ -27,7 +28,7 @@ export class CreateUserDto {
     example: 'Nguyễn Văn A',
     type: String,
   })
-  @IsNotEmpty({ message: 'Tên không được để trống' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.NAME_REQUIRED })
   @IsString()
   name: string;
 
@@ -52,7 +53,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({
     description: 'Giới tính',
     example: 'Nam',
-    enum: ['Nam', 'Nữ', 'Khác'],
+    enum: GENDER_OPTIONS,
     type: String,
   })
   @IsOptional()
@@ -62,8 +63,8 @@ export class CreateUserDto {
   @ApiPropertyOptional({
     description: 'Vai trò người dùng',
     example: 'freelancer',
-    enum: ['user', 'freelancer', 'client', 'admin'],
-    default: 'user',
+    enum: Object.values(USER_ROLES),
+    default: USER_ROLES.USER,
     type: String,
   })
   @IsOptional()
@@ -120,7 +121,7 @@ export class UpdateUserDto {
   @ApiPropertyOptional({
     description: 'Giới tính',
     example: 'Nam',
-    enum: ['Nam', 'Nữ', 'Khác'],
+    enum: GENDER_OPTIONS,
     type: String,
   })
   @IsOptional()
@@ -130,7 +131,7 @@ export class UpdateUserDto {
   @ApiPropertyOptional({
     description: 'Vai trò người dùng',
     example: 'freelancer',
-    enum: ['user', 'freelancer', 'client', 'admin'],
+    enum: Object.values(USER_ROLES),
     type: String,
   })
   @IsOptional()
@@ -163,6 +164,6 @@ export class UpdateUserDto {
   })
   @IsOptional()
   @IsString()
-  @MinLength(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
+  @MinLength(6, { message: VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH })
   pass_word?: string;
 }

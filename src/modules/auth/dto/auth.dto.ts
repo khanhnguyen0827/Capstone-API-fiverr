@@ -1,5 +1,26 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { VALIDATION_MESSAGES } from '../../../common/constant/app.constant';
+
+export class AuthDto {
+  @ApiProperty({
+    description: 'Email đăng nhập',
+    example: 'user@example.com',
+    type: String,
+  })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.EMAIL_REQUIRED })
+  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
+  email: string;
+
+  @ApiProperty({
+    description: 'Mật khẩu',
+    example: 'password123',
+    type: String,
+  })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
+  @IsString()
+  password: string;
+}
 
 export class RegisterDto {
   @ApiProperty({
@@ -7,8 +28,8 @@ export class RegisterDto {
     example: 'user@example.com',
     type: String,
   })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.EMAIL_REQUIRED })
+  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
   email: string;
 
   @ApiProperty({
@@ -17,9 +38,9 @@ export class RegisterDto {
     minLength: 6,
     type: String,
   })
-  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
   @IsString()
-  @MinLength(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
+  @MinLength(6, { message: VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH })
   pass_word: string;
 
   @ApiProperty({
@@ -27,7 +48,7 @@ export class RegisterDto {
     example: 'Nguyễn Văn A',
     type: String,
   })
-  @IsNotEmpty({ message: 'Tên không được để trống' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.NAME_REQUIRED })
   @IsString()
   name: string;
 
@@ -95,8 +116,8 @@ export class LoginDto {
     example: 'user@example.com',
     type: String,
   })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.EMAIL_REQUIRED })
+  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
   email: string;
 
   @ApiProperty({
@@ -104,7 +125,7 @@ export class LoginDto {
     example: 'password123',
     type: String,
   })
-  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
   @IsString()
   pass_word: string;
 }

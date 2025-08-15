@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, Min, Max } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { RATING_CONFIG, VALIDATION_MESSAGES } from '../../../common/constant/app.constant';
 
 export class CreateCommentDto {
   @ApiProperty({
@@ -21,16 +22,16 @@ export class CreateCommentDto {
   noi_dung: string;
 
   @ApiPropertyOptional({
-    description: 'Số sao đánh giá (1-5)',
+    description: `Số sao đánh giá (${RATING_CONFIG.min}-${RATING_CONFIG.max})`,
     example: 5,
     type: Number,
-    minimum: 1,
-    maximum: 5,
+    minimum: RATING_CONFIG.min,
+    maximum: RATING_CONFIG.max,
   })
   @IsOptional()
   @IsNumber()
-  @Min(1, { message: 'Số sao phải từ 1-5' })
-  @Max(5, { message: 'Số sao phải từ 1-5' })
+  @Min(RATING_CONFIG.min, { message: VALIDATION_MESSAGES.RATING_RANGE })
+  @Max(RATING_CONFIG.max, { message: VALIDATION_MESSAGES.RATING_RANGE })
   sao_binh_luan?: number;
 }
 
@@ -45,15 +46,15 @@ export class UpdateCommentDto {
   noi_dung?: string;
 
   @ApiPropertyOptional({
-    description: 'Số sao đánh giá (1-5)',
+    description: `Số sao đánh giá (${RATING_CONFIG.min}-${RATING_CONFIG.max})`,
     example: 5,
     type: Number,
-    minimum: 1,
-    maximum: 5,
+    minimum: RATING_CONFIG.min,
+    maximum: RATING_CONFIG.max,
   })
   @IsOptional()
   @IsNumber()
-  @Min(1, { message: 'Số sao phải từ 1-5' })
-  @Max(5, { message: 'Số sao phải từ 1-5' })
+  @Min(RATING_CONFIG.min, { message: VALIDATION_MESSAGES.RATING_RANGE })
+  @Max(RATING_CONFIG.max, { message: VALIDATION_MESSAGES.RATING_RANGE })
   sao_binh_luan?: number;
 }

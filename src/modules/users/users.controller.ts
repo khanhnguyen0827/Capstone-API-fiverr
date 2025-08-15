@@ -10,6 +10,7 @@ import {
   Request,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,21 +25,39 @@ import {
   ApiForbiddenResponse,
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { BaseController } from '../../common/base';
 
 @ApiTags('Users')
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UsersController extends BaseController {
+  constructor(private readonly usersService: UsersService) {
+    super();
+  }
 
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Lấy danh sách người dùng',
-    description: 'Lấy danh sách tất cả người dùng trong hệ thống'
+    description: 'Lấy danh sách tất cả người dùng trong hệ thống với phân trang'
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Số trang (mặc định: 1)',
+    type: Number,
+    example: 1
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    description: 'Số lượng item mỗi trang (mặc định: 10)',
+    type: Number,
+    example: 10
   })
   @ApiResponse({
     status: 200,
@@ -65,21 +84,29 @@ export class UsersController {
             page: 1,
             size: 10,
             total: 1,
-            totalPages: 1
+            totalPages: 1,
+            hasNext: false,
+            hasPrev: false
           }
         },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        timestamp: '2024-01-20T10:30:00.000Z',
+        path: '/api/v1/users',
+        method: 'GET'
       }
     }
   })
-  async getUsers() {
-    const users = await this.usersService.getUsers(1, 100); // Lấy tất cả users
-    return {
-      statusCode: 200,
-      message: 'Lấy danh sách người dùng thành công',
-      content: users,
-      dateTime: new Date().toISOString(),
-    };
+  async getUsers(
+    @Query('page') page?: number,
+    @Query('size') size?: number
+  ) {
+    const { page: validPage, size: validSize } = this.validatePagination(page, size);
+    const result = await this.usersService.getUsers(validPage, validSize);
+    
+    return this.createPaginatedResponse(
+      result.data,
+      result.pagination,
+      'Lấy danh sách người dùng thành công'
+    );
   }
 
   @Get(':id')
@@ -112,7 +139,9 @@ export class UsersController {
           skill: 'Lập trình web, React, Node.js',
           certification: 'AWS Certified Developer'
         },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        timestamp: '2024-01-20T10:30:00.000Z',
+        path: '/api/v1/users/1',
+        method: 'GET'
       }
     }
   })
@@ -122,12 +151,10 @@ export class UsersController {
   })
   async getUserById(@Param('id') id: number) {
     const user = await this.usersService.getUserById(id);
-    return {
-      statusCode: 200,
-      message: 'Lấy thông tin người dùng thành công',
-      content: user,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createSuccessResponse(
+      user,
+      'Lấy thông tin người dùng thành công'
+    );
   }
 
   @Post()
@@ -154,7 +181,9 @@ export class UsersController {
           skill: 'Quản lý dự án',
           certification: 'PMP Certified'
         },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        timestamp: '2024-01-20T10:30:00.000Z',
+        path: '/api/v1/users',
+        method: 'POST'
       }
     }
   })
@@ -163,12 +192,10 @@ export class UsersController {
   })
   async createUser(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.createUser(createUserDto);
-    return {
-      statusCode: 201,
-      message: 'Tạo người dùng thành công',
-      content: user,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createCreatedResponse(
+      user,
+      'Tạo người dùng thành công'
+    );
   }
 
   @Put(':id')
@@ -203,7 +230,9 @@ export class UsersController {
           skill: 'Lập trình web, React, Node.js, TypeScript',
           certification: 'AWS Certified Developer, Google Cloud Certified'
         },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        timestamp: '2024-01-20T10:30:00.000Z',
+        path: '/api/v1/users/1',
+        method: 'PUT'
       }
     }
   })
@@ -222,12 +251,10 @@ export class UsersController {
     @Request() req: any,
   ) {
     const user = await this.usersService.updateUser(id, updateUserDto, req.user);
-    return {
-      statusCode: 200,
-      message: 'Cập nhật người dùng thành công',
-      content: user,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createUpdatedResponse(
+      user,
+      'Cập nhật người dùng thành công'
+    );
   }
 
   @Delete(':id')
@@ -253,7 +280,9 @@ export class UsersController {
         content: {
           message: 'Xóa người dùng thành công'
         },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        timestamp: '2024-01-20T10:30:00.000Z',
+        path: '/api/v1/users/1',
+        method: 'DELETE'
       }
     }
   })
@@ -267,13 +296,8 @@ export class UsersController {
     description: 'Người dùng không tồn tại'
   })
   async deleteUser(@Param('id') id: number, @Request() req: any) {
-    const result = await this.usersService.deleteUser(id, req.user);
-    return {
-      statusCode: 200,
-      message: 'Xóa người dùng thành công',
-      content: result,
-      dateTime: new Date().toISOString(),
-    };
+    await this.usersService.deleteUser(id, req.user);
+    return this.createDeletedResponse('Xóa người dùng thành công');
   }
 
   @Get('profile/me')
@@ -301,7 +325,9 @@ export class UsersController {
           skill: 'Lập trình web, React, Node.js',
           certification: 'AWS Certified Developer'
         },
-        dateTime: '2024-01-20T10:30:00.000Z'
+        timestamp: '2024-01-20T10:30:00.000Z',
+        path: '/api/v1/users/profile/me',
+        method: 'GET'
       }
     }
   })
@@ -310,11 +336,9 @@ export class UsersController {
   })
   async getProfile(@Request() req: any) {
     const profile = await this.usersService.getUserById(req.user.userId);
-    return {
-      statusCode: 200,
-      message: 'Lấy profile thành công',
-      content: profile,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createSuccessResponse(
+      profile,
+      'Lấy profile thành công'
+    );
   }
 }

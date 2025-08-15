@@ -4,20 +4,21 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { PrismaService } from '../../common/prisma/prisma.service';
+import { JWT_CONFIG } from '../../common/constant/app.constant';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'capstone-fiverr-super-secret-jwt-key-2024',
-      signOptions: {
-        expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+      secret: JWT_CONFIG.secret,
+      signOptions: { 
+        expiresIn: JWT_CONFIG.expiresIn,
+        algorithm: JWT_CONFIG.algorithm,
       },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PrismaService],
-  exports: [AuthService, JwtModule],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
