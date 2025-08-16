@@ -14,6 +14,7 @@ services:
     environment:
       - NODE_ENV=development
       - DEBUG=*
+      - DATABASE_URL=mysql://root:123456@capstone-mysql:3306/capstone_fiverr
     command: npm run start:dev
     stdin_open: true
     tty: true
