@@ -19,6 +19,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
     // Override res.end to log response
     const originalEnd = res.end;
+    const self = this; // Capture this context
     res.end = function(chunk?: any, encoding?: any): Response {
       const endTime = Date.now();
       const duration = endTime - startTime;
@@ -28,7 +29,7 @@ export class LoggerMiddleware implements NestMiddleware {
       const logLevel = statusCode >= 400 ? 'error' : 'log';
       const emoji = statusCode >= 400 ? '❌' : '✅';
       
-      LoggerMiddleware.prototype.logger[logLevel](
+      self.logger[logLevel](
         `${emoji} ${method} ${originalUrl} - Status: ${statusCode} - Duration: ${duration}ms`
       );
 
