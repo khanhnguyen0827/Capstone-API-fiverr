@@ -52,7 +52,6 @@ dev_up() {
     
     print_success "Development environment started successfully!"
     print_status "API: http://localhost:3000"
-    print_status "phpMyAdmin: http://localhost:8080"
     print_status "MySQL: localhost:3307"
 }
 

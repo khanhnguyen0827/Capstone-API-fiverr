@@ -1,145 +1,157 @@
-# Capstone API Fiverr
+# ========================================
+# CAPSTONE FIVERR API
+# ========================================
 
-API backend cho nền tảng freelance tương tự Fiverr, được xây dựng với **NestJS**, **Prisma ORM** và **MySQL**.
+## 🌟 Tính năng chính
 
-## 🚀 Tính năng chính
+- **NestJS v10**: Framework hiện đại cho Node.js
+- **Prisma ORM**: Database ORM với type safety
+- **MySQL Database**: Hệ quản trị cơ sở dữ liệu
+- **JWT Authentication**: Xác thực và phân quyền
+- **Swagger Documentation**: API documentation tự động
+- **Environment Configuration**: Quản lý biến môi trường
+- **Constants Management**: Quản lý constants tập trung
+- **Middleware System**: Hệ thống middleware mạnh mẽ
+- **Response Interceptors**: Chuẩn hóa response format
+- **Error Handling**: Xử lý lỗi tập trung
+- **Health Checks**: Kiểm tra trạng thái hệ thống
+- **Docker Support**: Containerization đầy đủ
 
-- ✅ **Authentication**: Đăng ký, đăng nhập với JWT
-- ✅ **User Management**: CRUD người dùng với role-based access
-- ✅ **Job Management**: Quản lý công việc, danh mục
-- ✅ **Database**: MySQL với Prisma ORM
-- ✅ **API Documentation**: Swagger UI
-- ✅ **Validation**: Class-validator với DTOs
-- ✅ **Security**: JWT authentication, password hashing
-- ✅ **Environment Configuration**: Quản lý biến môi trường với dotenv
-- ✅ **Constants Management**: Hệ thống constants tập trung và type-safe
+## 🐳 Docker Support
 
-## 🏗️ Cấu trúc Database
+Project hỗ trợ đầy đủ Docker với nhiều môi trường khác nhau:
 
-Database được thiết kế theo mô hình ERD với 6 bảng chính:
+### 🚀 Quick Start với Docker
 
-### 1. **LoaiCongViec** (Job Type)
-- Quản lý các loại công việc chính (IT, Design, Marketing, etc.)
-
-### 2. **ChiTietLoaiCongViec** (Job Type Detail)
-- Quản lý chi tiết từng loại công việc
-- Liên kết với LoaiCongViec
-
-### 3. **NguoiDung** (User)
-- Quản lý thông tin người dùng
-- Hỗ trợ 2 role: freelancer và client
-
-### 4. **CongViec** (Job)
-- Quản lý các công việc được đăng
-- Liên kết với người tạo và loại công việc
-
-### 5. **ThueCongViec** (Job Rental)
-- Quản lý việc thuê công việc
-- Theo dõi trạng thái hoàn thành
-
-### 6. **BinhLuan** (Comment)
-- Quản lý bình luận và đánh giá
-- Hỗ trợ rating bằng sao
-
-## 📁 Cấu trúc dự án
-
-```
-src/
-├── common/
-│   ├── constant/
-│   │   └── app.constant.ts        # Application constants & env vars
-│   └── prisma/
-│       └── prisma.service.ts      # Prisma service
-├── modules/
-│   ├── auth/                      # Authentication module
-│   │   ├── auth.controller.ts     # Auth endpoints
-│   │   ├── auth.service.ts        # Auth business logic
-│   │   ├── auth.module.ts         # Auth module config
-│   │   ├── jwt.strategy.ts        # JWT strategy
-│   │   ├── jwt-auth.guard.ts      # JWT guard
-│   │   └── dto/
-│   │       └── auth.dto.ts        # Auth DTOs
-│   ├── users/                     # Users module
-│   │   ├── users.controller.ts    # User endpoints
-│   │   ├── users.service.ts       # User business logic
-│   │   ├── users.module.ts        # User module config
-│   │   └── dto/
-│   │       └── users.dto.ts       # User DTOs
-│   └── jobs/                      # Jobs module
-│       ├── jobs.controller.ts     # Job endpoints
-│       ├── jobs.service.ts        # Job business logic
-│       ├── jobs.module.ts         # Job module config
-│       └── dto/
-│           └── jobs.dto.ts        # Job DTOs
-├── app.module.ts                  # Root module
-├── main.ts                        # Application entry point
-└── prisma/
-    └── schema.prisma              # Database schema
-```
-
-## 🛠️ Cài đặt
-
-### 1. Cài đặt dependencies
 ```bash
+# Khởi động development environment
+docker-compose up -d
+
+# Hoặc sử dụng script PowerShell
+.\scripts\docker-utils.ps1 dev-up
+
+# Xem logs
+.\scripts\docker-utils.ps1 logs api
+
+# Dừng tất cả containers
+.\scripts\docker-utils.ps1 down
+```
+
+### 🏗️ Docker Files
+
+- **`docker-compose.yml`**: Cấu hình chính cho development
+- **`docker-compose.override.yml`**: Override cho development với hot reload
+- **`docker-compose.prod.yml`**: Cấu hình production
+- **`Dockerfile`**: Production build
+- **`Dockerfile.dev`**: Development build với hot reload
+
+### 🔧 Docker Commands
+
+```bash
+# Development
+docker-compose up -d                    # Khởi động development
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+
+# Production
+docker-compose -f docker-compose.prod.yml up -d
+
+# Build images
+docker-compose build
+docker-compose -f docker-compose.prod.yml build
+
+# View logs
+docker-compose logs -f api
+docker-compose logs -f mysql
+
+# Stop services
+docker-compose down
+```
+
+### 🛠️ Docker Utilities Scripts
+
+#### PowerShell (Windows)
+```powershell
+# Khởi động development
+.\scripts\docker-utils.ps1 dev-up
+
+# Khởi động production
+.\scripts\docker-utils.ps1 prod-up
+
+# Xem status
+.\scripts\docker-utils.ps1 status
+
+# Cleanup
+.\scripts\docker-utils.ps1 cleanup
+
+# Help
+.\scripts\docker-utils.ps1 help
+```
+
+#### Bash (Linux/Mac)
+```bash
+# Khởi động development
+./scripts/docker-utils.sh dev-up
+
+# Khởi động production
+./scripts/docker-utils.sh prod-up
+
+# Xem status
+./scripts/docker-utils.sh status
+
+# Cleanup
+./scripts/docker-utils.sh cleanup
+
+# Help
+./scripts/docker-utils.sh help
+```
+
+### 🌐 Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| **API** | 3000 | NestJS Backend API |
+| **MySQL** | 3307 | Database server |
+
+### 🔒 Security Features
+
+- **Non-root user**: Containers chạy với user `nestjs` (UID 1001)
+- **Health checks**: Tự động kiểm tra trạng thái services
+- **Resource limits**: Giới hạn CPU và memory cho production
+- **Network isolation**: Services được tách biệt trong network riêng
+- **Volume persistence**: Database data được lưu trữ bền vững
+
+### 📊 Monitoring
+
+```bash
+# Xem container status
+docker-compose ps
+
+# Xem resource usage
+docker stats
+
+# Xem logs real-time
+docker-compose logs -f
+
+# Health check
+curl http://localhost:3000/api/v1/health
+```
+
+## 🛠️ Cài đặt và Setup
+
+### Yêu cầu hệ thống
+
+- **Node.js**: v18+ (khuyến nghị v22)
+- **npm**: v8+
+- **Docker**: v20+
+- **Docker Compose**: v2+
+
+### Cài đặt dependencies
+
+```bash
+# Cài đặt dependencies
 npm install
-```
 
-### 2. Cấu hình Environment Variables
-
-#### Tạo file `.env` từ template:
-```bash
-cp env.example .env
-```
-
-#### Cấu hình các biến môi trường chính:
-
-**Application Environment:**
-```env
-NODE_ENV=development
-PORT=3000
-```
-
-**Database Configuration:**
-```env
-DATABASE_URL=mysql://root:password@localhost:3306/capstone_fiverr
-DB_POOL_MIN=2
-DB_POOL_MAX=10
-DB_TIMEOUT=30000
-```
-
-**JWT Configuration:**
-```env
-JWT_SECRET=your-super-secret-jwt-key-2024
-JWT_EXPIRES_IN=1d
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-2024
-JWT_REFRESH_EXPIRES_IN=7d
-```
-
-**Security Configuration:**
-```env
-BCRYPT_ROUNDS=10
-CORS_ORIGIN=*
-API_RATE_LIMIT=100
-API_RATE_LIMIT_WINDOW=900000
-```
-
-**API Configuration:**
-```env
-API_PREFIX=api
-API_VERSION=v1
-SWAGGER_PATH=api-docs
-SWAGGER_ENABLED=true
-```
-
-### 3. Tạo Database
-Chạy file SQL để tạo database:
-```bash
-mysql -u root -p < database.sql
-```
-
-### 4. Khởi tạo Prisma
-```bash
-# Tạo Prisma client
+# Generate Prisma client
 npm run db:generate
 
 # Push schema to database
@@ -187,15 +199,25 @@ export const VALIDATION_MESSAGES = {
 
 ## 🚀 Chạy ứng dụng
 
-### Development mode
+### Development mode (Local)
 ```bash
 npm run start:dev
 ```
 
-### Production mode
+### Development mode (Docker)
+```bash
+docker-compose up -d
+```
+
+### Production mode (Local)
 ```bash
 npm run build
 npm run start:prod
+```
+
+### Production mode (Docker)
+```bash
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ## 📚 API Documentation
@@ -213,6 +235,8 @@ http://localhost:3000/api-docs
 - **CORS Configuration**: Cấu hình CORS linh hoạt
 - **Rate Limiting**: Giới hạn số lượng request
 - **Input Validation**: Validation tất cả input với class-validator
+- **Security Headers**: Các header bảo mật tự động
+- **Request Validation**: Kiểm tra và validate tất cả requests
 
 ## 📝 Environment Variables Reference
 
@@ -227,6 +251,15 @@ http://localhost:3000/api-docs
 | `CORS_ORIGIN` | `*` | Origin cho CORS |
 | `API_PREFIX` | `api` | Prefix cho API endpoints |
 | `SWAGGER_ENABLED` | `true` | Bật/tắt Swagger UI |
+
+## 🐳 Docker Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MYSQL_ROOT_PASSWORD` | `123456` | MySQL root password |
+| `MYSQL_DATABASE` | `capstone_fiverr` | Database name |
+| `MYSQL_USER` | `capstone_user` | Database user |
+| `MYSQL_PASSWORD` | `capstone_pass` | Database password |
 
 ## 🤝 Contributing
 

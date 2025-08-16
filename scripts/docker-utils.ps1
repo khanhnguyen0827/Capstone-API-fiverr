@@ -62,7 +62,6 @@ function Start-DevEnvironment {
     
     Write-Success "Development environment started successfully!"
     Write-Status "API: http://localhost:3000"
-    Write-Status "phpMyAdmin: http://localhost:8080"
     Write-Status "MySQL: localhost:3307"
 }
 
@@ -149,9 +148,9 @@ function Show-Help {
     Write-Host "  help       Show this help message" -ForegroundColor $White
     Write-Host ""
     Write-Host "Examples:" -ForegroundColor $White
-    Write-Host "  .\docker-utils.ps1 dev-up" -ForegroundColor $White
-    Write-Host "  .\docker-utils.ps1 logs mysql" -ForegroundColor $White
-    Write-Host "  .\docker-utils.ps1 cleanup" -ForegroundColor $White
+    Write-Host "  .\scripts\docker-utils.ps1 dev-up" -ForegroundColor $White
+    Write-Host "  .\scripts\docker-utils.ps1 logs mysql" -ForegroundColor $White
+    Write-Host "  .\scripts\docker-utils.ps1 cleanup" -ForegroundColor $White
 }
 
 # Main script logic
