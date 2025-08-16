@@ -1,19 +1,61 @@
+version: '3.8'
+
 services:
-  BE:
+  # Backend API Service
+  api:
     image: khanh2nq/img-be_api_fiverr:latest
-    container_name: con-be_api_fiverr
+    container_name: capstone-api
     ports:
-      - 3070:3069
+      - "3000:3000"
     env_file:
       - .env
     depends_on:
-      - DB
+      - mysql
+    networks:
+      - capstone-network
+    restart: unless-stopped
 
-  DB:
+  # MySQL Database Service
+  mysql:
     image: mysql:8.0
-    container_name: con-db_api_fiverr
+    container_name: capstone-mysql
     ports:
-      - 3307:3306
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=capstone_fiverr
+      - MYSQL_USER=capstone_user
+      - MYSQL_PASSWORD=capstone_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - capstone-network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # phpMyAdmin (Optional - for database management)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: capstone-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=123456
+    depends_on:
+      - mysql
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+networks:
+  capstone-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
 
