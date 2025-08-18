@@ -58,12 +58,6 @@ protection_rules:
   # Required approving reviews count
   required_approving_review_count: 1
   
-  # Dismiss stale reviews when new commits are pushed
-  dismiss_stale_reviews: true
-  
-  # Require review from code owners
-  require_code_owner_reviews: false
-  
   # Require last push approval
   require_last_push_approval: false
   
