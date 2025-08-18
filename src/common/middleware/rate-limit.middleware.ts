@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { SECURITY_CONFIG, RESPONSE_MESSAGES } from '../constant/app.constant';
+import { RESPONSE_MESSAGES } from '../constant/app.constant';
 
 interface RateLimitStore {
   [key: string]: {
@@ -13,12 +13,14 @@ interface RateLimitStore {
 export class RateLimitMiddleware implements NestMiddleware {
   private readonly logger = new Logger(RateLimitMiddleware.name);
   private store: RateLimitStore = {};
+  
+  // Rate limit configuration
+  private readonly limit = 100; // requests per window
+  private readonly windowMs = 15 * 60 * 1000; // 15 minutes
 
   use(req: Request, res: Response, next: NextFunction) {
     const clientId = this.getClientId(req);
     const now = Date.now();
-    const windowMs = SECURITY_CONFIG.rateLimit.windowMs;
-    const limit = SECURITY_CONFIG.rateLimit.limit;
 
     // Clean up expired entries
     this.cleanupExpiredEntries(now);
@@ -27,7 +29,7 @@ export class RateLimitMiddleware implements NestMiddleware {
     if (!this.store[clientId]) {
       this.store[clientId] = {
         count: 0,
-        resetTime: now + windowMs,
+        resetTime: now + this.windowMs,
       };
     }
 
@@ -36,16 +38,16 @@ export class RateLimitMiddleware implements NestMiddleware {
     // Check if window has expired
     if (now > client.resetTime) {
       client.count = 0;
-      client.resetTime = now + windowMs;
+      client.resetTime = now + this.windowMs;
     }
 
     // Check rate limit
-    if (client.count >= limit) {
+    if (client.count >= this.limit) {
       this.logger.warn(`Rate limit exceeded for client: ${clientId}`);
       
       res.status(429).json({
         statusCode: 429,
-        message: RESPONSE_MESSAGES.RATE_LIMIT_EXCEEDED,
+        message: 'Quá giới hạn request',
         error: 'Too Many Requests',
         retryAfter: Math.ceil((client.resetTime - now) / 1000),
       });
@@ -56,8 +58,8 @@ export class RateLimitMiddleware implements NestMiddleware {
     client.count++;
 
     // Add rate limit headers
-    res.header('X-RateLimit-Limit', limit.toString());
-    res.header('X-RateLimit-Remaining', (limit - client.count).toString());
+    res.header('X-RateLimit-Limit', this.limit.toString());
+    res.header('X-RateLimit-Remaining', (this.limit - client.count).toString());
     res.header('X-RateLimit-Reset', new Date(client.resetTime).toISOString());
 
     next();

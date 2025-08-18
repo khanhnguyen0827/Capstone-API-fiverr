@@ -28,11 +28,14 @@ import {
 import { CommentsService } from './comments.service';
 import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { BaseController } from '../../common/base';
 
 @ApiTags('Comments')
 @Controller('comments')
-export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+export class CommentsController extends BaseController {
+  constructor(private readonly commentsService: CommentsService) {
+    super();
+  }
 
   @Get(':jobId')
   @HttpCode(HttpStatus.OK)
@@ -78,12 +81,10 @@ export class CommentsController {
   })
   async getCommentsByJobId(@Param('jobId') jobId: number) {
     const comments = await this.commentsService.getCommentsByJobId(jobId);
-    return {
-      statusCode: 200,
-      message: 'Lấy bình luận thành công',
-      content: comments,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createSuccessResponse(
+      comments,
+      'Lấy bình luận thành công'
+    );
   }
 
   @Post()
@@ -126,12 +127,10 @@ export class CommentsController {
   })
   async createComment(@Body() createCommentDto: CreateCommentDto, @Request() req: any) {
     const comment = await this.commentsService.createComment(createCommentDto, req.user.userId);
-    return {
-      statusCode: 201,
-      message: 'Tạo bình luận thành công',
-      content: comment,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createCreatedResponse(
+      comment,
+      'Tạo bình luận thành công'
+    );
   }
 
   @Put(':id')
@@ -187,12 +186,10 @@ export class CommentsController {
     @Request() req: any,
   ) {
     const comment = await this.commentsService.updateComment(id, updateCommentDto, req.user);
-    return {
-      statusCode: 200,
-      message: 'Cập nhật bình luận thành công',
-      content: comment,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createUpdatedResponse(
+      comment,
+      'Cập nhật bình luận thành công'
+    );
   }
 
   @Delete(':id')
@@ -232,12 +229,7 @@ export class CommentsController {
     description: 'Bình luận không tồn tại'
   })
   async deleteComment(@Param('id') id: number, @Request() req: any) {
-    const result = await this.commentsService.deleteComment(id, req.user);
-    return {
-      statusCode: 200,
-      message: 'Xóa bình luận thành công',
-      content: result,
-      dateTime: new Date().toISOString(),
-    };
+    await this.commentsService.deleteComment(id, req.user);
+    return this.createDeletedResponse('Xóa bình luận thành công');
   }
 }

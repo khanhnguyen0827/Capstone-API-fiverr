@@ -5,17 +5,12 @@ import {
   SECURITY_CONFIG, 
   PAGINATION_CONFIG,
   RATING_CONFIG,
-  FILE_UPLOAD_CONFIG,
   API_CONFIG,
-  SWAGGER_CONFIG,
   RESPONSE_MESSAGES,
   VALIDATION_MESSAGES,
-  LOG_CONFIG,
-  CACHE_CONFIG,
   isProduction,
   isDevelopment,
-  isTest,
-  validateConfig
+  isTest
 } from '../common/constant/app.constant';
 
 /**
@@ -66,24 +61,10 @@ export class AppConfig {
   }
 
   /**
-   * Get file upload configuration
-   */
-  static get fileUpload() {
-    return FILE_UPLOAD_CONFIG;
-  }
-
-  /**
    * Get API configuration
    */
   static get api() {
     return API_CONFIG;
-  }
-
-  /**
-   * Get Swagger configuration
-   */
-  static get swagger() {
-    return SWAGGER_CONFIG;
   }
 
   /**
@@ -101,28 +82,14 @@ export class AppConfig {
   }
 
   /**
-   * Get logging configuration
-   */
-  static get logging() {
-    return LOG_CONFIG;
-  }
-
-  /**
-   * Get cache configuration
-   */
-  static get cache() {
-    return CACHE_CONFIG;
-  }
-
-  /**
-   * Check if running in production
+   * Check if running in production mode
    */
   static get isProduction() {
     return isProduction;
   }
 
   /**
-   * Check if running in development
+   * Check if running in development mode
    */
   static get isDevelopment() {
     return isDevelopment;
@@ -136,86 +103,37 @@ export class AppConfig {
   }
 
   /**
-   * Validate configuration
+   * Get all configuration as a single object
    */
-  static validate() {
-    return validateConfig();
-  }
-
-  /**
-   * Get configuration summary
-   */
-  static getSummary() {
+  static getAll() {
     return {
-      environment: ENV.NODE_ENV,
-      port: ENV.PORT,
-      database: {
-        name: DATABASE_CONFIG.name,
-        pool: DATABASE_CONFIG.pool,
-        timeout: DATABASE_CONFIG.timeout,
-      },
-      jwt: {
-        expiresIn: JWT_CONFIG.expiresIn,
-        algorithm: JWT_CONFIG.algorithm,
-      },
-      security: {
-        bcryptRounds: SECURITY_CONFIG.bcryptRounds,
-        corsOrigin: SECURITY_CONFIG.corsOrigin,
-        rateLimit: SECURITY_CONFIG.rateLimit,
-      },
-      api: {
-        prefix: API_CONFIG.prefix,
-        version: API_CONFIG.version,
-        globalPrefix: API_CONFIG.globalPrefix,
-      },
-      swagger: {
-        enabled: SWAGGER_CONFIG.enabled,
-        path: SWAGGER_CONFIG.path,
-      },
-      pagination: PAGINATION_CONFIG,
-      rating: RATING_CONFIG,
-      fileUpload: {
-        maxSize: FILE_UPLOAD_CONFIG.maxSize,
-        allowedTypes: FILE_UPLOAD_CONFIG.allowedImageTypes,
-        uploadPath: FILE_UPLOAD_CONFIG.uploadPath,
-      },
+      env: this.env,
+      database: this.database,
+      jwt: this.jwt,
+      security: this.security,
+      pagination: this.pagination,
+      rating: this.rating,
+      api: this.api,
+      messages: this.messages,
+      validation: this.validation,
+      isProduction: this.isProduction,
+      isDevelopment: this.isDevelopment,
+      isTest: this.isTest,
     };
   }
 
   /**
-   * Get configuration for specific environment
+   * Validate required environment variables
    */
-  static getEnvironmentConfig() {
-    if (isProduction) {
-      return {
-        cors: { origin: false }, // Disable CORS in production
-        swagger: false, // Disable Swagger in production
-        logging: 'error',
-        cache: { ttl: 600 }, // 10 minutes in production
-      };
+  static validateEnv() {
+    const required = ['DATABASE_URL', 'JWT_SECRET'];
+    const missing = required.filter(key => !process.env[key]);
+    
+    if (missing.length > 0) {
+      console.warn(`⚠️  Missing required environment variables: ${missing.join(', ')}`);
+      return false;
     }
-
-    if (isDevelopment) {
-      return {
-        cors: { origin: '*' },
-        swagger: true,
-        logging: 'debug',
-        cache: { ttl: 60 }, // 1 minute in development
-      };
-    }
-
-    if (isTest) {
-      return {
-        cors: { origin: '*' },
-        swagger: false,
-        logging: 'warn',
-        cache: { ttl: 0 }, // No cache in test
-      };
-    }
-
-    return {};
+    
+    return true;
   }
 }
-
-// Export default instance
-export default AppConfig;

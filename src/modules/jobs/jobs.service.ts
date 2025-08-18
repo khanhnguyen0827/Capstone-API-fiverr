@@ -7,6 +7,12 @@ import { USER_ROLES, RESPONSE_MESSAGES } from '../../common/constant/app.constan
 export class JobsService {
   constructor(private prisma: PrismaService) {}
 
+  validatePagination(page: number, size: number) {
+    const validPage = Math.max(1, page || 1);
+    const validSize = Math.max(1, Math.min(100, size || 10));
+    return { page: validPage, size: validSize };
+  }
+
   async getJobs(page: number, size: number, search?: string, category?: string) {
     try {
       console.log('getJobs called with:', { page, size, search, category });

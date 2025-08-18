@@ -30,11 +30,14 @@ import {
 import { JobsService } from './jobs.service';
 import { CreateJobDto, UpdateJobDto, JobSearchDto } from './dto/jobs.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { BaseController } from '../../common/base';
 
 @ApiTags('Jobs')
 @Controller('jobs')
-export class JobsController {
-  constructor(private readonly jobsService: JobsService) {}
+export class JobsController extends BaseController {
+  constructor(private readonly jobsService: JobsService) {
+    super();
+  }
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -107,27 +110,14 @@ export class JobsController {
     @Query('search') search?: string,
     @Query('category') category?: string,
   ) {
-    try {
-      // Đảm bảo page và size là số hợp lệ
-      const pageNum = Math.max(1, Number(page) || 1);
-      const sizeNum = Math.max(1, Math.min(100, Number(size) || 10));
-      
-      const result = await this.jobsService.getJobs(pageNum, sizeNum, search, category);
-      return {
-        statusCode: 200,
-        message: 'Lấy danh sách công việc thành công',
-        content: result,
-        dateTime: new Date().toISOString(),
-      };
-    } catch (error) {
-      console.error('Error in getJobs controller:', error);
-      return {
-        statusCode: 500,
-        message: 'Lỗi khi lấy danh sách công việc',
-        content: null,
-        dateTime: new Date().toISOString(),
-      };
-    }
+    const { page: validPage, size: validSize } = this.jobsService.validatePagination(page, size);
+    const result = await this.jobsService.getJobs(validPage, validSize, search, category);
+    
+    return this.createPaginatedResponse(
+      result.data,
+      result.pagination,
+      'Lấy danh sách công việc thành công'
+    );
   }
 
   @Get(':id')
@@ -184,12 +174,10 @@ export class JobsController {
   })
   async getJobById(@Param('id') id: number) {
     const job = await this.jobsService.getJobById(id);
-    return {
-      statusCode: 200,
-      message: 'Lấy thông tin công việc thành công',
-      content: job,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createSuccessResponse(
+      job,
+      'Lấy thông tin công việc thành công'
+    );
   }
 
   @Post()
@@ -229,12 +217,10 @@ export class JobsController {
   })
   async createJob(@Body() createJobDto: CreateJobDto, @Request() req: any) {
     const job = await this.jobsService.createJob(createJobDto, req.user.userId);
-    return {
-      statusCode: 201,
-      message: 'Tạo công việc thành công',
-      content: job,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createCreatedResponse(
+      job,
+      'Tạo công việc thành công'
+    );
   }
 
   @Put(':id')
@@ -287,12 +273,10 @@ export class JobsController {
     @Request() req: any,
   ) {
     const job = await this.jobsService.updateJob(id, updateJobDto, req.user);
-    return {
-      statusCode: 200,
-      message: 'Cập nhật công việc thành công',
-      content: job,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createUpdatedResponse(
+      job,
+      'Cập nhật công việc thành công'
+    );
   }
 
   @Delete(':id')
@@ -332,13 +316,8 @@ export class JobsController {
     description: 'Công việc không tồn tại'
   })
   async deleteJob(@Param('id') id: number, @Request() req: any) {
-    const result = await this.jobsService.deleteJob(id, req.user);
-    return {
-      statusCode: 200,
-      message: 'Xóa công việc thành công',
-      content: result,
-      dateTime: new Date().toISOString(),
-    };
+    await this.jobsService.deleteJob(id, req.user);
+    return this.createDeletedResponse('Xóa công việc thành công');
   }
 
   @Get('categories/list')
@@ -372,12 +351,10 @@ export class JobsController {
   })
   async getJobCategories() {
     const categories = await this.jobsService.getJobCategories();
-    return {
-      statusCode: 200,
-      message: 'Lấy danh mục thành công',
-      content: categories,
-      dateTime: new Date().toISOString(),
-    };
+    return this.createSuccessResponse(
+      categories,
+      'Lấy danh mục thành công'
+    );
   }
 
   @Post('search')
@@ -423,12 +400,13 @@ export class JobsController {
     @Query('page') page: number = 1,
     @Query('size') size: number = 10,
   ) {
-    const result = await this.jobsService.searchJobs(searchDto, page, size);
-    return {
-      statusCode: 200,
-      message: 'Tìm kiếm thành công',
-      content: result,
-      dateTime: new Date().toISOString(),
-    };
+    const { page: validPage, size: validSize } = this.jobsService.validatePagination(page, size);
+    const result = await this.jobsService.searchJobs(searchDto, validPage, validSize);
+    
+    return this.createPaginatedResponse(
+      result.data,
+      result.pagination,
+      'Tìm kiếm thành công'
+    );
   }
 }
