@@ -1,0 +1,81 @@
+# ========================================
+# STAGING ENVIRONMENT CONFIGURATION
+# ========================================
+
+# Environment name
+name: staging
+
+# Environment URL (for deployment status)
+url: https://staging.your-domain.com
+
+# Branch protection rules
+protection_rules:
+  # Required reviewers
+  required_reviewers:
+    - username: your-username
+      type: USER
+    - team: developers
+      type: TEAM
+  
+  # Required status checks
+  required_status_checks:
+    strict: true
+    contexts:
+      - "CI - Build & Test"
+      - "Lint & Format Check"
+      - "Unit Tests"
+      - "Build Check"
+      - "Security Scan"
+      - "Docker Build Test"
+  
+  # Branch restrictions
+  restrictions:
+    users: []
+    teams: []
+    apps: []
+  
+  # Enforce admins
+  enforce_admins: false
+  
+  # Allow force pushes
+  allow_force_pushes: false
+  
+  # Allow deletions
+  allow_deletions: false
+  
+  # Required conversation resolution
+  required_conversation_resolution: true
+  
+  # Required linear history
+  required_linear_history: false
+  
+  # Dismiss stale reviews
+  dismiss_stale_reviews: true
+  
+  # Require code owner reviews
+  require_code_owner_reviews: false
+  
+  # Required approving reviews count
+  required_approving_review_count: 1
+  
+  # Dismiss stale reviews when new commits are pushed
+  dismiss_stale_reviews: true
+  
+  # Require review from code owners
+  require_code_owner_reviews: false
+  
+  # Require last push approval
+  require_last_push_approval: false
+  
+  # Restrict pushes that create files
+  restrict_pushes:
+    allow_force_pushes: false
+    allow_deletions: false
+    block_creations: false
+  
+  # Required deployments
+  required_deployments:
+    - environment: staging
+      required_reviewers:
+        - username: your-username
+          type: USER
