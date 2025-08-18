@@ -1,6 +1,6 @@
 /**
-docker image build -t khanh2nq/img-be_api_fiverr:latest .
-docker build -t img-be_api_fiverr .
+docker image build -t vulebaolong/img-be_cyber_community:latest .
+docker build -t img-be_cyber_community .
    - build ra image
 
 docker image list
@@ -17,7 +17,7 @@ docker image remove ten_id_image
 
 dive: là thư viện giúp phân tích image
 
-docker run --env-file .env --name con-be_api_fiverr -p 3070:3069 -d img-be_api_fiverr
+docker run --env-file .env --name con-be_cyber_community -p 3070:3069 -d img-be_cyber_community
 MYSQL: docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
 
 

@@ -1,274 +1,98 @@
-# ========================================
-# CAPSTONE FIVERR API
-# ========================================
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
 
-## 🌟 Tính năng chính
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-- **NestJS v10**: Framework hiện đại cho Node.js
-- **Prisma ORM**: Database ORM với type safety
-- **MySQL Database**: Hệ quản trị cơ sở dữ liệu
-- **JWT Authentication**: Xác thực và phân quyền
-- **Swagger Documentation**: API documentation tự động
-- **Environment Configuration**: Quản lý biến môi trường
-- **Constants Management**: Quản lý constants tập trung
-- **Middleware System**: Hệ thống middleware mạnh mẽ
-- **Response Interceptors**: Chuẩn hóa response format
-- **Error Handling**: Xử lý lỗi tập trung
-- **Health Checks**: Kiểm tra trạng thái hệ thống
-- **Docker Support**: Containerization đầy đủ
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## 🐳 Docker Support
+## Description
 
-Project hỗ trợ đầy đủ Docker với nhiều môi trường khác nhau:
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-### 🚀 Quick Start với Docker
-
-```bash
-# Khởi động development environment
-docker-compose up -d
-
-# Hoặc sử dụng script PowerShell
-.\scripts\docker-utils.ps1 dev-up
-
-# Xem logs
-.\scripts\docker-utils.ps1 logs api
-
-# Dừng tất cả containers
-.\scripts\docker-utils.ps1 down
-```
-
-### 🏗️ Docker Files
-
-- **`docker-compose.yml`**: Cấu hình chính cho development
-- **`docker-compose.override.yml`**: Override cho development với hot reload
-- **`docker-compose.prod.yml`**: Cấu hình production
-- **`Dockerfile`**: Production build
-- **`Dockerfile.dev`**: Development build với hot reload
-
-### 🔧 Docker Commands
+## Project setup
 
 ```bash
-# Development
-docker-compose up -d                    # Khởi động development
-docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
-
-# Production
-docker-compose -f docker-compose.prod.yml up -d
-
-# Build images
-docker-compose build
-docker-compose -f docker-compose.prod.yml build
-
-# View logs
-docker-compose logs -f api
-docker-compose logs -f mysql
-
-# Stop services
-docker-compose down
+$ npm install
 ```
 
-### 🛠️ Docker Utilities Scripts
-
-#### PowerShell (Windows)
-```powershell
-# Khởi động development
-.\scripts\docker-utils.ps1 dev-up
-
-# Khởi động production
-.\scripts\docker-utils.ps1 prod-up
-
-# Xem status
-.\scripts\docker-utils.ps1 status
-
-# Cleanup
-.\scripts\docker-utils.ps1 cleanup
-
-# Help
-.\scripts\docker-utils.ps1 help
-```
-
-#### Bash (Linux/Mac)
-```bash
-# Khởi động development
-./scripts/docker-utils.sh dev-up
-
-# Khởi động production
-./scripts/docker-utils.sh prod-up
-
-# Xem status
-./scripts/docker-utils.sh status
-
-# Cleanup
-./scripts/docker-utils.sh cleanup
-
-# Help
-./scripts/docker-utils.sh help
-```
-
-### 🌐 Services
-
-| Service | Port | Description |
-|---------|------|-------------|
-| **API** | 3000 | NestJS Backend API |
-| **MySQL** | 3307 | Database server |
-
-### 🔒 Security Features
-
-- **Non-root user**: Containers chạy với user `nestjs` (UID 1001)
-- **Health checks**: Tự động kiểm tra trạng thái services
-- **Resource limits**: Giới hạn CPU và memory cho production
-- **Network isolation**: Services được tách biệt trong network riêng
-- **Volume persistence**: Database data được lưu trữ bền vững
-
-### 📊 Monitoring
+## Compile and run the project
 
 ```bash
-# Xem container status
-docker-compose ps
+# development
+$ npm run start
 
-# Xem resource usage
-docker stats
+# watch mode
+$ npm run start:dev
 
-# Xem logs real-time
-docker-compose logs -f
-
-# Health check
-curl http://localhost:3000/api/v1/health
+# production mode
+$ npm run start:prod
 ```
 
-## 🛠️ Cài đặt và Setup
-
-### Yêu cầu hệ thống
-
-- **Node.js**: v18+ (khuyến nghị v22)
-- **npm**: v8+
-- **Docker**: v20+
-- **Docker Compose**: v2+
-
-### Cài đặt dependencies
+## Run tests
 
 ```bash
-# Cài đặt dependencies
-npm install
+# unit tests
+$ npm run test
 
-# Generate Prisma client
-npm run db:generate
+# e2e tests
+$ npm run test:e2e
 
-# Push schema to database
-npm run db:push
+# test coverage
+$ npm run test:cov
 ```
 
-## 🔧 Cấu hình Constants
+## Deployment
 
-Project sử dụng hệ thống constants tập trung trong `src/common/constant/app.constant.ts`:
+When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
 
-### Environment Variables
-```typescript
-export const ENV = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  PORT: parseInt(process.env.PORT || '3000', 10),
-  DATABASE_URL: process.env.DATABASE_URL || 'mysql://...',
-  JWT_SECRET: process.env.JWT_SECRET || 'your-secret-key',
-  // ... more env vars
-} as const;
-```
+If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
-### Configuration Objects
-```typescript
-export const JWT_CONFIG = {
-  secret: ENV.JWT_SECRET,
-  expiresIn: ENV.JWT_EXPIRES_IN,
-  algorithm: 'HS256' as const,
-} as const;
-
-export const SECURITY_CONFIG = {
-  bcryptRounds: ENV.BCRYPT_ROUNDS,
-  corsOrigin: ENV.CORS_ORIGIN,
-  // ... more security config
-} as const;
-```
-
-### Validation Messages
-```typescript
-export const VALIDATION_MESSAGES = {
-  EMAIL_REQUIRED: 'Email không được để trống',
-  PASSWORD_MIN_LENGTH: 'Mật khẩu phải có ít nhất 6 ký tự',
-  // ... more validation messages
-} as const;
-```
-
-## 🚀 Chạy ứng dụng
-
-### Development mode (Local)
 ```bash
-npm run start:dev
+$ npm install -g @nestjs/mau
+$ mau deploy
 ```
 
-### Development mode (Docker)
-```bash
-docker-compose up -d
-```
+With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
-### Production mode (Local)
-```bash
-npm run build
-npm run start:prod
-```
+## Resources
 
-### Production mode (Docker)
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
+Check out a few resources that may come in handy when working with NestJS:
 
-## 📚 API Documentation
+- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
+- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
+- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
+- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
+- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
+- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
+- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
+- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-Sau khi khởi động ứng dụng, truy cập Swagger UI tại:
-```
-http://localhost:3000/api-docs
-```
+## Support
 
-## 🔒 Security Features
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-- **JWT Authentication**: Xác thực người dùng với JWT tokens
-- **Password Hashing**: Mật khẩu được hash với bcrypt
-- **Role-based Access Control**: Phân quyền theo vai trò người dùng
-- **CORS Configuration**: Cấu hình CORS linh hoạt
-- **Rate Limiting**: Giới hạn số lượng request
-- **Input Validation**: Validation tất cả input với class-validator
-- **Security Headers**: Các header bảo mật tự động
-- **Request Validation**: Kiểm tra và validate tất cả requests
+## Stay in touch
 
-## 📝 Environment Variables Reference
+- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `NODE_ENV` | `development` | Môi trường chạy ứng dụng |
-| `PORT` | `3000` | Port mà ứng dụng lắng nghe |
-| `DATABASE_URL` | `mysql://...` | URL kết nối database |
-| `JWT_SECRET` | `your-secret-key` | Secret key cho JWT |
-| `JWT_EXPIRES_IN` | `1d` | Thời gian hết hạn JWT |
-| `BCRYPT_ROUNDS` | `10` | Số rounds hash password |
-| `CORS_ORIGIN` | `*` | Origin cho CORS |
-| `API_PREFIX` | `api` | Prefix cho API endpoints |
-| `SWAGGER_ENABLED` | `true` | Bật/tắt Swagger UI |
+## License
 
-## 🐳 Docker Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `MYSQL_ROOT_PASSWORD` | `123456` | MySQL root password |
-| `MYSQL_DATABASE` | `capstone_fiverr` | Database name |
-| `MYSQL_USER` | `capstone_user` | Database user |
-| `MYSQL_PASSWORD` | `capstone_pass` | Database password |
-
-## 🤝 Contributing
-
-1. Fork project
-2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Tạo Pull Request
-
-## 📄 License
-
-Project này được phân phối dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
