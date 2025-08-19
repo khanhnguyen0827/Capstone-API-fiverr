@@ -23,220 +23,288 @@
 
 # Capstone API Fiverr
 
-API backend cho ứng dụng Fiverr clone được xây dựng với NestJS và Prisma.
+API backend cho ứng dụng Fiverr - Quản lý công việc freelance được xây dựng với NestJS v10, Prisma ORM và MySQL.
 
-## Mô tả
+## 🚀 Tính năng
 
-Đây là một API backend hoàn chỉnh cho ứng dụng Fiverr clone, bao gồm các chức năng:
-- Quản lý người dùng (User Management)
-- Xác thực và phân quyền (Authentication & Authorization)
-- Quản lý công việc (Job Management)
-- Quản lý bình luận (Comment Management)
-- Quản lý thuê công việc (Job Hiring Management)
-- Phân loại công việc (Job Categories)
+- **Xác thực & Phân quyền**: JWT-based authentication với refresh token
+- **Quản lý người dùng**: CRUD operations với validation
+- **Quản lý công việc**: Tạo, cập nhật, xóa và tìm kiếm công việc
+- **Quản lý bình luận**: Hệ thống bình luận và đánh giá
+- **Quản lý thuê công việc**: Theo dõi trạng thái công việc
+- **Phân loại công việc**: Hệ thống phân loại đa cấp
+- **API Documentation**: Swagger/OpenAPI với Bearer token authentication
+- **Logging & Monitoring**: Comprehensive logging và error handling
+- **Security**: CORS, validation, và error handling
 
-## Công nghệ sử dụng
+## 🛠️ Công nghệ sử dụng
 
-- **Framework**: NestJS v11
+- **Framework**: NestJS v10
 - **Database**: MySQL với Prisma ORM
 - **Authentication**: JWT với bcrypt
 - **Validation**: class-validator
+- **Documentation**: Swagger/OpenAPI
 - **Language**: TypeScript
 
-## Cấu trúc dự án
+## 📋 Yêu cầu hệ thống
 
-```
-src/
-├── modules/
-│   ├── auth/           # Xác thực và phân quyền
-│   ├── user/           # Quản lý người dùng
-│   ├── cong-viec/      # Quản lý công việc
-│   ├── binh-luan/      # Quản lý bình luận
-│   ├── thue-cong-viec/ # Quản lý thuê công việc
-│   ├── loai-cong-viec/ # Quản lý loại công việc
-│   ├── chi-tiet-loai-cong-viec/ # Quản lý chi tiết loại công việc
-│   └── prisma/         # Database service
-├── app.module.ts        # Module chính
-└── main.ts             # Entry point
-```
+- Node.js 18+ 
+- MySQL 8.0+
+- npm hoặc yarn
 
-## Cài đặt
+## 🔧 Cài đặt
 
-### 1. Clone repository
+1. **Clone repository**
 ```bash
 git clone <repository-url>
 cd Capstone-API-fiverr
 ```
 
-### 2. Cài đặt dependencies
+2. **Cài đặt dependencies**
 ```bash
 npm install
 ```
 
-### 3. Cấu hình môi trường
-Tạo file `.env` từ `.env.example`:
+3. **Cấu hình môi trường**
 ```bash
-cp .env.example .env
+cp env.example .env
+# Chỉnh sửa .env với thông tin database và JWT secret
 ```
 
-Cập nhật các biến môi trường:
-```env
-# Database Configuration
-DATABASE_URL="mysql://username:password@localhost:3306/database_name"
-
-# JWT Configuration
-JWT_SECRET="your-super-secret-jwt-key-here"
-
-# Server Configuration
-PORT=3000
-
-# Environment
-NODE_ENV=development
-```
-
-### 4. Cài đặt và migrate database
+4. **Cài đặt và migrate database**
 ```bash
-# Generate Prisma client
 npx prisma generate
-
-# Run database migrations
-npx prisma migrate dev
-
-# Seed database (nếu có)
-npx prisma db seed
+npx prisma db push
 ```
 
-### 5. Chạy ứng dụng
+5. **Chạy ứng dụng**
 ```bash
-# Development mode
+# Development
 npm run start:dev
 
-# Production mode
+# Production
+npm run build
 npm run start:prod
 ```
 
-## API Endpoints
+## 🌐 API Endpoints
+
+### Base URL: `http://localhost:3000/api/v1`
 
 ### Authentication
 - `POST /auth/register` - Đăng ký người dùng mới
 - `POST /auth/login` - Đăng nhập
-- `GET /auth/profile` - Lấy thông tin profile (cần JWT token)
+- `POST /auth/refresh` - Làm mới JWT token
+- `GET /auth/profile` - Lấy thông tin profile (cần JWT)
+- `POST /auth/logout` - Đăng xuất
 
 ### Users
-- `GET /users` - Lấy danh sách người dùng (có pagination và filters)
-- `POST /users` - Tạo người dùng mới
+- `GET /users` - Lấy danh sách người dùng (với pagination, filters, search)
 - `GET /users/:id` - Lấy thông tin người dùng theo ID
+- `POST /users` - Tạo người dùng mới
 - `PATCH /users/:id` - Cập nhật thông tin người dùng
 - `DELETE /users/:id` - Xóa người dùng
 
-### Công việc (Jobs)
-- `GET /cong-viec` - Lấy danh sách công việc
-- `POST /cong-viec` - Tạo công việc mới
+### Công việc
+- `GET /cong-viec` - Lấy danh sách công việc (với pagination, filters, search, sort)
 - `GET /cong-viec/:id` - Lấy thông tin công việc theo ID
+- `POST /cong-viec` - Tạo công việc mới
 - `PATCH /cong-viec/:id` - Cập nhật công việc
 - `DELETE /cong-viec/:id` - Xóa công việc
 - `GET /cong-viec/category/:maChiTietLoai` - Lấy công việc theo danh mục
 - `GET /cong-viec/user/:nguoiTao` - Lấy công việc theo người tạo
 
-### Bình luận (Comments)
-- `GET /binh-luan` - Lấy danh sách bình luận
-- `POST /binh-luan` - Tạo bình luận mới
+### Bình luận
+- `GET /binh-luan` - Lấy danh sách bình luận (với pagination, filters)
 - `GET /binh-luan/:id` - Lấy thông tin bình luận theo ID
+- `POST /binh-luan` - Tạo bình luận mới
 - `PATCH /binh-luan/:id` - Cập nhật bình luận
 - `DELETE /binh-luan/:id` - Xóa bình luận
 - `GET /binh-luan/cong-viec/:maCongViec` - Lấy bình luận theo công việc
-- `GET /binh-luan/user/:maNguoiBinhLuan` - Lấy bình luận theo người dùng
+- `GET /binh-luan/user/:maNguoiBinhLuan` - Lấy bình luận theo người bình luận
 
-### Thuê công việc (Job Hiring)
-- `GET /thue-cong-viec` - Lấy danh sách thuê công việc
-- `POST /thue-cong-viec` - Tạo thuê công việc mới
+### Thuê công việc
+- `GET /thue-cong-viec` - Lấy danh sách thuê công việc (với pagination, filters)
 - `GET /thue-cong-viec/:id` - Lấy thông tin thuê công việc theo ID
+- `POST /thue-cong-viec` - Tạo thuê công việc mới
 - `PATCH /thue-cong-viec/:id` - Cập nhật thuê công việc
-- `DELETE /thue-cong-viec/:id` - Xóa thuê công việc
 - `PATCH /thue-cong-viec/:id/complete` - Hoàn thành công việc
+- `DELETE /thue-cong-viec/:id` - Xóa thuê công việc
 - `GET /thue-cong-viec/cong-viec/:maCongViec` - Lấy thuê công việc theo công việc
 - `GET /thue-cong-viec/user/:maNguoiThue` - Lấy thuê công việc theo người thuê
 
-### Loại công việc (Job Categories)
+### Loại công việc
 - `GET /loai-cong-viec` - Lấy danh sách loại công việc
-- `POST /loai-cong-viec` - Tạo loại công việc mới
 - `GET /loai-cong-viec/:id` - Lấy thông tin loại công việc theo ID
+- `POST /loai-cong-viec` - Tạo loại công việc mới
 - `PATCH /loai-cong-viec/:id` - Cập nhật loại công việc
 - `DELETE /loai-cong-viec/:id` - Xóa loại công việc
 
-### Chi tiết loại công việc (Job Subcategories)
+### Chi tiết loại công việc
 - `GET /chi-tiet-loai-cong-viec` - Lấy danh sách chi tiết loại công việc
-- `POST /chi-tiet-loai-cong-viec` - Tạo chi tiết loại công việc mới
 - `GET /chi-tiet-loai-cong-viec/:id` - Lấy thông tin chi tiết loại công việc theo ID
+- `POST /chi-tiet-loai-cong-viec` - Tạo chi tiết loại công việc mới
 - `PATCH /chi-tiet-loai-cong-viec/:id` - Cập nhật chi tiết loại công việc
 - `DELETE /chi-tiet-loai-cong-viec/:id` - Xóa chi tiết loại công việc
 - `GET /chi-tiet-loai-cong-viec/loai-cong-viec/:maLoaiCongViec` - Lấy chi tiết theo loại công việc
 
-## Tính năng
+## 🔐 Authentication
+
+API sử dụng JWT Bearer token authentication. Để truy cập các endpoint được bảo vệ:
+
+1. Đăng nhập qua `/auth/login` để nhận access token
+2. Thêm header: `Authorization: Bearer <your-token>`
+3. Token có thời hạn 7 ngày
+4. Sử dụng `/auth/refresh` để làm mới token
+
+## 📊 Query Parameters
 
 ### Pagination
-Tất cả các endpoint GET danh sách đều hỗ trợ pagination:
-```
-GET /users?page=1&pageSize=10
-```
+- `page`: Trang hiện tại (mặc định: 1)
+- `pageSize`: Số lượng item mỗi trang (mặc định: 10, tối đa: 100)
 
 ### Filters
-Hỗ trợ filters dưới dạng JSON:
-```
-GET /users?filters={"name":"John","role":"user"}
-```
+- `filters`: JSON string với các điều kiện lọc
+- Ví dụ: `{"name":"John","role":"user"}`
 
-### Validation
-Sử dụng class-validator để validate dữ liệu đầu vào
+### Search
+- `search`: Tìm kiếm text trong các trường
+- Hỗ trợ tìm kiếm không phân biệt hoa thường
 
-### Error Handling
-Xử lý lỗi chuẩn với HTTP status codes phù hợp
+### Sorting
+- `sortBy`: Trường để sắp xếp
+- `sortOrder`: Thứ tự sắp xếp (`asc` hoặc `desc`)
 
-### CORS
-Đã bật CORS để hỗ trợ frontend
+## 📝 Ví dụ sử dụng
 
-## Database Schema
-
-Dự án sử dụng Prisma với các model chính:
-- `NguoiDung` - Người dùng
-- `CongViec` - Công việc
-- `BinhLuan` - Bình luận
-- `ThueCongViec` - Thuê công việc
-- `LoaiCongViec` - Loại công việc
-- `ChiTietLoaiCongViec` - Chi tiết loại công việc
-
-## Development
-
-### Scripts
+### Đăng ký người dùng
 ```bash
-# Development
-npm run start:dev
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "pass_word": "password123",
+    "phone": "0123456789",
+    "role": "user"
+  }'
+```
 
-# Build
-npm run build
+### Tạo công việc
+```bash
+curl -X POST http://localhost:3000/api/v1/cong-viec \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-token>" \
+  -d '{
+    "ten_cong_viec": "Web Developer",
+    "gia_tien": 1000000,
+    "mo_ta": "Cần developer web fullstack",
+    "ma_chi_tiet_loai": 1,
+    "nguoi_tao": 1
+  }'
+```
 
-# Production
-npm run start:prod
+### Tìm kiếm công việc với filters
+```bash
+curl "http://localhost:3000/api/v1/cong-viec?page=1&pageSize=10&search=web&filters={\"gia_tien\":{\"gte\":500000}}&sortBy=gia_tien&sortOrder=desc"
+```
 
-# Lint
-npm run lint
+## 🚨 Error Handling
 
-# Test
+API trả về error responses với format nhất quán:
+
+```json
+{
+  "statusCode": 400,
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "path": "/api/v1/users",
+  "method": "POST",
+  "message": "Email không hợp lệ",
+  "error": "Bad Request"
+}
+```
+
+## 📚 API Documentation
+
+Swagger documentation có sẵn tại:
+- Development: `http://localhost:3000/api-docs`
+- Production: Không có sẵn (bảo mật)
+
+## 🧪 Testing
+
+```bash
+# Unit tests
 npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
 ```
 
-### Database
+## 🐳 Docker
+
 ```bash
-# Generate Prisma client
-npx prisma generate
+# Build image
+docker build -t capstone-api-fiverr .
 
-# Run migrations
-npx prisma migrate dev
+# Run container
+docker run -p 3000:3000 capstone-api-fiverr
 
-# Open Prisma Studio
-npx prisma studio
+# Docker Compose
+docker-compose up -d
 ```
 
-## License
+## 📁 Cấu trúc dự án
 
-MIT License
+```
+src/
+├── common/                 # Shared utilities
+│   ├── filters/           # Exception filters
+│   └── interceptors/      # Request/Response interceptors
+├── modules/               # Feature modules
+│   ├── auth/             # Authentication
+│   ├── user/             # User management
+│   ├── cong-viec/        # Job management
+│   ├── binh-luan/        # Comment management
+│   ├── thue-cong-viec/   # Job hiring management
+│   ├── loai-cong-viec/   # Job type management
+│   ├── chi-tiet-loai-cong-viec/ # Job detail type
+│   └── prisma/           # Database service
+├── app.module.ts          # Root module
+└── main.ts               # Application entry point
+```
+
+## 🔒 Security Features
+
+- JWT authentication với refresh token
+- Password hashing với bcrypt
+- Input validation và sanitization
+- CORS configuration
+- Global exception handling
+- Request logging và monitoring
+
+## 📈 Performance
+
+- Database connection pooling
+- Query optimization với Prisma
+- Response compression
+- Efficient pagination
+- Caching strategies
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Tạo feature branch
+3. Commit changes
+4. Push to branch
+5. Tạo Pull Request
+
+## 📄 License
+
+UNLICENSED - Private project
+
+## 📞 Support
+
+Nếu có vấn đề hoặc câu hỏi, vui lòng tạo issue trong repository.

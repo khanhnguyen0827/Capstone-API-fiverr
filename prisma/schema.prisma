@@ -12,14 +12,14 @@ model BinhLuan {
   id                 Int        @id @default(autoincrement())
   ma_cong_viec       Int?
   ma_nguoi_binh_luan Int?
-  ngay_binh_luan     DateTime   @default(now())
+  ngay_binh_luan     DateTime?  @default(now()) @db.DateTime(0)
   noi_dung           String     @db.Text
   sao_binh_luan      Int?       @default(0)
-  CongViec           CongViec?  @relation(fields: [ma_cong_viec], references: [id])
-  NguoiDung          NguoiDung? @relation(fields: [ma_nguoi_binh_luan], references: [id])
+  CongViec           CongViec?  @relation(fields: [ma_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_1")
+  NguoiDung          NguoiDung? @relation(fields: [ma_nguoi_binh_luan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_2")
 
-  @@index([ma_cong_viec], map: "BinhLuan_ma_cong_viec_fkey")
-  @@index([ma_nguoi_binh_luan], map: "BinhLuan_ma_nguoi_binh_luan_fkey")
+  @@index([ma_cong_viec], map: "idx_binhluan_congviec")
+  @@index([ma_nguoi_binh_luan], map: "idx_binhluan_nguoibinhluan")
 }
 
 model ChiTietLoaiCongViec {
@@ -27,10 +27,10 @@ model ChiTietLoaiCongViec {
   ten_chi_tiet      String        @db.VarChar(255)
   hinh_anh          String?       @db.VarChar(500)
   ma_loai_cong_viec Int?
-  LoaiCongViec      LoaiCongViec? @relation(fields: [ma_loai_cong_viec], references: [id])
+  LoaiCongViec      LoaiCongViec? @relation(fields: [ma_loai_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ChiTietLoaiCongViec_ibfk_1")
   CongViec          CongViec[]
 
-  @@index([ma_loai_cong_viec], map: "ChiTietLoaiCongViec_ma_loai_cong_viec_fkey")
+  @@index([ma_loai_cong_viec], map: "idx_chitietloai_loaicongviec")
 }
 
 model CongViec {
@@ -45,12 +45,12 @@ model CongViec {
   ma_chi_tiet_loai    Int?
   nguoi_tao           Int?
   BinhLuan            BinhLuan[]
-  ChiTietLoaiCongViec ChiTietLoaiCongViec? @relation(fields: [ma_chi_tiet_loai], references: [id])
-  NguoiDung           NguoiDung?           @relation(fields: [nguoi_tao], references: [id])
+  ChiTietLoaiCongViec ChiTietLoaiCongViec? @relation(fields: [ma_chi_tiet_loai], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CongViec_ibfk_1")
+  NguoiDung           NguoiDung?           @relation(fields: [nguoi_tao], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "CongViec_ibfk_2")
   ThueCongViec        ThueCongViec[]
 
-  @@index([ma_chi_tiet_loai], map: "CongViec_ma_chi_tiet_loai_fkey")
-  @@index([nguoi_tao], map: "CongViec_nguoi_tao_fkey")
+  @@index([ma_chi_tiet_loai], map: "idx_congviec_chitietloai")
+  @@index([nguoi_tao], map: "idx_congviec_nguoitao")
 }
 
 model LoaiCongViec {
@@ -62,7 +62,7 @@ model LoaiCongViec {
 model NguoiDung {
   id            Int            @id @default(autoincrement())
   name          String         @db.VarChar(255)
-  email         String         @unique @db.VarChar(255)
+  email         String         @unique(map: "email") @db.VarChar(255)
   pass_word     String         @db.VarChar(255)
   phone         String?        @db.VarChar(20)
   birth_day     String?        @db.VarChar(20)
@@ -73,17 +73,19 @@ model NguoiDung {
   BinhLuan      BinhLuan[]
   CongViec      CongViec[]
   ThueCongViec  ThueCongViec[]
+
+  @@index([email], map: "idx_nguoidung_email")
 }
 
 model ThueCongViec {
   id            Int        @id @default(autoincrement())
   ma_cong_viec  Int?
   ma_nguoi_thue Int?
-  ngay_thue     DateTime   @default(now())
+  ngay_thue     DateTime?  @default(now()) @db.DateTime(0)
   hoan_thanh    Boolean?   @default(false)
-  CongViec      CongViec?  @relation(fields: [ma_cong_viec], references: [id])
-  NguoiDung     NguoiDung? @relation(fields: [ma_nguoi_thue], references: [id])
+  CongViec      CongViec?  @relation(fields: [ma_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ThueCongViec_ibfk_1")
+  NguoiDung     NguoiDung? @relation(fields: [ma_nguoi_thue], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ThueCongViec_ibfk_2")
 
-  @@index([ma_cong_viec], map: "ThueCongViec_ma_cong_viec_fkey")
-  @@index([ma_nguoi_thue], map: "ThueCongViec_ma_nguoi_thue_fkey")
+  @@index([ma_cong_viec], map: "idx_thuecongviec_congviec")
+  @@index([ma_nguoi_thue], map: "idx_thuecongviec_nguoithue")
 }

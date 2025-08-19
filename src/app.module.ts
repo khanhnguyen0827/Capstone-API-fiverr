@@ -13,7 +13,9 @@ import { ChiTietLoaiCongViecModule } from './modules/chi-tiet-loai-cong-viec/chi
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), 
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PrismaModule,
     AuthModule, 
     UserModule,
