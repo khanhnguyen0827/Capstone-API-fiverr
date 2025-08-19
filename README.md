@@ -21,78 +21,222 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Capstone API Fiverr
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API backend cho ứng dụng Fiverr clone được xây dựng với NestJS và Prisma.
 
-## Project setup
+## Mô tả
 
-```bash
-$ npm install
+Đây là một API backend hoàn chỉnh cho ứng dụng Fiverr clone, bao gồm các chức năng:
+- Quản lý người dùng (User Management)
+- Xác thực và phân quyền (Authentication & Authorization)
+- Quản lý công việc (Job Management)
+- Quản lý bình luận (Comment Management)
+- Quản lý thuê công việc (Job Hiring Management)
+- Phân loại công việc (Job Categories)
+
+## Công nghệ sử dụng
+
+- **Framework**: NestJS v11
+- **Database**: MySQL với Prisma ORM
+- **Authentication**: JWT với bcrypt
+- **Validation**: class-validator
+- **Language**: TypeScript
+
+## Cấu trúc dự án
+
+```
+src/
+├── modules/
+│   ├── auth/           # Xác thực và phân quyền
+│   ├── user/           # Quản lý người dùng
+│   ├── cong-viec/      # Quản lý công việc
+│   ├── binh-luan/      # Quản lý bình luận
+│   ├── thue-cong-viec/ # Quản lý thuê công việc
+│   ├── loai-cong-viec/ # Quản lý loại công việc
+│   ├── chi-tiet-loai-cong-viec/ # Quản lý chi tiết loại công việc
+│   └── prisma/         # Database service
+├── app.module.ts        # Module chính
+└── main.ts             # Entry point
 ```
 
-## Compile and run the project
+## Cài đặt
 
+### 1. Clone repository
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone <repository-url>
+cd Capstone-API-fiverr
 ```
 
-## Run tests
-
+### 2. Cài đặt dependencies
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### 3. Cấu hình môi trường
+Tạo file `.env` từ `.env.example`:
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+cp .env.example .env
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Cập nhật các biến môi trường:
+```env
+# Database Configuration
+DATABASE_URL="mysql://username:password@localhost:3306/database_name"
 
-## Resources
+# JWT Configuration
+JWT_SECRET="your-super-secret-jwt-key-here"
 
-Check out a few resources that may come in handy when working with NestJS:
+# Server Configuration
+PORT=3000
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Environment
+NODE_ENV=development
+```
 
-## Support
+### 4. Cài đặt và migrate database
+```bash
+# Generate Prisma client
+npx prisma generate
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Run database migrations
+npx prisma migrate dev
 
-## Stay in touch
+# Seed database (nếu có)
+npx prisma db seed
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 5. Chạy ứng dụng
+```bash
+# Development mode
+npm run start:dev
+
+# Production mode
+npm run start:prod
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /auth/register` - Đăng ký người dùng mới
+- `POST /auth/login` - Đăng nhập
+- `GET /auth/profile` - Lấy thông tin profile (cần JWT token)
+
+### Users
+- `GET /users` - Lấy danh sách người dùng (có pagination và filters)
+- `POST /users` - Tạo người dùng mới
+- `GET /users/:id` - Lấy thông tin người dùng theo ID
+- `PATCH /users/:id` - Cập nhật thông tin người dùng
+- `DELETE /users/:id` - Xóa người dùng
+
+### Công việc (Jobs)
+- `GET /cong-viec` - Lấy danh sách công việc
+- `POST /cong-viec` - Tạo công việc mới
+- `GET /cong-viec/:id` - Lấy thông tin công việc theo ID
+- `PATCH /cong-viec/:id` - Cập nhật công việc
+- `DELETE /cong-viec/:id` - Xóa công việc
+- `GET /cong-viec/category/:maChiTietLoai` - Lấy công việc theo danh mục
+- `GET /cong-viec/user/:nguoiTao` - Lấy công việc theo người tạo
+
+### Bình luận (Comments)
+- `GET /binh-luan` - Lấy danh sách bình luận
+- `POST /binh-luan` - Tạo bình luận mới
+- `GET /binh-luan/:id` - Lấy thông tin bình luận theo ID
+- `PATCH /binh-luan/:id` - Cập nhật bình luận
+- `DELETE /binh-luan/:id` - Xóa bình luận
+- `GET /binh-luan/cong-viec/:maCongViec` - Lấy bình luận theo công việc
+- `GET /binh-luan/user/:maNguoiBinhLuan` - Lấy bình luận theo người dùng
+
+### Thuê công việc (Job Hiring)
+- `GET /thue-cong-viec` - Lấy danh sách thuê công việc
+- `POST /thue-cong-viec` - Tạo thuê công việc mới
+- `GET /thue-cong-viec/:id` - Lấy thông tin thuê công việc theo ID
+- `PATCH /thue-cong-viec/:id` - Cập nhật thuê công việc
+- `DELETE /thue-cong-viec/:id` - Xóa thuê công việc
+- `PATCH /thue-cong-viec/:id/complete` - Hoàn thành công việc
+- `GET /thue-cong-viec/cong-viec/:maCongViec` - Lấy thuê công việc theo công việc
+- `GET /thue-cong-viec/user/:maNguoiThue` - Lấy thuê công việc theo người thuê
+
+### Loại công việc (Job Categories)
+- `GET /loai-cong-viec` - Lấy danh sách loại công việc
+- `POST /loai-cong-viec` - Tạo loại công việc mới
+- `GET /loai-cong-viec/:id` - Lấy thông tin loại công việc theo ID
+- `PATCH /loai-cong-viec/:id` - Cập nhật loại công việc
+- `DELETE /loai-cong-viec/:id` - Xóa loại công việc
+
+### Chi tiết loại công việc (Job Subcategories)
+- `GET /chi-tiet-loai-cong-viec` - Lấy danh sách chi tiết loại công việc
+- `POST /chi-tiet-loai-cong-viec` - Tạo chi tiết loại công việc mới
+- `GET /chi-tiet-loai-cong-viec/:id` - Lấy thông tin chi tiết loại công việc theo ID
+- `PATCH /chi-tiet-loai-cong-viec/:id` - Cập nhật chi tiết loại công việc
+- `DELETE /chi-tiet-loai-cong-viec/:id` - Xóa chi tiết loại công việc
+- `GET /chi-tiet-loai-cong-viec/loai-cong-viec/:maLoaiCongViec` - Lấy chi tiết theo loại công việc
+
+## Tính năng
+
+### Pagination
+Tất cả các endpoint GET danh sách đều hỗ trợ pagination:
+```
+GET /users?page=1&pageSize=10
+```
+
+### Filters
+Hỗ trợ filters dưới dạng JSON:
+```
+GET /users?filters={"name":"John","role":"user"}
+```
+
+### Validation
+Sử dụng class-validator để validate dữ liệu đầu vào
+
+### Error Handling
+Xử lý lỗi chuẩn với HTTP status codes phù hợp
+
+### CORS
+Đã bật CORS để hỗ trợ frontend
+
+## Database Schema
+
+Dự án sử dụng Prisma với các model chính:
+- `NguoiDung` - Người dùng
+- `CongViec` - Công việc
+- `BinhLuan` - Bình luận
+- `ThueCongViec` - Thuê công việc
+- `LoaiCongViec` - Loại công việc
+- `ChiTietLoaiCongViec` - Chi tiết loại công việc
+
+## Development
+
+### Scripts
+```bash
+# Development
+npm run start:dev
+
+# Build
+npm run build
+
+# Production
+npm run start:prod
+
+# Lint
+npm run lint
+
+# Test
+npm run test
+```
+
+### Database
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# Open Prisma Studio
+npx prisma studio
+```
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT License
