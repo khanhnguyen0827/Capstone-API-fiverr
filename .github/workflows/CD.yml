@@ -1,0 +1,40 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types:
+      - completed
+
+jobs:
+  start-project:
+    runs-on: node_49
+
+    steps:
+      - name: tạo file .env
+        run: |
+          echo "PORT=${{secrets.PORT}}" >> .env
+          echo "DATABASE_URL=${{secrets.DATABASE_URL}}" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{secrets.ACCESS_TOKEN_SECRET}}" >> .env
+          echo "ACCESS_TOKEN_EXPIRES=${{secrets.ACCESS_TOKEN_EXPIRES}}" >> .env
+          echo "REFRESH_TOKEN_SECRET=${{secrets.REFRESH_TOKEN_SECRET}}" >> .env
+          echo "REFRESH_TOKEN_EXPIRES=${{secrets.REFRESH_TOKEN_EXPIRES}}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{secrets.GOOGLE_CLIENT_SECRET}}" >> .env
+          echo "CLOUDINARY_NAME=${{secrets.CLOUDINARY_NAME}}" >> .env
+          echo "CLOUDINARY_API_KEY=${{secrets.CLOUDINARY_API_KEY}}" >> .env
+          echo "CLOUDINARY_API_SECRET=${{secrets.CLOUDINARY_API_SECRET}}" >> .env
+
+      - name: dừng và xoá container
+        run: |
+          sudo docker container stop con-be_capstone-api-Fiverr || true
+          sudo docker container remove con-be_capstone-api-Fiverr || true
+
+      - name: xoá image cũ
+        run: sudo docker image remove khanh2nq/img-be_capstone-api-Fiverr:latest
+
+      - name: chạy image
+        run: sudo docker compose up -d
+
+      - name: xoá env
+        run: sudo rm -f .env

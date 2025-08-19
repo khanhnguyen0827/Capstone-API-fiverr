@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+   build-image:
+      runs-on: unbuntu-latest
+
+      steps:
+         - uses: actions/checkout@v4
+
+         - name: đăng nhập docker hub
+           run: docker login -u vulebaolong -p ${{secrets.DOCKER_PASSWORD}}
+
+         - name: build image
+           run: docker image build -t khanh2nq/img-be_capstone-api-Fiverr:latest .
+
+         - name: push image
+           run: docker push khanh2nq/img-be_capstone-api-Fiverr:latest
