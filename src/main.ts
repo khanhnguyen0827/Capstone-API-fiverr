@@ -22,7 +22,7 @@ async function bootstrap() {
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Capstone API Fiverr')
-    .setDescription('API backend cho ứng dụng Fiverr clone')
+    .setDescription('API backend cho ứng dụng Fiverr')
     .setVersion('1.0')
     .addTag('auth', 'Xác thực và phân quyền')
     .addTag('users', 'Quản lý người dùng')

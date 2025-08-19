@@ -1,38 +1,62 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CongViecService } from './cong-viec.service';
 import { CreateCongViecDto } from './dto/create-cong-viec.dto';
 import { UpdateCongViecDto } from './dto/update-cong-viec.dto';
 
+@ApiTags('cong-viec')
 @Controller('cong-viec')
 export class CongViecController {
   constructor(private readonly congViecService: CongViecService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Tạo công việc mới' })
+  @ApiResponse({ status: 201, description: 'Tạo công việc thành công' })
+  @ApiResponse({ status: 400, description: 'Dữ liệu không hợp lệ' })
   async create(@Body() createCongViecDto: CreateCongViecDto) {
     return await this.congViecService.create(createCongViecDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Lấy danh sách công việc' })
+  @ApiQuery({ name: 'page', required: false, description: 'Trang hiện tại', example: 1 })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Số lượng item mỗi trang', example: 10 })
+  @ApiQuery({ name: 'filters', required: false, description: 'Bộ lọc JSON', example: '{"ten_cong_viec":"web","gia_tien":1000000}' })
+  @ApiResponse({ status: 200, description: 'Lấy danh sách công việc thành công' })
   async findAll(@Query() query: any) {
     return await this.congViecService.findAll(query);
   }
 
   @Get('category/:maChiTietLoai')
+  @ApiOperation({ summary: 'Lấy công việc theo danh mục' })
+  @ApiParam({ name: 'maChiTietLoai', description: 'ID chi tiết loại công việc', example: 1 })
+  @ApiResponse({ status: 200, description: 'Lấy công việc theo danh mục thành công' })
   async findByCategory(@Param('maChiTietLoai', ParseIntPipe) maChiTietLoai: number) {
     return await this.congViecService.findByCategory(maChiTietLoai);
   }
 
   @Get('user/:nguoiTao')
+  @ApiOperation({ summary: 'Lấy công việc theo người tạo' })
+  @ApiParam({ name: 'nguoiTao', description: 'ID người tạo', example: 1 })
+  @ApiResponse({ status: 200, description: 'Lấy công việc theo người tạo thành công' })
   async findByUser(@Param('nguoiTao', ParseIntPipe) nguoiTao: number) {
     return await this.congViecService.findByUser(nguoiTao);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Lấy thông tin công việc theo ID' })
+  @ApiParam({ name: 'id', description: 'ID công việc', example: 1 })
+  @ApiResponse({ status: 200, description: 'Lấy thông tin công việc thành công' })
+  @ApiResponse({ status: 404, description: 'Không tìm thấy công việc' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.congViecService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Cập nhật công việc' })
+  @ApiParam({ name: 'id', description: 'ID công việc', example: 1 })
+  @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
+  @ApiResponse({ status: 404, description: 'Không tìm thấy công việc' })
   async update(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateCongViecDto: UpdateCongViecDto
@@ -41,6 +65,10 @@ export class CongViecController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa công việc' })
+  @ApiParam({ name: 'id', description: 'ID công việc', example: 1 })
+  @ApiResponse({ status: 200, description: 'Xóa thành công' })
+  @ApiResponse({ status: 404, description: 'Không tìm thấy công việc' })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.congViecService.remove(id);
   }
