@@ -1,0 +1,43 @@
+services:
+  # Backend API Service
+  backend:
+    image: khanh2nq/img-be_capstone:latest
+    container_name: capstone-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - database
+    environment:
+      - DATABASE_URL=mysql://root:123456@database:3306/capstone_fiverr
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - capstone-network
+
+  # Database Service
+  database:
+    image: mysql:8.0
+    container_name: capstone-database
+    restart: unless-stopped
+    ports:
+      - "3308:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=capstone_fiverr
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    networks:
+      - capstone-network
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mysql_data:
+
+networks:
+  capstone-network:
+    driver: bridge

@@ -23,14 +23,16 @@ jobs:
 
       - name: dừng và xoá container
         run: |
-          sudo docker container stop con-capstone-backend|| true
-          sudo docker container remove con-capstone-backend || true
+          sudo docker container stop capstone-backend || true
+          sudo docker container remove capstone-backend || true
+          sudo docker container stop capstone-database || true
+          sudo docker container remove capstone-database || true
 
       - name: xoá image cũ
-        run: sudo docker image remove khanh2nq/img-be_capstone:latest
+        run: sudo docker image remove khanh2nq/img-be_capstone:latest || true
 
-      - name: chạy image
-        run: sudo docker compose up -d
+      - name: chạy image production
+        run: sudo docker compose -f docker-compose.prod.yml up -d
 
       - name: xoá env
         run: sudo rm -f .env
