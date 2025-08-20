@@ -27,7 +27,7 @@ jobs:
           sudo docker container remove con-capstone-backend || true
 
       - name: xoá image cũ
-        run: sudo docker image remove khanh2nq/img-be_capstone-api-Fiverr:latest
+        run: sudo docker image remove khanh2nq/img-be_capstone:latest
 
       - name: chạy image
         run: sudo docker compose up -d
