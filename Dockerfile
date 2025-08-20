@@ -1,33 +1,29 @@
 
 # stage 1: giai đoạn để build ra image
-FROM node:24-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
-# thay đổi thư viên thêm/ xoá thư viện
-COPY package.json ./
-RUN npm install
+# Copy package files
+COPY package*.json ./
 
-# thay đổi code
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
 COPY . .
 
+# Generate Prisma client
 RUN npx prisma generate
 
+# Build the application
 RUN npm run build
 
-# xoá thư viện devDependencies
-RUN npm prune --production
+# Expose port
+EXPOSE 3000
 
-# stage 2: start project
-FROM node:24-alpine
-
-WORKDIR /app
-
-COPY --from=builder ./app/dist ./dist
-COPY --from=builder ./app/generated ./generated
-COPY --from=builder ./app/node_modules ./node_modules
-
-CMD ["node", "dist/main.js"]
+# Start the application
+CMD ["npm", "run", "start:prod"]
 
 
 # 2.07GB

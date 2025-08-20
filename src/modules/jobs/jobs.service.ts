@@ -1,15 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  CreateJobDto,
-  UpdateJobDto,
-  JobResponseDto,
-  JobSearchDto,
-} from './dto/jobs.dto';
+import { CreateJobDto, UpdateJobDto, JobResponseDto } from './dto/jobs.dto';
 
 @Injectable()
 export class JobsService {
@@ -19,10 +10,9 @@ export class JobsService {
     page: number = 1,
     size: number = 10,
     search?: string,
-    category?: number,
-  ) {
+    categoryId?: number,
+  ): Promise<{ data: JobResponseDto[]; pagination: any }> {
     const skip = (page - 1) * size;
-
     const where: any = {};
 
     if (search) {
@@ -32,8 +22,8 @@ export class JobsService {
       };
     }
 
-    if (category) {
-      where.ma_chi_tiet_loai = category;
+    if (categoryId) {
+      where.ma_chi_tiet_loai = categoryId;
     }
 
     const [jobs, total] = await Promise.all([
@@ -42,12 +32,12 @@ export class JobsService {
         skip,
         take: size,
         include: {
-          chiTietLoaiCongViec: {
+          ChiTietLoaiCongViec: {
             include: {
-              loaiCongViec: true,
+              LoaiCongViec: true,
             },
           },
-          nguoiTao: {
+          NguoiDung: {
             select: {
               id: true,
               name: true,
@@ -81,12 +71,12 @@ export class JobsService {
     const job = await this.prisma.congViec.findUnique({
       where: { id },
       include: {
-        chiTietLoaiCongViec: {
+        ChiTietLoaiCongViec: {
           include: {
-            loaiCongViec: true,
+            LoaiCongViec: true,
           },
         },
-        nguoiTao: {
+        NguoiDung: {
           select: {
             id: true,
             name: true,
@@ -115,12 +105,12 @@ export class JobsService {
         sao_cong_viec: 0,
       },
       include: {
-        chiTietLoaiCongViec: {
+        ChiTietLoaiCongViec: {
           include: {
-            loaiCongViec: true,
+            LoaiCongViec: true,
           },
         },
-        nguoiTao: {
+        NguoiDung: {
           select: {
             id: true,
             name: true,
@@ -155,12 +145,12 @@ export class JobsService {
       where: { id },
       data: updateJobDto,
       include: {
-        chiTietLoaiCongViec: {
+        ChiTietLoaiCongViec: {
           include: {
-            loaiCongViec: true,
+            LoaiCongViec: true,
           },
         },
-        nguoiTao: {
+        NguoiDung: {
           select: {
             id: true,
             name: true,
@@ -192,62 +182,25 @@ export class JobsService {
     });
   }
 
-  async getJobCategories() {
-    return this.prisma.chiTietLoaiCongViec.findMany({
-      include: {
-        loaiCongViec: true,
-      },
-    });
-  }
-
-  async searchJobs(
-    searchDto: JobSearchDto,
+  async findByUserId(
+    userId: number,
     page: number = 1,
     size: number = 10,
-  ) {
+  ): Promise<{ data: JobResponseDto[]; pagination: any }> {
     const skip = (page - 1) * size;
-
-    const where: any = {};
-
-    if (searchDto.search) {
-      where.ten_cong_viec = {
-        contains: searchDto.search,
-        mode: 'insensitive',
-      };
-    }
-
-    if (searchDto.category) {
-      where.ma_chi_tiet_loai = searchDto.category;
-    }
-
-    if (searchDto.minPrice !== undefined || searchDto.maxPrice !== undefined) {
-      where.gia_tien = {};
-      if (searchDto.minPrice !== undefined) {
-        where.gia_tien.gte = searchDto.minPrice;
-      }
-      if (searchDto.maxPrice !== undefined) {
-        where.gia_tien.lte = searchDto.maxPrice;
-      }
-    }
-
-    if (searchDto.minRating !== undefined) {
-      where.sao_cong_viec = {
-        gte: searchDto.minRating,
-      };
-    }
 
     const [jobs, total] = await Promise.all([
       this.prisma.congViec.findMany({
-        where,
+        where: { nguoi_tao: userId },
         skip,
         take: size,
         include: {
-          chiTietLoaiCongViec: {
+          ChiTietLoaiCongViec: {
             include: {
-              loaiCongViec: true,
+              LoaiCongViec: true,
             },
           },
-          nguoiTao: {
+          NguoiDung: {
             select: {
               id: true,
               name: true,
@@ -259,7 +212,59 @@ export class JobsService {
           id: 'desc',
         },
       }),
-      this.prisma.congViec.count({ where }),
+      this.prisma.congViec.count({
+        where: { nguoi_tao: userId },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / size);
+
+    return {
+      data: jobs,
+      pagination: {
+        page,
+        size,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  async findByCategory(
+    categoryId: number,
+    page: number = 1,
+    size: number = 10,
+  ): Promise<{ data: JobResponseDto[]; pagination: any }> {
+    const skip = (page - 1) * size;
+
+    const [jobs, total] = await Promise.all([
+      this.prisma.congViec.findMany({
+        where: { ma_chi_tiet_loai: categoryId },
+        skip,
+        take: size,
+        include: {
+          ChiTietLoaiCongViec: {
+            include: {
+              LoaiCongViec: true,
+            },
+          },
+          NguoiDung: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      }),
+      this.prisma.congViec.count({
+        where: { ma_chi_tiet_loai: categoryId },
+      }),
     ]);
 
     const totalPages = Math.ceil(total / size);

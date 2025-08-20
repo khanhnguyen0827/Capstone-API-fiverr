@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
-import { UserModule } from './modules/user/user.module';
 import { UsersModule } from './modules/users/users.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { CommentsModule } from './modules/comments/comments.module';
@@ -16,7 +15,6 @@ import { CategoriesModule } from './modules/categories/categories.module';
     ConfigModule.forRoot(),
     AuthModule,
     PrismaModule,
-    UserModule,
     UsersModule,
     JobsModule,
     CommentsModule,

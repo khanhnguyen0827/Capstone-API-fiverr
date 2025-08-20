@@ -31,7 +31,6 @@ import {
   CreateJobDto,
   UpdateJobDto,
   JobResponseDto,
-  JobSearchDto,
 } from './dto/jobs.dto';
 
 @ApiTags('Jobs')
@@ -67,7 +66,7 @@ export class JobsController {
     example: 'website',
   })
   @ApiQuery({
-    name: 'category',
+    name: 'categoryId',
     required: false,
     description: 'ID danh mục',
     type: Number,
@@ -83,13 +82,13 @@ export class JobsController {
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('size', new ParseIntPipe({ optional: true })) size?: number,
     @Query('search') search?: string,
-    @Query('category', new ParseIntPipe({ optional: true })) category?: number,
+    @Query('categoryId', new ParseIntPipe({ optional: true })) categoryId?: number,
   ) {
     const result = await this.jobsService.findAll(
       page || 1,
       size || 10,
       search,
-      category,
+      categoryId,
     );
     return {
       statusCode: 200,
@@ -98,22 +97,101 @@ export class JobsController {
     };
   }
 
-  @Get('categories/list')
+  @Get('user/:userId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Lấy danh sách danh mục công việc',
-    description: 'Lấy tất cả danh mục và chi tiết danh mục công việc',
+    summary: 'Lấy danh sách công việc theo người dùng',
+    description: 'Lấy danh sách công việc được tạo bởi một người dùng cụ thể',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'ID người dùng',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Số trang (mặc định: 1)',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    description: 'Số lượng item mỗi trang (mặc định: 10)',
+    type: Number,
+    example: 10,
   })
   @ApiResponse({
     status: 200,
-    description: 'Lấy danh mục thành công',
+    description: 'Lấy danh sách công việc thành công',
+    type: JobResponseDto,
+    isArray: true,
   })
-  async getJobCategories() {
-    const categories = await this.jobsService.getJobCategories();
+  async getJobsByUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('size', new ParseIntPipe({ optional: true })) size?: number,
+  ) {
+    const result = await this.jobsService.findByUserId(
+      userId,
+      page || 1,
+      size || 10,
+    );
     return {
       statusCode: 200,
-      message: 'Lấy danh mục thành công',
-      data: categories,
+      message: 'Lấy danh sách công việc thành công',
+      ...result,
+    };
+  }
+
+  @Get('category/:categoryId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Lấy danh sách công việc theo danh mục',
+    description: 'Lấy danh sách công việc theo một danh mục cụ thể',
+  })
+  @ApiParam({
+    name: 'categoryId',
+    description: 'ID danh mục',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Số trang (mặc định: 1)',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    description: 'Số lượng item mỗi trang (mặc định: 10)',
+    type: Number,
+    example: 10,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lấy danh sách công việc thành công',
+    type: JobResponseDto,
+    isArray: true,
+  })
+  async getJobsByCategory(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('size', new ParseIntPipe({ optional: true })) size?: number,
+  ) {
+    const result = await this.jobsService.findByCategory(
+      categoryId,
+      page || 1,
+      size || 10,
+    );
+    return {
+      statusCode: 200,
+      message: 'Lấy danh sách công việc thành công',
+      ...result,
     };
   }
 
@@ -238,36 +316,6 @@ export class JobsController {
       statusCode: 200,
       message: 'Xóa công việc thành công',
       data: { id },
-    };
-  }
-
-  @Post('search')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Tìm kiếm công việc nâng cao',
-    description: 'Tìm kiếm công việc với nhiều tiêu chí khác nhau',
-  })
-  @ApiBody({ type: JobSearchDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Tìm kiếm thành công',
-    type: JobResponseDto,
-    isArray: true,
-  })
-  async searchJobs(
-    @Body() searchDto: JobSearchDto,
-    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
-    @Query('size', new ParseIntPipe({ optional: true })) size?: number,
-  ) {
-    const result = await this.jobsService.searchJobs(
-      searchDto,
-      page || 1,
-      size || 10,
-    );
-    return {
-      statusCode: 200,
-      message: 'Tìm kiếm thành công',
-      ...result,
     };
   }
 }

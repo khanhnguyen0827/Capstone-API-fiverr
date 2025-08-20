@@ -1,18 +1,28 @@
 services:
   BE:
-    image: khanh2nq/img-be_capstone-api-Fiverr:latest
+    build: .
     container_name: con-be_capstone-api-Fiverr
     ports:
-      - 3070:3069
+      - 3000:3000
     env_file:
       - .env
     depends_on:
       - DB
+    environment:
+      - DATABASE_URL=mysql://root:123456@DB:3306/capstone_fiverr
+      - NODE_ENV=development
 
   DB:
     image: mysql:8.0
     container_name: con-db_capstone-api-Fiverr
     ports:
-      - 3307:3306
+      - 3308:3306
     environment:
       - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=capstone_fiverr
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+
+volumes:
+  mysql_data:

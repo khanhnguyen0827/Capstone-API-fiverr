@@ -1,20 +1,16 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  CreateCommentDto,
-  UpdateCommentDto,
-  CommentResponseDto,
-} from './dto/comments.dto';
+import { CreateCommentDto, UpdateCommentDto, CommentResponseDto } from './dto/comments.dto';
 
 @Injectable()
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findByJobId(jobId: number, page: number = 1, size: number = 10) {
+  async findAll(
+    jobId: number,
+    page: number = 1,
+    size: number = 10,
+  ): Promise<{ data: CommentResponseDto[]; pagination: any }> {
     const skip = (page - 1) * size;
 
     const [comments, total] = await Promise.all([
@@ -23,7 +19,7 @@ export class CommentsService {
         skip,
         take: size,
         include: {
-          nguoiBinhLuan: {
+          NguoiDung: {
             select: {
               id: true,
               name: true,
@@ -66,7 +62,7 @@ export class CommentsService {
         ngay_binh_luan: new Date(),
       },
       include: {
-        nguoiBinhLuan: {
+        NguoiDung: {
           select: {
             id: true,
             name: true,
@@ -101,7 +97,7 @@ export class CommentsService {
       where: { id },
       data: updateCommentDto,
       include: {
-        nguoiBinhLuan: {
+        NguoiDung: {
           select: {
             id: true,
             name: true,

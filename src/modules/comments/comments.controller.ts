@@ -75,7 +75,7 @@ export class CommentsController {
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('size', new ParseIntPipe({ optional: true })) size?: number,
   ) {
-    const result = await this.commentsService.findByJobId(
+    const result = await this.commentsService.findAll(
       jobId,
       page || 1,
       size || 10,

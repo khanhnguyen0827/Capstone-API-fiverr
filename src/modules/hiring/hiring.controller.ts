@@ -26,10 +26,12 @@ import {
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
+import { HiringService } from './hiring.service';
 
 @ApiTags('Hiring')
 @Controller('hiring')
 export class HiringController {
+  constructor(private readonly hiringService: HiringService) {}
   @Get('hired')
   @UseGuards()
   @HttpCode(HttpStatus.OK)
@@ -68,16 +70,17 @@ export class HiringController {
     @Query('size') size?: number,
     @Query('status') status?: string,
   ) {
+    const userId = req.user?.userId || 1; // Fallback cho demo
+    const result = await this.hiringService.getHiredJobs(
+      userId,
+      page || 1,
+      size || 10,
+      status,
+    );
     return {
       statusCode: 200,
       message: 'Lấy danh sách công việc đã thuê thành công',
-      data: [],
-      pagination: {
-        page: page || 1,
-        size: size || 10,
-        total: 0,
-        totalPages: 0,
-      },
+      ...result,
     };
   }
 
@@ -111,16 +114,16 @@ export class HiringController {
     @Query('page') page?: number,
     @Query('size') size?: number,
   ) {
+    const userId = req.user?.userId || 1; // Fallback cho demo
+    const result = await this.hiringService.getFreelancerJobs(
+      userId,
+      page || 1,
+      size || 10,
+    );
     return {
       statusCode: 200,
       message: 'Lấy danh sách công việc được thuê thành công',
-      data: [],
-      pagination: {
-        page: page || 1,
-        size: size || 10,
-        total: 0,
-        totalPages: 0,
-      },
+      ...result,
     };
   }
 
@@ -144,10 +147,15 @@ export class HiringController {
     description: 'Thuê công việc thành công',
   })
   async hireJob(@Body() createHiringDto: any, @Request() req: any) {
+    const userId = req.user?.userId || 1; // Fallback cho demo
+    const hiring = await this.hiringService.hireJob(
+      createHiringDto.ma_cong_viec,
+      userId,
+    );
     return {
       statusCode: 201,
       message: 'Thuê công việc thành công',
-      data: createHiringDto,
+      data: hiring,
     };
   }
 
@@ -169,10 +177,12 @@ export class HiringController {
     description: 'Đánh dấu hoàn thành thành công',
   })
   async completeJob(@Param('id') id: number, @Request() req: any) {
+    const userId = req.user?.userId || 1; // Fallback cho demo
+    const hiring = await this.hiringService.completeJob(id, userId);
     return {
       statusCode: 200,
       message: 'Đánh dấu hoàn thành thành công',
-      data: { id, hoan_thanh: true },
+      data: hiring,
     };
   }
 
@@ -193,10 +203,12 @@ export class HiringController {
     description: 'Hủy thuê công việc thành công',
   })
   async cancelHiring(@Param('id') id: number, @Request() req: any) {
+    const userId = req.user?.userId || 1; // Fallback cho demo
+    const result = await this.hiringService.cancelHiring(id, userId);
     return {
       statusCode: 200,
       message: 'Hủy thuê công việc thành công',
-      data: { message: 'Hủy thuê công việc thành công' },
+      data: result,
     };
   }
 
@@ -218,10 +230,11 @@ export class HiringController {
     description: 'Lấy thông tin công việc được thuê thành công',
   })
   async getHiringById(@Param('id') id: number, @Request() req: any) {
+    const hiring = await this.hiringService.getHiringById(id);
     return {
       statusCode: 200,
       message: 'Lấy thông tin công việc được thuê thành công',
-      data: { id, ma_cong_viec: 1, ma_nguoi_thue: 1 },
+      data: hiring,
     };
   }
 }

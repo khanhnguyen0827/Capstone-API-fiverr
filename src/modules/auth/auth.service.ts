@@ -1,74 +1,154 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
+import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  async findAll(query: any) {
-    let { page, pageSize, filters } = query;
+  async login(loginDto: LoginDto) {
+    const { email, pass_word } = loginDto;
 
-    // Xử lý pagination
-    page = +page > 0 ? +page : 1;
-    pageSize = +pageSize > 0 ? +pageSize : 10;
-
-    // Xử lý filters
-    let parsedFilters = {};
-    try {
-      parsedFilters = JSON.parse(filters || '{}');
-    } catch (error) {
-      parsedFilters = {};
-    }
-
-    // Xử lý và validate filters
-    const where: any = {};
-    Object.entries(parsedFilters).forEach(([key, value]) => {
-      if (value && value !== '' && value !== null && value !== undefined) {
-        if (typeof value === 'string') {
-          where[key] = { contains: value };
-        } else {
-          where[key] = value;
-        }
-      }
+    // Tìm người dùng theo email
+    const user = await this.prisma.nguoiDung.findUnique({
+      where: { email },
     });
 
-    // Tính toán skip cho pagination
-    const skip = (page - 1) * pageSize;
+    if (!user) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+    }
 
-    // Lấy danh sách người dùng
-    const users = await this.prisma.nguoiDung.findMany({
-      take: pageSize,
-      skip: skip,
-      orderBy: {
-        id: 'desc',
+    // Kiểm tra mật khẩu
+    const isPasswordValid = await bcrypt.compare(pass_word, user.pass_word);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+    }
+
+    // Tạo JWT tokens
+    const payload = { 
+      userId: user.id, 
+      email: user.email, 
+      role: user.role 
+    };
+    
+    const access_token = this.jwtService.sign(payload);
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    return {
+      statusCode: 200,
+      message: 'Đăng nhập thành công',
+      data: {
+        access_token,
+        refresh_token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
       },
-      where: where,
+    };
+  }
+
+  async register(registerDto: RegisterDto) {
+    const { email, pass_word, ...userData } = registerDto;
+
+    // Kiểm tra email đã tồn tại
+    const existingUser = await this.prisma.nguoiDung.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email đã được sử dụng');
+    }
+
+    // Hash mật khẩu
+    const hashedPassword = await bcrypt.hash(pass_word, 10);
+
+    // Tạo người dùng mới
+    const newUser = await this.prisma.nguoiDung.create({
+      data: {
+        ...userData,
+        email,
+        pass_word: hashedPassword,
+        role: userData.role || 'user',
+      },
+    });
+
+    // Tạo JWT tokens
+    const payload = { 
+      userId: newUser.id, 
+      email: newUser.email, 
+      role: newUser.role 
+    };
+    
+    const access_token = this.jwtService.sign(payload);
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    return {
+      statusCode: 201,
+      message: 'Đăng ký thành công',
+      data: {
+        access_token,
+        refresh_token,
+        user: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+        },
+      },
+    };
+  }
+
+  async refreshToken(userId: number) {
+    const user = await this.prisma.nguoiDung.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Người dùng không tồn tại');
+    }
+
+    const payload = { 
+      userId: user.id, 
+      email: user.email, 
+      role: user.role 
+    };
+    
+    const access_token = this.jwtService.sign(payload);
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    return {
+      statusCode: 200,
+      message: 'Làm mới token thành công',
+      data: {
+        access_token,
+        refresh_token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      },
+    };
+  }
+
+  async validateUser(userId: number) {
+    return this.prisma.nguoiDung.findUnique({
+      where: { id: userId },
       select: {
         id: true,
         name: true,
         email: true,
-        phone: true,
-        birth_day: true,
-        gender: true,
         role: true,
-        skill: true,
-        certification: true,
       },
     });
-
-    // Đếm tổng số người dùng
-    const totalItem = await this.prisma.nguoiDung.count({
-      where: where,
-    });
-
-    const totalPage = Math.ceil(totalItem / pageSize);
-
-    return {
-      page: page,
-      pageSize: pageSize,
-      totalItem: totalItem,
-      totalPage: totalPage,
-      items: users,
-    };
   }
 }
