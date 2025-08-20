@@ -8,25 +8,50 @@ export class BinhLuanService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createBinhLuanDto: CreateBinhLuanDto) {
-    const binhLuan = await this.prisma.binhLuan.create({
+    // Kiểm tra xem người bình luận có tồn tại không
+    const nguoiBinhLuan = await this.prisma.users.findUnique({
+      where: { id: createBinhLuanDto.ma_nguoi_binh_luan },
+    });
+
+    if (!nguoiBinhLuan) {
+      throw new NotFoundException('Người bình luận không tồn tại');
+    }
+
+    // Kiểm tra xem công việc có tồn tại không
+    const congViec = await this.prisma.cong_viec.findUnique({
+      where: { id: createBinhLuanDto.ma_cong_viec },
+    });
+
+    if (!congViec) {
+      throw new NotFoundException('Công việc không tồn tại');
+    }
+
+    // Tạo bình luận mới
+    const binh_luan = await this.prisma.binh_luan.create({
       data: createBinhLuanDto,
       include: {
-        CongViec: true,
-        NguoiDung: {
+        users: {
           select: {
             id: true,
-            name: true,
+            ho_ten: true,
             email: true,
+          },
+        },
+        cong_viec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+            gia_tien: true,
           },
         },
       },
     });
 
-    return binhLuan;
+    return binh_luan;
   }
 
   async findAll(query: any = {}) {
-    const { page = 1, pageSize = 10, filters = '{}' } = query;
+    const { page = 1, pageSize = 10, filters = '{}', search = '' } = query;
     
     // Xử lý pagination
     const currentPage = +page > 0 ? +page : 1;
@@ -41,7 +66,10 @@ export class BinhLuanService {
     }
 
     // Xử lý và validate filters
-    const where: any = {};
+    const where: any = {
+      is_deleted: false,
+    };
+    
     Object.entries(parsedFilters).forEach(([key, value]) => {
       if (value && value !== '' && value !== null && value !== undefined) {
         if (typeof value === 'string') {
@@ -52,11 +80,18 @@ export class BinhLuanService {
       }
     });
 
+    // Xử lý search
+    if (search) {
+      where.OR = [
+        { noi_dung: { contains: search } },
+      ];
+    }
+
     // Tính toán skip cho pagination
     const skip = (currentPage - 1) * currentPageSize;
 
     // Lấy danh sách bình luận
-    const binhLuans = await this.prisma.binhLuan.findMany({
+    const binhLuans = await this.prisma.binh_luan.findMany({
       take: currentPageSize,
       skip: skip,
       orderBy: {
@@ -64,19 +99,25 @@ export class BinhLuanService {
       },
       where: where,
       include: {
-        CongViec: true,
-        NguoiDung: {
+        users: {
           select: {
             id: true,
-            name: true,
+            ho_ten: true,
             email: true,
+          },
+        },
+        cong_viec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+            gia_tien: true,
           },
         },
       },
     });
 
     // Đếm tổng số bình luận
-    const totalItem = await this.prisma.binhLuan.count({
+    const totalItem = await this.prisma.binh_luan.count({
       where: where,
     });
 
@@ -92,47 +133,60 @@ export class BinhLuanService {
   }
 
   async findOne(id: number) {
-    const binhLuan = await this.prisma.binhLuan.findUnique({
+    const binh_luan = await this.prisma.binh_luan.findUnique({
       where: { id },
       include: {
-        CongViec: true,
-        NguoiDung: {
+        users: {
           select: {
             id: true,
-            name: true,
+            ho_ten: true,
             email: true,
+          },
+        },
+        cong_viec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+            gia_tien: true,
           },
         },
       },
     });
 
-    if (!binhLuan) {
-      throw new NotFoundException(`Không tìm thấy bình luận với ID: ${id}`);
+    if (!binh_luan) {
+      throw new NotFoundException(`Không tìm thấy bình luận với ID ${id}`);
     }
 
-    return binhLuan;
+    return binh_luan;
   }
 
   async update(id: number, updateBinhLuanDto: UpdateBinhLuanDto) {
-    // Kiểm tra bình luận có tồn tại
-    const existingBinhLuan = await this.prisma.binhLuan.findUnique({
+    // Kiểm tra xem bình luận có tồn tại không
+    const existingBinhLuan = await this.prisma.binh_luan.findUnique({
       where: { id },
     });
 
     if (!existingBinhLuan) {
-      throw new NotFoundException(`Không tìm thấy bình luận với ID: ${id}`);
+      throw new NotFoundException(`Không tìm thấy bình luận với ID ${id}`);
     }
 
-    const updatedBinhLuan = await this.prisma.binhLuan.update({
+    // Cập nhật bình luận
+    const updatedBinhLuan = await this.prisma.binh_luan.update({
       where: { id },
       data: updateBinhLuanDto,
       include: {
-        CongViec: true,
-        NguoiDung: {
+        users: {
           select: {
             id: true,
-            name: true,
+            ho_ten: true,
             email: true,
+          },
+        },
+        cong_viec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+            gia_tien: true,
           },
         },
       },
@@ -142,32 +196,52 @@ export class BinhLuanService {
   }
 
   async remove(id: number) {
-    // Kiểm tra bình luận có tồn tại
-    const existingBinhLuan = await this.prisma.binhLuan.findUnique({
+    // Kiểm tra xem bình luận có tồn tại không
+    const existingBinhLuan = await this.prisma.binh_luan.findUnique({
       where: { id },
     });
 
     if (!existingBinhLuan) {
-      throw new NotFoundException(`Không tìm thấy bình luận với ID: ${id}`);
+      throw new NotFoundException(`Không tìm thấy bình luận với ID ${id}`);
     }
 
-    await this.prisma.binhLuan.delete({
+    // Xóa bình luận (soft delete)
+    await this.prisma.binh_luan.update({
       where: { id },
+      data: { is_deleted: true },
     });
 
-    return { message: 'Xóa bình luận thành công' };
+    return { message: `Đã xóa bình luận với ID ${id}` };
   }
 
-  async findByCongViec(maCongViec: number) {
-    return await this.prisma.binhLuan.findMany({
-      where: { ma_cong_viec: maCongViec },
+  async findByUser(userId: number) {
+    // Kiểm tra xem user có tồn tại không
+    const nguoiBinhLuan = await this.prisma.users.findUnique({
+      where: { id: userId },
+    });
+
+    if (!nguoiBinhLuan) {
+      throw new NotFoundException('Người dùng không tồn tại');
+    }
+
+    const binhLuans = await this.prisma.binh_luan.findMany({
+      where: {
+        ma_nguoi_binh_luan: userId,
+        is_deleted: false,
+      },
       include: {
-        CongViec: true,
-        NguoiDung: {
+        users: {
           select: {
             id: true,
-            name: true,
+            ho_ten: true,
             email: true,
+          },
+        },
+        cong_viec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+            gia_tien: true,
           },
         },
       },
@@ -175,18 +249,38 @@ export class BinhLuanService {
         ngay_binh_luan: 'desc',
       },
     });
+
+    return binhLuans;
   }
 
-  async findByUser(maNguoiBinhLuan: number) {
-    return await this.prisma.binhLuan.findMany({
-      where: { ma_nguoi_binh_luan: maNguoiBinhLuan },
+  async findByCongViec(congViecId: number) {
+    // Kiểm tra xem công việc có tồn tại không
+    const congViec = await this.prisma.cong_viec.findUnique({
+      where: { id: congViecId },
+    });
+
+    if (!congViec) {
+      throw new NotFoundException('Công việc không tồn tại');
+    }
+
+    const binhLuans = await this.prisma.binh_luan.findMany({
+      where: {
+        ma_cong_viec: congViecId,
+        is_deleted: false,
+      },
       include: {
-        CongViec: true,
-        NguoiDung: {
+        users: {
           select: {
             id: true,
-            name: true,
+            ho_ten: true,
             email: true,
+          },
+        },
+        cong_viec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+            gia_tien: true,
           },
         },
       },
@@ -194,5 +288,7 @@ export class BinhLuanService {
         ngay_binh_luan: 'desc',
       },
     });
+
+    return binhLuans;
   }
 }

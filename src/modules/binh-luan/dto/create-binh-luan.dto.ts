@@ -1,39 +1,26 @@
-import { IsString, IsOptional, IsInt, IsNumber, Min, Max } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBinhLuanDto {
-  @ApiPropertyOptional({
-    description: 'Mã công việc',
-    example: 1
-  })
-  @IsOptional()
-  @IsInt()
-  ma_cong_viec?: number;
+  @ApiProperty({ description: 'Mã công việc' })
+  @IsNumber()
+  ma_cong_viec: number;
 
-  @ApiPropertyOptional({
-    description: 'Mã người bình luận',
-    example: 1
-  })
-  @IsOptional()
-  @IsInt()
-  ma_nguoi_binh_luan?: number;
+  @ApiProperty({ description: 'Mã người bình luận' })
+  @IsNumber()
+  ma_nguoi_binh_luan: number;
 
-  @ApiProperty({
-    description: 'Nội dung bình luận',
-    example: 'Công việc rất tốt, giao hàng đúng hạn!'
-  })
+  @ApiProperty({ description: 'Ngày bình luận', required: false })
+  @IsOptional()
+  @IsDateString()
+  ngay_binh_luan?: string;
+
+  @ApiProperty({ description: 'Nội dung' })
   @IsString()
   noi_dung: string;
 
-  @ApiPropertyOptional({
-    description: 'Sao đánh giá (0-5)',
-    minimum: 0,
-    maximum: 5,
-    example: 5
-  })
+  @ApiProperty({ description: 'Sao bình luận', required: false })
   @IsOptional()
   @IsNumber()
-  @Min(0)
-  @Max(5)
   sao_binh_luan?: number;
 }

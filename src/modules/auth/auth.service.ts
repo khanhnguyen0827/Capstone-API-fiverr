@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, ho_ten, phone, birth_day, gender, role, skill, certification, anh_dai_dien } = registerDto;
+    const { email, password, ho_ten, phone, birth_day, gender, role, skill, certification, anh_dai_dien, is_active } = registerDto;
 
     // Kiểm tra email đã tồn tại
     const existingUser = await this.prisma.users.findUnique({
@@ -36,13 +36,14 @@ export class AuthService {
         email,
         pass_word: hashedPassword,
         ho_ten,
-        phone,
-        birth_day,
-        gender,
-        role: role || 'USER', // Default role
-        skill,
-        certification,
-        anh_dai_dien,
+        phone: phone || null,
+        birth_day: birth_day || null,
+        gender: gender || null,
+        role: role || 'USER',
+        skill: skill || null,
+        certification: certification || null,
+        anh_dai_dien: anh_dai_dien || null,
+        is_active: is_active !== undefined ? is_active : true,
       },
       select: {
         id: true,
@@ -55,6 +56,7 @@ export class AuthService {
         skill: true,
         certification: true,
         anh_dai_dien: true,
+        is_active: true,
         created_at: true,
       },
     });
@@ -88,6 +90,11 @@ export class AuthService {
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
+    // Kiểm tra user có active không
+    if (!user.is_active) {
+      throw new UnauthorizedException('Tài khoản đã bị khóa');
+    }
+
     // Tạo JWT token
     const payload = { email: user.email, sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload);
@@ -104,6 +111,7 @@ export class AuthService {
         skill: user.skill,
         certification: user.certification,
         anh_dai_dien: user.anh_dai_dien,
+        is_active: user.is_active,
       },
       accessToken,
       message: 'Đăng nhập thành công',
@@ -118,8 +126,13 @@ export class AuthService {
         email: true,
         ho_ten: true,
         role: true,
+        is_active: true,
       },
     });
+
+    if (!user || !user.is_active) {
+      return null;
+    }
 
     return user;
   }

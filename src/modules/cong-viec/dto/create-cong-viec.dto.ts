@@ -1,80 +1,60 @@
-import { IsString, IsNumber, IsOptional, IsInt, Min } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCongViecDto {
-  @ApiProperty({
-    description: 'Tên công việc',
-    example: 'Thiết kế website responsive'
-  })
+  @ApiProperty({ description: 'Tên công việc' })
   @IsString()
   ten_cong_viec: string;
 
-  @ApiPropertyOptional({
-    description: 'Đánh giá',
-    minimum: 0,
-    example: 5
-  })
+  @ApiProperty({ description: 'Đánh giá', required: false })
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @IsNumber()
   danh_gia?: number;
 
-  @ApiProperty({
-    description: 'Giá tiền',
-    minimum: 0,
-    example: 1000000
-  })
+  @ApiProperty({ description: 'Giá tiền' })
   @IsNumber()
-  @Min(0)
   gia_tien: number;
 
-  @ApiPropertyOptional({
-    description: 'Hình ảnh',
-    example: 'https://example.com/image.jpg'
-  })
+  @ApiProperty({ description: 'Hình ảnh', required: false })
   @IsOptional()
   @IsString()
   hinh_anh?: string;
 
-  @ApiPropertyOptional({
-    description: 'Mô tả chi tiết',
-    example: 'Thiết kế website responsive với HTML5, CSS3, JavaScript'
-  })
+  @ApiProperty({ description: 'Mô tả', required: false })
   @IsOptional()
   @IsString()
   mo_ta?: string;
 
-  @ApiPropertyOptional({
-    description: 'Mô tả ngắn',
-    example: 'Website responsive cho công ty'
-  })
+  @ApiProperty({ description: 'Mô tả ngắn', required: false })
   @IsOptional()
   @IsString()
   mo_ta_ngan?: string;
 
-  @ApiPropertyOptional({
-    description: 'Sao đánh giá',
-    minimum: 0,
-    example: 5
-  })
+  @ApiProperty({ description: 'Sao công việc', required: false })
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @IsNumber()
   sao_cong_viec?: number;
 
-  @ApiPropertyOptional({
-    description: 'Mã chi tiết loại công việc',
-    example: 1
-  })
-  @IsOptional()
-  @IsInt()
-  ma_chi_tiet_loai?: number;
+  @ApiProperty({ description: 'Mã chi tiết loại' })
+  @IsNumber()
+  ma_chi_tiet_loai: number;
 
-  @ApiPropertyOptional({
-    description: 'Người tạo công việc',
-    example: 1
-  })
+  @ApiProperty({ description: 'Người tạo' })
+  @IsNumber()
+  nguoi_tao: number;
+
+  @ApiProperty({ description: 'Trạng thái', required: false, enum: ['AVAILABLE', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] })
   @IsOptional()
-  @IsInt()
-  nguoi_tao?: number;
+  @IsEnum(['AVAILABLE', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
+  trang_thai?: string;
+
+  @ApiProperty({ description: 'Số lượng đã thuê', required: false })
+  @IsOptional()
+  @IsNumber()
+  so_luong_da_thue?: number;
+
+  @ApiProperty({ description: 'Số lượng đã hoàn thành', required: false })
+  @IsOptional()
+  @IsNumber()
+  so_luong_da_hoan_thanh?: number;
 }

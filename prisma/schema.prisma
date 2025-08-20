@@ -8,224 +8,161 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id            Int            @id @default(autoincrement())
-  ho_ten        String         @db.VarChar(255)
-  email         String         @unique @db.VarChar(255)
-  pass_word     String         @db.VarChar(255)
-  phone         String?        @db.VarChar(20)
-  birth_day     String?        @db.VarChar(20)
-  gender        String?        @db.VarChar(10)
-  role          String?        @default("USER") @db.VarChar(50)
-  skill         String?        @db.Text
-  certification String?        @db.Text
-  anh_dai_dien  String?        @db.VarChar(500)
-  is_active     Boolean        @default(true)
-  is_deleted    Boolean        @default(false)
-  deleted_by    Int?           @default(0)
-  deleted_at    DateTime?      @db.Timestamp(0)
-  created_at    DateTime       @default(now()) @db.Timestamp(0)
-  updated_at    DateTime       @default(now()) @db.Timestamp(0)
-  
-  // Relations
-  BinhLuan      BinhLuan[]
-  CongViec      CongViec[]
-  ThueCongViecClient ThueCongViec[] @relation("ClientHires")
-  ThueCongViecFreelancer ThueCongViec[] @relation("FreelancerWorks")
-  FileUpload    FileUpload[]
-  ThongBao      ThongBao[]
+model users {
+  id            Int       @id @default(autoincrement())
+  ho_ten        String    @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  pass_word     String    @db.VarChar(255)
+  phone         String?   @db.VarChar(20)
+  birth_day     String?   @db.VarChar(255)
+  gender        String?   @db.VarChar(10)
+  role          String    @default("USER") @db.VarChar(50)
+  skill         String?   @db.Text
+  certification String?   @db.Text
+  anh_dai_dien  String?   @db.VarChar(500)
+  is_active     Boolean   @default(true)
+  is_deleted    Boolean   @default(false)
+  deleted_by    Int       @default(0)
+  deleted_at    DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now()) @updatedAt
 
-  @@index([email])
-  @@index([role])
-  @@index([is_active])
-  @@index([is_deleted])
+  cong_viec          cong_viec[]
+  thue_cong_viec_thue thue_cong_viec[] @relation("ThueCongViec_thue")
+  thue_cong_viec_lam  thue_cong_viec[] @relation("ThueCongViec_lam")
+
   @@map("users")
 }
 
-model LoaiCongViec {
-  id                  Int                   @id @default(autoincrement())
-  ten_loai_cong_viec  String                @db.VarChar(255)
-  hinh_anh            String?               @db.VarChar(500)
-  mo_ta               String?               @db.Text
-  thu_tu              Int?                  @default(0)
-  is_deleted          Boolean               @default(false)
-  deleted_by          Int?                  @default(0)
-  deleted_at          DateTime?             @db.Timestamp(0)
-  created_at          DateTime              @default(now()) @db.Timestamp(0)
-  updated_at          DateTime              @default(now()) @db.Timestamp(0)
-  
-  // Relations
-  ChiTietLoaiCongViec ChiTietLoaiCongViec[]
+model loai_cong_viec {
+  id                  Int                        @id @default(autoincrement())
+  ten_loai_cong_viec String                     @db.VarChar(255)
+  hinh_anh           String?                    @db.VarChar(500)
+  mo_ta              String?                    @db.Text
+  thu_tu             Int                        @default(0)
+  is_deleted         Boolean                    @default(false)
+  deleted_by         Int                        @default(0)
+  deleted_at         DateTime?
+  created_at         DateTime                   @default(now())
+  updated_at         DateTime                   @default(now()) @updatedAt
+  chi_tiet_loai_cong_viec chi_tiet_loai_cong_viec[]
 
-  @@index([is_deleted])
-  @@index([thu_tu])
   @@map("loai_cong_viec")
 }
 
-model ChiTietLoaiCongViec {
-  id                Int           @id @default(autoincrement())
-  ten_chi_tiet      String        @db.VarChar(255)
-  hinh_anh          String?       @db.VarChar(500)
-  mo_ta             String?       @db.Text
-  thu_tu            Int?          @default(0)
-  ma_loai_cong_viec Int?
-  is_deleted        Boolean       @default(false)
-  deleted_by        Int?          @default(0)
-  deleted_at        DateTime?     @db.Timestamp(0)
-  created_at        DateTime      @default(now()) @db.Timestamp(0)
-  updated_at        DateTime      @default(now()) @db.Timestamp(0)
-  
-  // Relations
-  LoaiCongViec      LoaiCongViec? @relation(fields: [ma_loai_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  CongViec          CongViec[]
+model chi_tiet_loai_cong_viec {
+  id                  Int           @id @default(autoincrement())
+  ten_chi_tiet       String        @db.VarChar(255)
+  hinh_anh           String?       @db.VarChar(500)
+  mo_ta              String?       @db.Text
+  thu_tu             Int           @default(0)
+  ma_loai_cong_viec  Int
+  is_deleted         Boolean       @default(false)
+  deleted_by         Int           @default(0)
+  deleted_at         DateTime?
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @default(now()) @updatedAt
+  loai_cong_viec     loai_cong_viec @relation(fields: [ma_loai_cong_viec], references: [id])
+  cong_viec          cong_viec[]
 
-  @@index([ma_loai_cong_viec])
-  @@index([is_deleted])
-  @@index([thu_tu])
   @@map("chi_tiet_loai_cong_viec")
 }
 
-model CongViec {
-  id                  Int                  @id @default(autoincrement())
-  ten_cong_viec       String               @db.VarChar(255)
-  danh_gia            Int?                 @default(0)
-  gia_tien            Int
-  hinh_anh            String?              @db.VarChar(500)
-  mo_ta               String?              @db.Text
-  mo_ta_ngan          String?              @db.VarChar(500)
-  sao_cong_viec       Int?                 @default(0)
-  ma_chi_tiet_loai    Int?
-  nguoi_tao           Int?
-  trang_thai          String?              @default("AVAILABLE") @db.VarChar(50)
-  so_luong_da_thue    Int?                @default(0)
-  so_luong_da_hoan_thanh Int?             @default(0)
-  is_deleted          Boolean              @default(false)
-  deleted_by          Int?                 @default(0)
-  deleted_at          DateTime?            @db.Timestamp(0)
-  created_at          DateTime             @default(now()) @db.Timestamp(0)
-  updated_at          DateTime             @default(now()) @db.Timestamp(0)
-  
-  // Relations
-  BinhLuan            BinhLuan[]
-  ChiTietLoaiCongViec ChiTietLoaiCongViec? @relation(fields: [ma_chi_tiet_loai], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Users               Users?               @relation(fields: [nguoi_tao], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ThueCongViec        ThueCongViec[]
+model cong_viec {
+  id                     Int            @id @default(autoincrement())
+  ten_cong_viec         String         @db.VarChar(255)
+  danh_gia              Int            @default(0)
+  gia_tien              Int
+  hinh_anh              String?        @db.VarChar(500)
+  mo_ta                 String?        @db.Text
+  mo_ta_ngan            String?        @db.VarChar(500)
+  sao_cong_viec         Int            @default(0)
+  ma_chi_tiet_loai      Int
+  nguoi_tao             Int
+  trang_thai             String         @default("AVAILABLE") @db.VarChar(50)
+  so_luong_da_thue      Int            @default(0)
+  so_luong_da_hoan_thanh Int           @default(0)
+  is_deleted            Boolean        @default(false)
+  deleted_by            Int            @default(0)
+  deleted_at            DateTime?
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @default(now()) @updatedAt
+  chi_tiet_loai_cong_viec chi_tiet_loai_cong_viec @relation(fields: [ma_chi_tiet_loai], references: [id])
+  users                 users          @relation(fields: [nguoi_tao], references: [id])
+  thue_cong_viec        thue_cong_viec[]
 
-  @@index([ma_chi_tiet_loai])
-  @@index([nguoi_tao])
-  @@index([trang_thai])
-  @@index([is_deleted])
-  @@index([gia_tien])
-  @@index([sao_cong_viec])
   @@map("cong_viec")
 }
 
-model ThueCongViec {
-  id            Int        @id @default(autoincrement())
-  ma_cong_viec  Int?
-  ma_nguoi_thue Int?
-  ma_nguoi_lam  Int?
-  ngay_thue     DateTime?  @default(now()) @db.DateTime(0)
-  ngay_bat_dau  DateTime?  @db.DateTime(0)
-  ngay_hoan_thanh DateTime? @db.DateTime(0)
-  hoan_thanh    Boolean?   @default(false)
-  trang_thai    String?    @default("PENDING") @db.VarChar(50)
-  ghi_chu       String?    @db.Text
-  danh_gia      Int?       @default(0)
-  noi_dung_danh_gia String? @db.Text
-  is_deleted    Boolean    @default(false)
-  deleted_by    Int?       @default(0)
-  deleted_at    DateTime?  @db.Timestamp(0)
-  created_at    DateTime   @default(now()) @db.Timestamp(0)
-  updated_at    DateTime   @default(now()) @db.Timestamp(0)
-  
-  // Relations
-  CongViec      CongViec?  @relation(fields: [ma_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Client        Users?     @relation("ClientHires", fields: [ma_nguoi_thue], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Freelancer    Users?     @relation("FreelancerWorks", fields: [ma_nguoi_lam], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  BinhLuan      BinhLuan[]
+model thue_cong_viec {
+  id                    Int           @id @default(autoincrement())
+  ma_cong_viec          Int
+  ma_nguoi_thue         Int
+  ma_nguoi_lam          Int
+  ngay_thue             DateTime      @default(now())
+  ngay_bat_dau          DateTime?
+  ngay_hoan_thanh       DateTime?
+  hoan_thanh            Boolean       @default(false)
+  trang_thai            String        @default("PENDING") @db.VarChar(50)
+  ghi_chu               String?       @db.Text
+  danh_gia              Int           @default(0)
+  noi_dung_danh_gia     String?       @db.Text
+  is_deleted            Boolean       @default(false)
+  deleted_by            Int           @default(0)
+  deleted_at            DateTime?
+  created_at            DateTime      @default(now())
+  updated_at            DateTime      @default(now()) @updatedAt
+  cong_viec             cong_viec     @relation(fields: [ma_cong_viec], references: [id])
+  users_thue            users         @relation("ThueCongViec_thue", fields: [ma_nguoi_thue], references: [id])
+  users_lam             users         @relation("ThueCongViec_lam", fields: [ma_nguoi_lam], references: [id])
 
-  @@index([ma_cong_viec])
-  @@index([ma_nguoi_thue])
-  @@index([ma_nguoi_lam])
-  @@index([trang_thai])
-  @@index([is_deleted])
-  @@index([ngay_thue])
   @@map("thue_cong_viec")
 }
 
-model BinhLuan {
-  id                 Int        @id @default(autoincrement())
-  ma_cong_viec       Int?
-  ma_nguoi_binh_luan Int?
-  ma_thue_cong_viec  Int?
-  ngay_binh_luan     DateTime?  @default(now()) @db.DateTime(0)
-  noi_dung           String     @db.Text
-  sao_binh_luan      Int?       @default(0)
-  loai_binh_luan     String?    @default("REVIEW") @db.VarChar(50) // REVIEW, COMMENT
-  is_deleted         Boolean    @default(false)
-  deleted_by         Int?       @default(0)
-  deleted_at         DateTime?  @db.Timestamp(0)
-  created_at         DateTime   @default(now()) @db.Timestamp(0)
-  updated_at         DateTime   @default(now()) @db.Timestamp(0)
-  
-  // Relations
-  CongViec           CongViec?  @relation(fields: [ma_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Users              Users?     @relation(fields: [ma_nguoi_binh_luan], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ThueCongViec       ThueCongViec? @relation(fields: [ma_thue_cong_viec], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model binh_luan {
+  id           Int       @id @default(autoincrement())
+  ma_cong_viec Int
+  ma_nguoi_binh_luan Int
+  ngay_binh_luan DateTime @default(now())
+  noi_dung     String    @db.Text
+  sao_binh_luan Int      @default(0)
+  is_deleted   Boolean   @default(false)
+  deleted_by   Int       @default(0)
+  deleted_at   DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now()) @updatedAt
 
-  @@index([ma_cong_viec])
-  @@index([ma_nguoi_binh_luan])
-  @@index([ma_thue_cong_viec])
-  @@index([is_deleted])
-  @@index([ngay_binh_luan])
-  @@index([loai_binh_luan])
   @@map("binh_luan")
 }
 
-// Thêm model mới cho quản lý file upload
-model FileUpload {
-  id          Int       @id @default(autoincrement())
-  ten_file    String    @db.VarChar(255)
-  duong_dan   String    @db.VarChar(500)
-  loai_file   String    @db.VarChar(100)
-  kich_thuoc  Int?
-  ma_nguoi_tao Int?
-  is_deleted  Boolean   @default(false)
-  deleted_by  Int?      @default(0)
-  deleted_at  DateTime? @db.Timestamp(0)
-  created_at  DateTime  @default(now()) @db.Timestamp(0)
-  updated_at  DateTime  @default(now()) @db.Timestamp(0)
+model file_upload {
+  id           Int       @id @default(autoincrement())
+  ten_file     String    @db.VarChar(255)
+  duong_dan    String    @db.VarChar(500)
+  kich_thuoc   Int
+  loai_file    String    @db.VarChar(100)
+  ma_nguoi_upload Int
+  is_deleted   Boolean   @default(false)
+  deleted_by   Int       @default(0)
+  deleted_at   DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now()) @updatedAt
 
-  // Relations
-  Users       Users?    @relation(fields: [ma_nguoi_tao], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([ma_nguoi_tao])
-  @@index([loai_file])
-  @@index([is_deleted])
   @@map("file_upload")
 }
 
-// Thêm model cho thông báo
-model ThongBao {
-  id              Int       @id @default(autoincrement())
-  tieu_de         String    @db.VarChar(255)
-  noi_dung        String    @db.Text
-  loai_thong_bao  String    @db.VarChar(100) // SYSTEM, JOB, HIRE, COMMENT
-  ma_nguoi_nhan   Int?
-  da_doc          Boolean   @default(false)
-  is_deleted      Boolean   @default(false)
-  deleted_by      Int?      @default(0)
-  deleted_at      DateTime? @db.Timestamp(0)
-  created_at      DateTime  @default(now()) @db.Timestamp(0)
-  updated_at      DateTime  @default(now()) @db.Timestamp(0)
+model thong_bao {
+  id           Int       @id @default(autoincrement())
+  tieu_de      String    @db.VarChar(255)
+  noi_dung     String    @db.Text
+  ma_nguoi_nhan Int
+  da_doc       Boolean   @default(false)
+  is_deleted   Boolean   @default(false)
+  deleted_by   Int       @default(0)
+  deleted_at   DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now()) @updatedAt
 
-  // Relations
-  Users           Users?    @relation(fields: [ma_nguoi_nhan], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([ma_nguoi_nhan])
-  @@index([loai_thong_bao])
-  @@index([da_doc])
-  @@index([is_deleted])
   @@map("thong_bao")
 }
+

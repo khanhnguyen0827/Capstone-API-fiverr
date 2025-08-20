@@ -1,82 +1,56 @@
-import { IsEmail, IsString, IsOptional, IsEnum, MinLength, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { APP_CONSTANTS } from '../../common/constants/app.constants';
+import { IsEmail, IsString, IsOptional, IsEnum, IsBoolean } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  @ApiProperty({
-    description: 'Họ tên người dùng',
-    example: 'Nguyễn Văn A'
-  })
-  @IsString()
-  @MinLength(APP_CONSTANTS.VALIDATION.NAME_MIN_LENGTH)
-  @MaxLength(APP_CONSTANTS.VALIDATION.NAME_MAX_LENGTH)
-  ho_ten: string;
-
-  @ApiProperty({
-    description: 'Email người dùng',
-    example: 'user@example.com'
-  })
+  @ApiProperty({ description: 'Email của người dùng' })
   @IsEmail()
-  @MaxLength(APP_CONSTANTS.VALIDATION.EMAIL_MAX_LENGTH)
   email: string;
 
-  @ApiProperty({
-    description: 'Mật khẩu',
-    example: 'password123'
-  })
+  @ApiProperty({ description: 'Mật khẩu' })
   @IsString()
-  @MinLength(APP_CONSTANTS.VALIDATION.PASSWORD_MIN_LENGTH)
-  @MaxLength(APP_CONSTANTS.VALIDATION.PASSWORD_MAX_LENGTH)
-  password: string;
+  pass_word: string;
 
-  @ApiPropertyOptional({
-    description: 'Số điện thoại',
-    example: '0123456789'
-  })
+  @ApiProperty({ description: 'Họ tên' })
+  @IsString()
+  ho_ten: string;
+
+  @ApiProperty({ description: 'Số điện thoại', required: false })
   @IsOptional()
   @IsString()
-  @MaxLength(APP_CONSTANTS.VALIDATION.PHONE_MAX_LENGTH)
   phone?: string;
 
-  @ApiPropertyOptional({
-    description: 'Ngày sinh',
-    example: '1990-01-01'
-  })
+  @ApiProperty({ description: 'Ngày sinh', required: false })
   @IsOptional()
   @IsString()
   birth_day?: string;
 
-  @ApiPropertyOptional({
-    description: 'Giới tính',
-    enum: ['male', 'female', 'other'],
-    example: 'male'
-  })
+  @ApiProperty({ description: 'Giới tính', required: false, enum: ['MALE', 'FEMALE', 'OTHER'] })
   @IsOptional()
-  @IsEnum(['male', 'female', 'other'])
+  @IsEnum(['MALE', 'FEMALE', 'OTHER'])
   gender?: string;
 
-  @ApiPropertyOptional({
-    description: 'Vai trò',
-    example: 'USER',
-    enum: Object.values(APP_CONSTANTS.ROLES)
-  })
+  @ApiProperty({ description: 'Vai trò', required: false, enum: ['USER', 'ADMIN', 'MODERATOR'] })
   @IsOptional()
-  @IsEnum(Object.values(APP_CONSTANTS.ROLES))
+  @IsEnum(['USER', 'ADMIN', 'MODERATOR'])
   role?: string;
 
-  @ApiPropertyOptional({
-    description: 'Kỹ năng',
-    example: 'JavaScript, React, Node.js'
-  })
+  @ApiProperty({ description: 'Kỹ năng', required: false })
   @IsOptional()
   @IsString()
   skill?: string;
 
-  @ApiPropertyOptional({
-    description: 'Chứng chỉ',
-    example: 'AWS Certified Developer, Google Cloud Professional'
-  })
+  @ApiProperty({ description: 'Chứng chỉ', required: false })
   @IsOptional()
   @IsString()
   certification?: string;
+
+  @ApiProperty({ description: 'Ảnh đại diện', required: false })
+  @IsOptional()
+  @IsString()
+  anh_dai_dien?: string;
+
+  @ApiProperty({ description: 'Trạng thái hoạt động', required: false })
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean;
 }

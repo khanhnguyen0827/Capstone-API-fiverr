@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { ThueCongViecService } from './thue-cong-viec.service';
 import { CreateThueCongViecDto } from './dto/create-thue-cong-viec.dto';
 import { UpdateThueCongViecDto } from './dto/update-thue-cong-viec.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('thue-cong-viec')
 @Controller('thue-cong-viec')
@@ -10,75 +13,81 @@ export class ThueCongViecController {
   constructor(private readonly thueCongViecService: ThueCongViecService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('USER', 'ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Tạo thuê công việc mới' })
-  @ApiResponse({ status: 201, description: 'Tạo thuê công việc thành công' })
+  @ApiResponse({ status: 201, description: 'Thuê công việc đã được tạo thành công' })
   @ApiResponse({ status: 400, description: 'Dữ liệu không hợp lệ' })
-  async create(@Body() createThueCongViecDto: CreateThueCongViecDto) {
-    return await this.thueCongViecService.create(createThueCongViecDto);
+  @ApiResponse({ status: 401, description: 'Không được phép truy cập' })
+  create(@Body() createThueCongViecDto: CreateThueCongViecDto) {
+    return this.thueCongViecService.create(createThueCongViecDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Lấy danh sách thuê công việc' })
-  @ApiQuery({ name: 'page', required: false, description: 'Trang hiện tại', example: 1 })
-  @ApiQuery({ name: 'pageSize', required: false, description: 'Số lượng item mỗi trang', example: 10 })
-  @ApiQuery({ name: 'filters', required: false, description: 'Bộ lọc JSON', example: '{"ma_cong_viec":1,"hoan_thanh":false}' })
-  @ApiResponse({ status: 200, description: 'Lấy danh sách thuê công việc thành công' })
-  async findAll(@Query() query: any) {
-    return await this.thueCongViecService.findAll(query);
-  }
-
-  @Get('cong-viec/:maCongViec')
-  @ApiOperation({ summary: 'Lấy thuê công việc theo công việc' })
-  @ApiParam({ name: 'maCongViec', description: 'ID công việc', example: 1 })
-  @ApiResponse({ status: 200, description: 'Lấy thuê công việc theo công việc thành công' })
-  async findByCongViec(@Param('maCongViec', ParseIntPipe) maCongViec: number) {
-    return await this.thueCongViecService.findByCongViec(maCongViec);
-  }
-
-  @Get('user/:maNguoiThue')
-  @ApiOperation({ summary: 'Lấy thuê công việc theo người thuê' })
-  @ApiParam({ name: 'maNguoiThue', description: 'ID người thuê', example: 1 })
-  @ApiResponse({ status: 200, description: 'Lấy thuê công việc theo người thuê thành công' })
-  async findByUser(@Param('maNguoiThue', ParseIntPipe) maNguoiThue: number) {
-    return await this.thueCongViecService.findByUser(maNguoiThue);
+  @ApiResponse({ status: 200, description: 'Danh sách thuê công việc' })
+  findAll(@Query() query: any) {
+    return this.thueCongViecService.findAll(query);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Lấy thông tin thuê công việc theo ID' })
-  @ApiParam({ name: 'id', description: 'ID thuê công việc', example: 1 })
-  @ApiResponse({ status: 200, description: 'Lấy thông tin thuê công việc thành công' })
+  @ApiOperation({ summary: 'Lấy thuê công việc theo ID' })
+  @ApiResponse({ status: 200, description: 'Thông tin thuê công việc' })
   @ApiResponse({ status: 404, description: 'Không tìm thấy thuê công việc' })
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return await this.thueCongViecService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.thueCongViecService.findOne(+id);
+  }
+
+  @Get('cong-viec/:congViecId')
+  @ApiOperation({ summary: 'Lấy thuê công việc theo công việc' })
+  @ApiResponse({ status: 200, description: 'Danh sách thuê công việc' })
+  findByCongViec(@Param('congViecId') congViecId: string) {
+    return this.thueCongViecService.findByCongViec(+congViecId);
+  }
+
+  @Get('client/:clientId')
+  @ApiOperation({ summary: 'Lấy thuê công việc theo khách hàng' })
+  @ApiResponse({ status: 200, description: 'Danh sách thuê công việc' })
+  findByClient(@Param('clientId') clientId: string) {
+    return this.thueCongViecService.findByClient(+clientId);
+  }
+
+  @Get('freelancer/:freelancerId')
+  @ApiOperation({ summary: 'Lấy thuê công việc theo freelancer' })
+  @ApiResponse({ status: 200, description: 'Danh sách thuê công việc' })
+  findByFreelancer(@Param('freelancerId') freelancerId: string) {
+    return this.thueCongViecService.findByFreelancer(+freelancerId);
+  }
+
+  @Get('status/:status')
+  @ApiOperation({ summary: 'Lấy thuê công việc theo trạng thái' })
+  @ApiResponse({ status: 200, description: 'Danh sách thuê công việc' })
+  findByStatus(@Param('status') status: string) {
+    return this.thueCongViecService.findByStatus(status);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('USER', 'ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Cập nhật thuê công việc' })
-  @ApiParam({ name: 'id', description: 'ID thuê công việc', example: 1 })
-  @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
+  @ApiResponse({ status: 200, description: 'Thuê công việc đã được cập nhật' })
   @ApiResponse({ status: 404, description: 'Không tìm thấy thuê công việc' })
-  async update(
-    @Param('id', ParseIntPipe) id: number, 
-    @Body() updateThueCongViecDto: UpdateThueCongViecDto
-  ) {
-    return await this.thueCongViecService.update(id, updateThueCongViecDto);
-  }
-
-  @Patch(':id/complete')
-  @ApiOperation({ summary: 'Hoàn thành công việc' })
-  @ApiParam({ name: 'id', description: 'ID thuê công việc', example: 1 })
-  @ApiResponse({ status: 200, description: 'Hoàn thành công việc thành công' })
-  @ApiResponse({ status: 404, description: 'Không tìm thấy thuê công việc' })
-  async completeJob(@Param('id', ParseIntPipe) id: number) {
-    return await this.thueCongViecService.completeJob(id);
+  @ApiResponse({ status: 401, description: 'Không được phép truy cập' })
+  update(@Param('id') id: string, @Body() updateThueCongViecDto: UpdateThueCongViecDto) {
+    return this.thueCongViecService.update(+id, updateThueCongViecDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('USER', 'ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Xóa thuê công việc' })
-  @ApiParam({ name: 'id', description: 'ID thuê công việc', example: 1 })
-  @ApiResponse({ status: 200, description: 'Xóa thành công' })
+  @ApiResponse({ status: 200, description: 'Thuê công việc đã được xóa' })
   @ApiResponse({ status: 404, description: 'Không tìm thấy thuê công việc' })
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    return await this.thueCongViecService.remove(id);
+  @ApiResponse({ status: 401, description: 'Không được phép truy cập' })
+  remove(@Param('id') id: string) {
+    return this.thueCongViecService.remove(+id);
   }
 }
