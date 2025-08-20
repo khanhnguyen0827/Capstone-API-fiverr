@@ -8,7 +8,7 @@ on:
 
 jobs:
   start-project:
-    runs-on: node_49
+    runs-on: api_fiverr
 
     steps:
       - name: tạo file .env
