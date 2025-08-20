@@ -15,7 +15,7 @@ jobs:
         run: docker login -u khanh2nq -p ${{secrets.DOCKER_PASSWORD}}
 
       - name: build image
-        run: docker image build -t khanh2nq/img-be_capstone-api-Fiverr:latest .
+        run: docker image build -t khanh2nq/img-be_capstone-api-fiverr:latest .
 
       - name: push image
-        run: docker push khanh2nq/img-be_capstone-api-Fiverr:latest
+        run: docker push khanh2nq/img-be_capstone-api-fiverr:latest
