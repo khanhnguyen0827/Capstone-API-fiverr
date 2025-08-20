@@ -23,8 +23,8 @@ jobs:
 
       - name: dừng và xoá container
         run: |
-          sudo docker container stop con-be_capstone-api-Fiverr || true
-          sudo docker container remove con-be_capstone-api-Fiverr || true
+          sudo docker container stop con-capstone-backend|| true
+          sudo docker container remove con-capstone-backend || true
 
       - name: xoá image cũ
         run: sudo docker image remove khanh2nq/img-be_capstone-api-Fiverr:latest
