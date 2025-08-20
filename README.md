@@ -1,234 +1,223 @@
+# 🚀 Capstone API Fiverr
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-# Capstone API Fiverr
+API backend hiện đại cho ứng dụng Fiverr - Quản lý công việc freelance được xây dựng với **NestJS v11**, **Prisma ORM** và **MySQL**.
 
-API backend cho ứng dụng Fiverr - Quản lý công việc freelance được xây dựng với NestJS v10, Prisma ORM và MySQL.
+## ✨ Tính năng chính
 
-## 🚀 Tính năng
-
-- **Xác thực & Phân quyền**: JWT-based authentication với refresh token
-- **Quản lý người dùng**: CRUD operations với validation
-- **Quản lý công việc**: Tạo, cập nhật, xóa và tìm kiếm công việc
-- **Quản lý bình luận**: Hệ thống bình luận và đánh giá
-- **Quản lý thuê công việc**: Theo dõi trạng thái công việc
-- **Phân loại công việc**: Hệ thống phân loại đa cấp
-- **API Documentation**: Swagger/OpenAPI với Bearer token authentication
-- **Logging & Monitoring**: Comprehensive logging và error handling
-- **Security**: CORS, validation, và error handling
+- 🔐 **Xác thực & Phân quyền**: JWT-based authentication với role-based access control
+- 👥 **Quản lý người dùng**: CRUD operations với validation và phân quyền
+- 💼 **Quản lý công việc**: Tạo, cập nhật, xóa và tìm kiếm công việc
+- 💬 **Quản lý bình luận**: Hệ thống bình luận và đánh giá sao
+- 📋 **Quản lý thuê công việc**: Theo dõi trạng thái và tiến độ công việc
+- 🏷️ **Phân loại công việc**: Hệ thống phân loại đa cấp (loại công việc > chi tiết loại)
+- 📚 **API Documentation**: Swagger/OpenAPI với Bearer token authentication
+- 📊 **Logging & Monitoring**: Comprehensive logging và error handling
+- 🛡️ **Security**: CORS, validation, rate limiting, và error handling
+- 🐳 **Docker Support**: Containerization với Docker Compose
 
 ## 🛠️ Công nghệ sử dụng
 
-- **Framework**: NestJS v10
-- **Database**: MySQL với Prisma ORM
-- **Authentication**: JWT với bcrypt
-- **Validation**: class-validator
-- **Documentation**: Swagger/OpenAPI
-- **Language**: TypeScript
+### Core Framework
+- **NestJS**: v11.0.1 - Progressive Node.js framework
+- **TypeScript**: v5.7.3 - Type-safe JavaScript
+- **Node.js**: ES2023 support
+
+### Database & ORM
+- **MySQL**: v8.0 - Relational database
+- **Prisma**: v6.10.1 - Modern database toolkit
+
+### Authentication & Security
+- **JWT**: JSON Web Tokens
+- **bcrypt**: Password hashing
+- **Passport**: Authentication strategies
+- **Helmet**: Security headers
+- **CORS**: Cross-origin resource sharing
+
+### Validation & Documentation
+- **class-validator**: Input validation
+- **class-transformer**: Object transformation
+- **Swagger/OpenAPI**: API documentation
+
+### Development Tools
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+- **Jest**: Testing framework
 
 ## 📋 Yêu cầu hệ thống
 
-- Node.js 18+ 
-- MySQL 8.0+
-- npm hoặc yarn
+- **Node.js**: 18.x hoặc cao hơn
+- **MySQL**: 8.0+
+- **npm**: 8.x hoặc cao hơn
+- **Docker**: (tùy chọn, để chạy với Docker)
 
-## 🔧 Cài đặt
+## 🚀 Cài đặt và chạy
 
-1. **Clone repository**
+### 1. Clone repository
 ```bash
 git clone <repository-url>
 cd Capstone-API-fiverr
 ```
 
-2. **Cài đặt dependencies**
+### 2. Cài đặt dependencies
 ```bash
 npm install
 ```
 
-3. **Cấu hình môi trường**
+### 3. Cấu hình môi trường
 ```bash
+# Copy file môi trường
 cp env.example .env
-# Chỉnh sửa .env với thông tin database và JWT secret
+
+# Chỉnh sửa các biến môi trường trong .env
+DATABASE_URL="mysql://root:123456@localhost:3307/capstone_fiverr"
+JWT_SECRET="your-super-secret-jwt-key-here"
+PORT=3000
 ```
 
-4. **Cài đặt và migrate database**
+### 4. Cài đặt và migrate database
 ```bash
-npx prisma generate
-npx prisma db push
+# Generate Prisma client
+npm run prisma:generate
+
+# Push schema to database
+npm run prisma:push
+
+# (Tùy chọn) Seed dữ liệu mẫu
+npm run db:seed
 ```
 
-5. **Chạy ứng dụng**
+### 5. Chạy ứng dụng
 ```bash
-# Development
+# Development mode
 npm run start:dev
 
-# Production
+# Production mode
 npm run build
 npm run start:prod
+```
+
+## 🐳 Chạy với Docker
+
+### Sử dụng Docker Compose
+```bash
+# Build và chạy tất cả services
+docker-compose up --build
+
+# Chạy ở background
+docker-compose up -d
+
+# Dừng services
+docker-compose down
+```
+
+### Chạy từng service riêng biệt
+```bash
+# Chỉ chạy database
+docker-compose up DB
+
+# Chỉ chạy backend
+docker-compose up BE
 ```
 
 ## 🌐 API Endpoints
 
 ### Base URL: `http://localhost:3000/api/v1`
 
-### Authentication
-- `POST /auth/register` - Đăng ký người dùng mới
-- `POST /auth/login` - Đăng nhập
-- `POST /auth/refresh` - Làm mới JWT token
-- `GET /auth/profile` - Lấy thông tin profile (cần JWT)
-- `POST /auth/logout` - Đăng xuất
+### 📚 Documentation
+- **Swagger UI**: `http://localhost:3000/docs`
+- **API Spec**: `http://localhost:3000/docs-json`
 
-### Users
-- `GET /users` - Lấy danh sách người dùng (với pagination, filters, search)
-- `GET /users/:id` - Lấy thông tin người dùng theo ID
-- `POST /users` - Tạo người dùng mới
-- `PATCH /users/:id` - Cập nhật thông tin người dùng
-- `DELETE /users/:id` - Xóa người dùng
+### 🔐 Authentication
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/auth/register` | Đăng ký người dùng mới | ❌ |
+| `POST` | `/auth/login` | Đăng nhập | ❌ |
+| `GET` | `/auth/profile` | Lấy thông tin profile | ✅ |
+| `POST` | `/auth/logout` | Đăng xuất | ✅ |
 
-### Công việc
-- `GET /cong-viec` - Lấy danh sách công việc (với pagination, filters, search, sort)
-- `GET /cong-viec/:id` - Lấy thông tin công việc theo ID
-- `POST /cong-viec` - Tạo công việc mới
-- `PATCH /cong-viec/:id` - Cập nhật công việc
-- `DELETE /cong-viec/:id` - Xóa công việc
-- `GET /cong-viec/category/:maChiTietLoai` - Lấy công việc theo danh mục
-- `GET /cong-viec/user/:nguoiTao` - Lấy công việc theo người tạo
+### 👥 Users
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/users` | Lấy danh sách người dùng | ✅ |
+| `GET` | `/users/:id` | Lấy thông tin người dùng | ✅ |
+| `POST` | `/users` | Tạo người dùng mới | ✅ |
+| `PATCH` | `/users/:id` | Cập nhật thông tin | ✅ |
+| `DELETE` | `/users/:id` | Xóa người dùng | ✅ |
 
-### Bình luận
-- `GET /binh-luan` - Lấy danh sách bình luận (với pagination, filters)
-- `GET /binh-luan/:id` - Lấy thông tin bình luận theo ID
-- `POST /binh-luan` - Tạo bình luận mới
-- `PATCH /binh-luan/:id` - Cập nhật bình luận
-- `DELETE /binh-luan/:id` - Xóa bình luận
-- `GET /binh-luan/cong-viec/:maCongViec` - Lấy bình luận theo công việc
-- `GET /binh-luan/user/:maNguoiBinhLuan` - Lấy bình luận theo người bình luận
+### 💼 Jobs (Công việc)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/cong-viec` | Lấy danh sách công việc | ❌ |
+| `GET` | `/cong-viec/:id` | Lấy chi tiết công việc | ❌ |
+| `POST` | `/cong-viec` | Tạo công việc mới | ✅ |
+| `PATCH` | `/cong-viec/:id` | Cập nhật công việc | ✅ |
+| `DELETE` | `/cong-viec/:id` | Xóa công việc | ✅ |
 
-### Thuê công việc
-- `GET /thue-cong-viec` - Lấy danh sách thuê công việc (với pagination, filters)
-- `GET /thue-cong-viec/:id` - Lấy thông tin thuê công việc theo ID
-- `POST /thue-cong-viec` - Tạo thuê công việc mới
-- `PATCH /thue-cong-viec/:id` - Cập nhật thuê công việc
-- `PATCH /thue-cong-viec/:id/complete` - Hoàn thành công việc
-- `DELETE /thue-cong-viec/:id` - Xóa thuê công việc
-- `GET /thue-cong-viec/cong-viec/:maCongViec` - Lấy thuê công việc theo công việc
-- `GET /thue-cong-viec/user/:maNguoiThue` - Lấy thuê công việc theo người thuê
+### 💬 Comments (Bình luận)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/binh-luan` | Lấy danh sách bình luận | ❌ |
+| `POST` | `/binh-luan` | Tạo bình luận mới | ✅ |
+| `PATCH` | `/binh-luan/:id` | Cập nhật bình luận | ✅ |
+| `DELETE` | `/binh-luan/:id` | Xóa bình luận | ✅ |
 
-### Loại công việc
-- `GET /loai-cong-viec` - Lấy danh sách loại công việc
-- `GET /loai-cong-viec/:id` - Lấy thông tin loại công việc theo ID
-- `POST /loai-cong-viec` - Tạo loại công việc mới
-- `PATCH /loai-cong-viec/:id` - Cập nhật loại công việc
-- `DELETE /loai-cong-viec/:id` - Xóa loại công việc
+### 📋 Job Categories
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/loai-cong-viec` | Lấy danh sách loại công việc | ❌ |
+| `GET` | `/chi-tiet-loai-cong-viec` | Lấy chi tiết loại công việc | ❌ |
 
-### Chi tiết loại công việc
-- `GET /chi-tiet-loai-cong-viec` - Lấy danh sách chi tiết loại công việc
-- `GET /chi-tiet-loai-cong-viec/:id` - Lấy thông tin chi tiết loại công việc theo ID
-- `POST /chi-tiet-loai-cong-viec` - Tạo chi tiết loại công việc mới
-- `PATCH /chi-tiet-loai-cong-viec/:id` - Cập nhật chi tiết loại công việc
-- `DELETE /chi-tiet-loai-cong-viec/:id` - Xóa chi tiết loại công việc
-- `GET /chi-tiet-loai-cong-viec/loai-cong-viec/:maLoaiCongViec` - Lấy chi tiết theo loại công việc
+### 🔄 Job Hires
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/thue-cong-viec` | Lấy danh sách thuê công việc | ✅ |
+| `POST` | `/thue-cong-viec` | Thuê công việc | ✅ |
+| `PATCH` | `/thue-cong-viec/:id` | Cập nhật trạng thái | ✅ |
 
 ## 🔐 Authentication
 
-API sử dụng JWT Bearer token authentication. Để truy cập các endpoint được bảo vệ:
-
-1. Đăng nhập qua `/auth/login` để nhận access token
-2. Thêm header: `Authorization: Bearer <your-token>`
-3. Token có thời hạn 7 ngày
-4. Sử dụng `/auth/refresh` để làm mới token
-
-## 📊 Query Parameters
-
-### Pagination
-- `page`: Trang hiện tại (mặc định: 1)
-- `pageSize`: Số lượng item mỗi trang (mặc định: 10, tối đa: 100)
-
-### Filters
-- `filters`: JSON string với các điều kiện lọc
-- Ví dụ: `{"name":"John","role":"user"}`
-
-### Search
-- `search`: Tìm kiếm text trong các trường
-- Hỗ trợ tìm kiếm không phân biệt hoa thường
-
-### Sorting
-- `sortBy`: Trường để sắp xếp
-- `sortOrder`: Thứ tự sắp xếp (`asc` hoặc `desc`)
-
-## 📝 Ví dụ sử dụng
-
-### Đăng ký người dùng
-```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "pass_word": "password123",
-    "phone": "0123456789",
-    "role": "user"
-  }'
+### JWT Token
+API sử dụng JWT Bearer token để xác thực. Thêm header:
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
-### Tạo công việc
-```bash
-curl -X POST http://localhost:3000/api/v1/cong-viec \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <your-token>" \
-  -d '{
-    "ten_cong_viec": "Web Developer",
-    "gia_tien": 1000000,
-    "mo_ta": "Cần developer web fullstack",
-    "ma_chi_tiet_loai": 1,
-    "nguoi_tao": 1
-  }'
-```
+### Roles & Permissions
+- **ADMIN**: Quyền truy cập tất cả
+- **USER**: Quyền cơ bản
+- **FREELANCER**: Người cung cấp dịch vụ
+- **CLIENT**: Người thuê dịch vụ
 
-### Tìm kiếm công việc với filters
-```bash
-curl "http://localhost:3000/api/v1/cong-viec?page=1&pageSize=10&search=web&filters={\"gia_tien\":{\"gte\":500000}}&sortBy=gia_tien&sortOrder=desc"
-```
+## 📊 Database Schema
 
-## 🚨 Error Handling
+### Users Table
+- Thông tin cá nhân: họ tên, email, phone, birth_day, gender
+- Thông tin chuyên môn: skill, certification
+- Phân quyền: role, is_active
+- Audit: created_at, updated_at, deleted_at
 
-API trả về error responses với format nhất quán:
+### Jobs Table
+- Thông tin công việc: tên, mô tả, giá tiền
+- Đánh giá: sao_cong_viec, danh_gia
+- Trạng thái: trang_thai (AVAILABLE, IN_PROGRESS, COMPLETED)
+- Liên kết: ma_chi_tiet_loai, nguoi_tao
 
-```json
-{
-  "statusCode": 400,
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "path": "/api/v1/users",
-  "method": "POST",
-  "message": "Email không hợp lệ",
-  "error": "Bad Request"
-}
-```
+### Comments Table
+- Nội dung bình luận và đánh giá sao
+- Liên kết với công việc và người bình luận
 
-## 📚 API Documentation
-
-Swagger documentation có sẵn tại:
-- Development: `http://localhost:3000/api-docs`
-- Production: Không có sẵn (bảo mật)
+### Job Categories
+- Hệ thống phân loại 2 cấp: Loại công việc > Chi tiết loại
 
 ## 🧪 Testing
 
@@ -241,70 +230,120 @@ npm run test:e2e
 
 # Test coverage
 npm run test:cov
+
+# Test in watch mode
+npm run test:watch
 ```
 
-## 🐳 Docker
+## 📝 Scripts
 
 ```bash
-# Build image
-docker build -t capstone-api-fiverr .
+# Development
+npm run start:dev          # Chạy với watch mode
+npm run start:debug        # Chạy với debug mode
 
-# Run container
-docker run -p 3000:3000 capstone-api-fiverr
+# Production
+npm run build              # Build ứng dụng
+npm run start:prod        # Chạy production
 
-# Docker Compose
-docker-compose up -d
+# Database
+npm run prisma:generate    # Generate Prisma client
+npm run prisma:migrate     # Run migrations
+npm run prisma:studio      # Open Prisma Studio
+npm run db:seed           # Seed dữ liệu mẫu
+npm run db:push           # Push schema to database
+
+# Code quality
+npm run lint              # Lint code
+npm run format            # Format code với Prettier
 ```
 
-## 📁 Cấu trúc dự án
+## 🏗️ Project Structure
 
 ```
 src/
 ├── common/                 # Shared utilities
+│   ├── constants/         # Application constants
+│   ├── decorators/        # Custom decorators
+│   ├── dto/              # Base DTOs
 │   ├── filters/           # Exception filters
-│   └── interceptors/      # Request/Response interceptors
+│   ├── guards/            # Authentication guards
+│   ├── interceptors/      # Response interceptors
+│   ├── middleware/        # Custom middleware
+│   └── strategies/        # Passport strategies
 ├── modules/               # Feature modules
-│   ├── auth/             # Authentication
+│   ├── auth/             # Authentication module
 │   ├── user/             # User management
 │   ├── cong-viec/        # Job management
 │   ├── binh-luan/        # Comment management
-│   ├── thue-cong-viec/   # Job hiring management
-│   ├── loai-cong-viec/   # Job type management
-│   ├── chi-tiet-loai-cong-viec/ # Job detail type
+│   ├── thue-cong-viec/   # Job hiring
+│   ├── loai-cong-viec/   # Job categories
+│   ├── chi-tiet-loai-cong-viec/ # Job subcategories
 │   └── prisma/           # Database service
 ├── app.module.ts          # Root module
 └── main.ts               # Application entry point
 ```
 
-## 🔒 Security Features
+## 🔧 Configuration
 
-- JWT authentication với refresh token
-- Password hashing với bcrypt
-- Input validation và sanitization
-- CORS configuration
-- Global exception handling
-- Request logging và monitoring
+### Environment Variables
+```bash
+# Database
+DATABASE_URL="mysql://user:password@host:port/database"
 
-## 📈 Performance
+# JWT
+JWT_SECRET="your-secret-key"
+JWT_EXPIRES_IN="1d"
 
-- Database connection pooling
-- Query optimization với Prisma
-- Response compression
-- Efficient pagination
-- Caching strategies
+# Server
+PORT=3000
+NODE_ENV="development"
+
+# Security
+BCRYPT_SALT_ROUNDS=10
+THROTTLE_TTL=60000
+THROTTLE_LIMIT=100
+```
+
+## 🚀 Deployment
+
+### Production Build
+```bash
+npm run build
+npm run start:prod
+```
+
+### Docker Deployment
+```bash
+docker build -t capstone-api-fiverr .
+docker run -p 3000:3000 capstone-api-fiverr
+```
+
+### Environment Variables
+Đảm bảo cấu hình đúng các biến môi trường cho production:
+- `NODE_ENV=production`
+- `DATABASE_URL` (production database)
+- `JWT_SECRET` (strong secret key)
+- `ALLOWED_ORIGINS` (production domains)
 
 ## 🤝 Contributing
 
 1. Fork repository
-2. Tạo feature branch
-3. Commit changes
-4. Push to branch
+2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Tạo Pull Request
 
 ## 📄 License
 
-UNLICENSED - Private project
+Dự án này được cấp phép theo [MIT License](LICENSE).
 
-## 📞 Support
+## 🆘 Support
 
-Nếu có vấn đề hoặc câu hỏi, vui lòng tạo issue trong repository.
+- 📧 Email: support@example.com
+- 📖 Documentation: [API Docs](http://localhost:3000/docs)
+- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+
+---
+
+**Made with ❤️ using NestJS**

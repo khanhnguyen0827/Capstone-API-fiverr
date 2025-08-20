@@ -39,20 +39,25 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async cleanDatabase() {
     if (process.env.NODE_ENV === 'test') {
-      const tablenames = await this.$queryRaw<
-        Array<{ tablename: string }>
-      >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
-
-      const tables = tablenames
-        .map(({ tablename }) => tablename)
-        .filter((name) => name !== '_prisma_migrations')
-        .map((name) => `"public"."${name}"`)
-        .join(', ');
-
       try {
-        await this.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`);
+        // For MySQL, we'll use a different approach
+        const tables = await this.$queryRaw<Array<{ TABLE_NAME: string }>>`
+          SELECT TABLE_NAME 
+          FROM information_schema.TABLES 
+          WHERE TABLE_SCHEMA = DATABASE()
+        `;
+
+        const tableNames = tables
+          .map(({ TABLE_NAME }) => TABLE_NAME)
+          .filter((name) => name !== '_prisma_migrations');
+
+        for (const tableName of tableNames) {
+          await this.$executeRawUnsafe(`TRUNCATE TABLE \`${tableName}\``);
+        }
+        
+        this.logger.log('Test database cleaned successfully');
       } catch (error) {
-        this.logger.error('Error cleaning database', error);
+        this.logger.error('Error cleaning test database', error);
       }
     }
   }

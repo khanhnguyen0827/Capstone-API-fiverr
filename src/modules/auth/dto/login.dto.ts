@@ -14,5 +14,5 @@ export class LoginDto {
     example: 'password123'
   })
   @IsString()
-  pass_word: string;
+  password: string;
 }

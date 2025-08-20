@@ -1,19 +1,23 @@
-import { IsEmail, IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsEmail, IsString, IsOptional, IsEnum, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { APP_CONSTANTS } from '../../common/constants/app.constants';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Tên người dùng',
+    description: 'Họ tên người dùng',
     example: 'Nguyễn Văn A'
   })
   @IsString()
-  name: string;
+  @MinLength(APP_CONSTANTS.VALIDATION.NAME_MIN_LENGTH)
+  @MaxLength(APP_CONSTANTS.VALIDATION.NAME_MAX_LENGTH)
+  ho_ten: string;
 
   @ApiProperty({
     description: 'Email người dùng',
     example: 'user@example.com'
   })
   @IsEmail()
+  @MaxLength(APP_CONSTANTS.VALIDATION.EMAIL_MAX_LENGTH)
   email: string;
 
   @ApiProperty({
@@ -21,7 +25,9 @@ export class CreateUserDto {
     example: 'password123'
   })
   @IsString()
-  pass_word: string;
+  @MinLength(APP_CONSTANTS.VALIDATION.PASSWORD_MIN_LENGTH)
+  @MaxLength(APP_CONSTANTS.VALIDATION.PASSWORD_MAX_LENGTH)
+  password: string;
 
   @ApiPropertyOptional({
     description: 'Số điện thoại',
@@ -29,6 +35,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(APP_CONSTANTS.VALIDATION.PHONE_MAX_LENGTH)
   phone?: string;
 
   @ApiPropertyOptional({
@@ -50,10 +57,11 @@ export class CreateUserDto {
 
   @ApiPropertyOptional({
     description: 'Vai trò',
-    example: 'user'
+    example: 'USER',
+    enum: Object.values(APP_CONSTANTS.ROLES)
   })
   @IsOptional()
-  @IsString()
+  @IsEnum(Object.values(APP_CONSTANTS.ROLES))
   role?: string;
 
   @ApiPropertyOptional({

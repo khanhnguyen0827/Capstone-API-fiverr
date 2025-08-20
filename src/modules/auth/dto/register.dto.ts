@@ -3,11 +3,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterDto {
   @ApiProperty({
-    description: 'Tên người dùng',
+    description: 'Họ tên người dùng',
     example: 'Nguyễn Văn A'
   })
   @IsString()
-  name: string;
+  ho_ten: string;
 
   @ApiProperty({
     description: 'Email người dùng',
@@ -21,7 +21,7 @@ export class RegisterDto {
     example: 'password123'
   })
   @IsString()
-  pass_word: string;
+  password: string;
 
   @ApiPropertyOptional({
     description: 'Số điện thoại',
@@ -50,7 +50,7 @@ export class RegisterDto {
 
   @ApiPropertyOptional({
     description: 'Vai trò',
-    example: 'user'
+    example: 'USER'
   })
   @IsOptional()
   @IsString()
@@ -71,4 +71,12 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   certification?: string;
+
+  @ApiPropertyOptional({
+    description: 'Ảnh đại diện',
+    example: 'https://example.com/avatar.jpg'
+  })
+  @IsOptional()
+  @IsString()
+  anh_dai_dien?: string;
 }

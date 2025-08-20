@@ -5,7 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import * as helmet from 'helmet';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +16,10 @@ async function bootstrap() {
   const PORT = configService.get<number>('PORT') ?? 3000;
   const NODE_ENV = configService.get<string>('NODE_ENV') ?? 'development';
   const logger = new Logger('Bootstrap');
+
+  // Security middleware
+  app.use(helmet());
+  app.use(compression());
 
   // Enable CORS
   app.enableCors({
@@ -37,7 +44,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Global interceptor
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
@@ -105,12 +112,13 @@ async function bootstrap() {
     logger.log(`🚀 Server is running on port ${PORT}`);
     logger.log(`🌍 Environment: ${NODE_ENV}`);
     if (NODE_ENV !== 'production') {
-      logger.log(`📚 Swagger documentation available at http://localhost:${PORT}/api-docs`);
+      logger.log(`📚 Swagger documentation available at http://localhost:${PORT}/docs`);
     }
     logger.log(`🌐 CORS enabled`);
     logger.log(`📊 API versioning enabled`);
     logger.log(`🚨 Global exception filter enabled`);
-    logger.log(`📝 Logging interceptor enabled`);
+    logger.log(`📝 Response interceptor enabled`);
+    logger.log(`🔒 Security middleware enabled`);
   });
 }
 
