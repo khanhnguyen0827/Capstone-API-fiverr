@@ -19,11 +19,18 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
+      cache: true,
+      expandVariables: true,
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 minute
-        limit: 100, // 100 requests per minute
+        ttl: parseInt(process.env.THROTTLE_TTL || '60000'),
+        limit: parseInt(process.env.THROTTLE_LIMIT || '100'),
+      },
+      {
+        name: 'auth',
+        ttl: 60000,
+        limit: 5,
       },
     ]),
     TerminusModule,

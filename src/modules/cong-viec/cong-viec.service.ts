@@ -21,8 +21,8 @@ export class CongViecService {
     const cong_viec = await this.prisma.cong_viec.create({
       data: createCongViecDto,
       include: {
-        ChiTietLoaiCongViec: true,
-        Users: {
+        chi_tiet_loai_cong_viec: true,
+        users: {
           select: {
             id: true,
             ho_ten: true,

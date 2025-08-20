@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -27,7 +27,7 @@ export class AuthService {
     }
 
     // Hash password
-    const saltRounds = 10;
+    const saltRounds = parseInt(this.configService.get('BCRYPT_SALT_ROUNDS') || '10');
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Tạo user mới
@@ -63,7 +63,10 @@ export class AuthService {
 
     // Tạo JWT token
     const payload = { email: user.email, sub: user.id, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: this.configService.get('JWT_EXPIRES_IN') || '1d',
+    });
 
     return {
       user,
@@ -97,7 +100,10 @@ export class AuthService {
 
     // Tạo JWT token
     const payload = { email: user.email, sub: user.id, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: this.configService.get('JWT_EXPIRES_IN') || '1d',
+    });
 
     return {
       user: {
@@ -125,15 +131,75 @@ export class AuthService {
         id: true,
         email: true,
         ho_ten: true,
+        phone: true,
+        birth_day: true,
+        gender: true,
         role: true,
+        skill: true,
+        certification: true,
+        anh_dai_dien: true,
         is_active: true,
+        created_at: true,
+        updated_at: true,
       },
     });
 
     if (!user || !user.is_active) {
-      return null;
+      throw new UnauthorizedException('Người dùng không tồn tại hoặc đã bị khóa');
     }
 
     return user;
+  }
+
+  async logout(userId: number): Promise<void> {
+    // Trong thực tế, có thể:
+    // 1. Thêm token vào blacklist
+    // 2. Cập nhật trạng thái đăng nhập
+    // 3. Ghi log đăng xuất
+    console.log(`User ${userId} logged out`);
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      // Verify refresh token
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+
+      // Kiểm tra user có tồn tại và active không
+      const user = await this.prisma.users.findUnique({
+        where: { id: payload.sub },
+        select: {
+          id: true,
+          email: true,
+          ho_ten: true,
+          role: true,
+          is_active: true,
+        },
+      });
+
+      if (!user || !user.is_active) {
+        throw new UnauthorizedException('Người dùng không tồn tại hoặc đã bị khóa');
+      }
+
+      // Tạo token mới
+      const newPayload = { email: user.email, sub: user.id, role: user.role };
+      const newAccessToken = this.jwtService.sign(newPayload, {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: this.configService.get('JWT_EXPIRES_IN') || '1d',
+      });
+
+      return {
+        accessToken: newAccessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          ho_ten: user.ho_ten,
+          role: user.role,
+        },
+      };
+    } catch (error) {
+      throw new BadRequestException('Refresh token không hợp lệ');
+    }
   }
 }
