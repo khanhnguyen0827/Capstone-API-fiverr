@@ -1,0 +1,135 @@
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import {
+  CreateCommentDto,
+  UpdateCommentDto,
+  CommentResponseDto,
+} from './dto/comments.dto';
+
+@Injectable()
+export class CommentsService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findByJobId(jobId: number, page: number = 1, size: number = 10) {
+    const skip = (page - 1) * size;
+
+    const [comments, total] = await Promise.all([
+      this.prisma.binhLuan.findMany({
+        where: { ma_cong_viec: jobId },
+        skip,
+        take: size,
+        include: {
+          nguoiBinhLuan: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: {
+          ngay_binh_luan: 'desc',
+        },
+      }),
+      this.prisma.binhLuan.count({
+        where: { ma_cong_viec: jobId },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / size);
+
+    return {
+      data: comments,
+      pagination: {
+        page,
+        size,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  async create(
+    createCommentDto: CreateCommentDto,
+    userId: number,
+  ): Promise<CommentResponseDto> {
+    const comment = await this.prisma.binhLuan.create({
+      data: {
+        ...createCommentDto,
+        ma_nguoi_binh_luan: userId,
+        ngay_binh_luan: new Date(),
+      },
+      include: {
+        nguoiBinhLuan: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return comment;
+  }
+
+  async update(
+    id: number,
+    updateCommentDto: UpdateCommentDto,
+    userId: number,
+  ): Promise<CommentResponseDto> {
+    const existingComment = await this.prisma.binhLuan.findUnique({
+      where: { id },
+      select: { ma_nguoi_binh_luan: true },
+    });
+
+    if (!existingComment) {
+      throw new NotFoundException(`Bình luận với ID ${id} không tồn tại`);
+    }
+
+    if (existingComment.ma_nguoi_binh_luan !== userId) {
+      throw new ForbiddenException('Bạn không có quyền cập nhật bình luận này');
+    }
+
+    const comment = await this.prisma.binhLuan.update({
+      where: { id },
+      data: updateCommentDto,
+      include: {
+        nguoiBinhLuan: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return comment;
+  }
+
+  async remove(id: number, userId: number): Promise<void> {
+    const existingComment = await this.prisma.binhLuan.findUnique({
+      where: { id },
+      select: { ma_nguoi_binh_luan: true },
+    });
+
+    if (!existingComment) {
+      throw new NotFoundException(`Bình luận với ID ${id} không tồn tại`);
+    }
+
+    if (existingComment.ma_nguoi_binh_luan !== userId) {
+      throw new ForbiddenException('Bạn không có quyền xóa bình luận này');
+    }
+
+    await this.prisma.binhLuan.delete({
+      where: { id },
+    });
+  }
+}
