@@ -15,6 +15,7 @@ CREATE TABLE ChiTietLoaiCongViec (
     hinh_anh VARCHAR(500),
     ma_loai_cong_viec INT,
     FOREIGN KEY (ma_loai_cong_viec) REFERENCES LoaiCongViec(id)
+    
 );
 
 -- Bảng NguoiDung (User)
