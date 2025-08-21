@@ -17,7 +17,6 @@ CREATE TABLE ChiTietLoaiCongViec (
     FOREIGN KEY (ma_loai_cong_viec) REFERENCES LoaiCongViec(id)
     
 );
-
 -- Bảng NguoiDung (User)
 CREATE TABLE NguoiDung (
     id INT PRIMARY KEY AUTO_INCREMENT,
