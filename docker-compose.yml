@@ -3,7 +3,7 @@ services:
     image: khanh2nq/img-be_capstone-api-fiverr:latest
     container_name: capstone-backend
     ports:
-      - 3000:3000
+      - 3070:3069
     env_file:
       - .env
     depends_on:
