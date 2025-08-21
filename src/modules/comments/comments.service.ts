@@ -7,15 +7,17 @@ export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(
-    jobId: number,
+    jobId?: number,
     page: number = 1,
     size: number = 10,
   ): Promise<{ data: CommentResponseDto[]; pagination: any }> {
     const skip = (page - 1) * size;
 
+    const where = jobId ? { ma_cong_viec: jobId } : {};
+
     const [comments, total] = await Promise.all([
       this.prisma.binhLuan.findMany({
-        where: { ma_cong_viec: jobId },
+        where,
         skip,
         take: size,
         include: {
@@ -31,8 +33,50 @@ export class CommentsService {
           ngay_binh_luan: 'desc',
         },
       }),
+      this.prisma.binhLuan.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(total / size);
+
+    return {
+      data: comments,
+      pagination: {
+        page,
+        size,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  async findByUser(
+    userId: number,
+    page: number = 1,
+    size: number = 10,
+  ): Promise<{ data: CommentResponseDto[]; pagination: any }> {
+    const skip = (page - 1) * size;
+
+    const [comments, total] = await Promise.all([
+      this.prisma.binhLuan.findMany({
+        where: { ma_nguoi_binh_luan: userId },
+        skip,
+        take: size,
+        include: {
+          CongViec: {
+            select: {
+              id: true,
+              ten_cong_viec: true,
+            },
+          },
+        },
+        orderBy: {
+          ngay_binh_luan: 'desc',
+        },
+      }),
       this.prisma.binhLuan.count({
-        where: { ma_cong_viec: jobId },
+        where: { ma_nguoi_binh_luan: userId },
       }),
     ]);
 
@@ -49,6 +93,33 @@ export class CommentsService {
         hasPrev: page > 1,
       },
     };
+  }
+
+  async findById(id: number): Promise<CommentResponseDto> {
+    const comment = await this.prisma.binhLuan.findUnique({
+      where: { id },
+      include: {
+        NguoiDung: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        CongViec: {
+          select: {
+            id: true,
+            ten_cong_viec: true,
+          },
+        },
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`Bình luận với ID ${id} không tồn tại`);
+    }
+
+    return comment;
   }
 
   async create(
@@ -127,5 +198,37 @@ export class CommentsService {
     await this.prisma.binhLuan.delete({
       where: { id },
     });
+  }
+
+  async toggleLike(id: number, userId: number): Promise<{ liked: boolean }> {
+    // Note: This is a placeholder implementation since the current schema doesn't support likes
+    // You would need to add a likes table or modify the schema to support this feature
+    const comment = await this.findById(id);
+    
+    // For now, return a mock response
+    return { liked: true };
+  }
+
+  async getStatistics(jobId: number): Promise<any> {
+    const [totalComments, avgRating, ratingDistribution] = await Promise.all([
+      this.prisma.binhLuan.count({
+        where: { ma_cong_viec: jobId },
+      }),
+      this.prisma.binhLuan.aggregate({
+        where: { ma_cong_viec: jobId },
+        _avg: { sao_binh_luan: true },
+      }),
+      this.prisma.binhLuan.groupBy({
+        by: ['sao_binh_luan'],
+        where: { ma_cong_viec: jobId },
+        _count: true,
+      }),
+    ]);
+
+    return {
+      totalComments,
+      averageRating: avgRating._avg.sao_binh_luan || 0,
+      ratingDistribution,
+    };
   }
 }

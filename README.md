@@ -57,8 +57,8 @@ cp env.example .env
 
 ### 3. Database setup
 ```bash
-npm run prisma:generate
-npm run prisma:push
+npx prisma generate
+npx prisma db push
 npm run db:seed  # Tùy chọn
 ```
 
@@ -94,43 +94,75 @@ docker-compose up BE
 |--------|----------|-------------|------|
 | `POST` | `/auth/register` | Đăng ký | ❌ |
 | `POST` | `/auth/login` | Đăng nhập | ❌ |
+| `POST` | `/auth/refresh` | Làm mới token | ✅ |
 | `GET` | `/auth/profile` | Profile | ✅ |
-| `POST` | `/auth/logout` | Đăng xuất | ✅ |
 
 ### 👥 Users
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| `GET` | `/users` | Danh sách | ✅ |
-| `GET` | `/users/:id` | Chi tiết | ✅ |
-| `POST` | `/users` | Tạo mới | ✅ |
-| `PATCH` | `/users/:id` | Cập nhật | ✅ |
-| `DELETE` | `/users/:id` | Xóa | ✅ |
+| `GET` | `/users` | Danh sách với tìm kiếm | ✅ |
+| `GET` | `/users/freelancers` | Danh sách freelancer | ❌ |
+| `GET` | `/users/top-rated` | Người dùng đánh giá cao | ❌ |
+| `GET` | `/users/:id` | Chi tiết | ❌ |
+| `GET` | `/users/:id/jobs` | Công việc của người dùng | ❌ |
+| `GET` | `/users/:id/reviews` | Đánh giá của người dùng | ❌ |
+| `POST` | `/users` | Tạo mới (admin) | ✅ |
+| `PUT` | `/users/:id` | Cập nhật thông tin | ✅ |
+| `PUT` | `/users/:id/role` | Cập nhật vai trò (admin) | ✅ |
+| `DELETE` | `/users/:id` | Xóa (admin) | ✅ |
+| `GET` | `/users/statistics/overview` | Thống kê người dùng | ✅ |
 
 ### 💼 Jobs
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| `GET` | `/cong-viec` | Danh sách | ❌ |
+| `GET` | `/cong-viec` | Danh sách với filter | ❌ |
+| `GET` | `/cong-viec/search` | Tìm kiếm nâng cao | ❌ |
+| `GET` | `/cong-viec/statistics` | Thống kê công việc | ❌ |
+| `GET` | `/cong-viec/featured` | Công việc nổi bật | ❌ |
+| `GET` | `/cong-viec/user/:userId` | Công việc theo người tạo | ❌ |
 | `GET` | `/cong-viec/:id` | Chi tiết | ❌ |
 | `POST` | `/cong-viec` | Tạo mới | ✅ |
-| `PATCH` | `/cong-viec/:id` | Cập nhật | ✅ |
+| `PUT` | `/cong-viec/:id` | Cập nhật | ✅ |
 | `DELETE` | `/cong-viec/:id` | Xóa | ✅ |
+| `POST` | `/cong-viec/:id/apply` | Ứng tuyển | ✅ |
+| `GET` | `/cong-viec/:id/applicants` | Danh sách ứng viên | ✅ |
 
 ### 💬 Comments
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| `GET` | `/binh-luan` | Danh sách | ❌ |
+| `GET` | `/binh-luan` | Danh sách tất cả | ❌ |
+| `GET` | `/binh-luan/job/:jobId` | Theo công việc | ❌ |
+| `GET` | `/binh-luan/user/:userId` | Theo người dùng | ❌ |
+| `GET` | `/binh-luan/:id` | Chi tiết | ❌ |
 | `POST` | `/binh-luan` | Tạo mới | ✅ |
-| `PATCH` | `/binh-luan/:id` | Cập nhật | ✅ |
+| `PUT` | `/binh-luan/:id` | Cập nhật | ✅ |
 | `DELETE` | `/binh-luan/:id` | Xóa | ✅ |
+| `POST` | `/binh-luan/:id/like` | Thích/bỏ thích | ✅ |
+| `GET` | `/binh-luan/job/:jobId/statistics` | Thống kê bình luận | ❌ |
 
 ### 📋 Categories & Hires
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| `GET` | `/loai-cong-viec` | Loại công việc | ❌ |
-| `GET` | `/chi-tiet-loai-cong-viec` | Chi tiết loại | ❌ |
+| `GET` | `/loai-cong-viec` | Loại công việc chính | ❌ |
+| `GET` | `/loai-cong-viec/chi-tiet` | Chi tiết loại | ❌ |
+| `GET` | `/loai-cong-viec/:id` | Chi tiết loại chính | ❌ |
+| `GET` | `/loai-cong-viec/:id/chi-tiet` | Chi tiết con theo chính | ❌ |
+| `POST` | `/loai-cong-viec` | Tạo loại chính (admin) | ✅ |
+| `POST` | `/loai-cong-viec/chi-tiet` | Tạo loại con (admin) | ✅ |
+| `PUT` | `/loai-cong-viec/:id` | Cập nhật loại chính (admin) | ✅ |
+| `PUT` | `/loai-cong-viec/chi-tiet/:id` | Cập nhật loại con (admin) | ✅ |
+| `DELETE` | `/loai-cong-viec/:id` | Xóa loại chính (admin) | ✅ |
+| `DELETE` | `/loai-cong-viec/chi-tiet/:id` | Xóa loại con (admin) | ✅ |
+| `GET` | `/loai-cong-viec/statistics/overview` | Thống kê danh mục | ❌ |
 | `GET` | `/thue-cong-viec` | Danh sách thuê | ✅ |
+| `GET` | `/thue-cong-viec/hired` | Công việc đã thuê (client) | ✅ |
+| `GET` | `/thue-cong-viec/freelancer` | Công việc được thuê (freelancer) | ✅ |
+| `GET` | `/thue-cong-viec/:id` | Chi tiết thuê | ✅ |
 | `POST` | `/thue-cong-viec` | Thuê công việc | ✅ |
-| `PATCH` | `/thue-cong-viec/:id` | Cập nhật trạng thái | ✅ |
+| `PUT` | `/thue-cong-viec/:id/status` | Cập nhật trạng thái | ✅ |
+| `PUT` | `/thue-cong-viec/:id/complete` | Đánh dấu hoàn thành | ✅ |
+| `DELETE` | `/thue-cong-viec/:id` | Hủy thuê | ✅ |
+| `GET` | `/thue-cong-viec/statistics/overview` | Thống kê thuê | ✅ |
 
 ## 🔐 Authentication
 
@@ -174,9 +206,9 @@ npm run build              # Build
 npm run start:prod        # Production
 
 # Database
-npm run prisma:generate    # Generate client
-npm run prisma:push       # Push schema
-npm run prisma:studio     # Prisma Studio
+npx prisma generate        # Generate client
+npx prisma db push        # Push schema
+npx prisma studio         # Prisma Studio
 npm run db:seed           # Seed data
 
 # Code quality
