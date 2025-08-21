@@ -9,6 +9,7 @@ services:
     depends_on:
       - DB
 
+
   DB:
     image: mysql:8.0
     container_name: capstone-database
